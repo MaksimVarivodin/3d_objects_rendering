@@ -1,4 +1,4 @@
-#include "Matrix.h"
+#include "Headers/Matrix.h"
 
 Matrix Matrix::createRotationX(float angle)
 {
@@ -7,7 +7,7 @@ Matrix Matrix::createRotationX(float angle)
 		{0, cos(angle), -sin(angle)},
 		{0, sin(angle), cos(angle)}
 	};
-	return Matrix(v);
+	return Matrix{v};
 }
 
 Matrix Matrix::createRotationY(float angle)
@@ -17,7 +17,7 @@ Matrix Matrix::createRotationY(float angle)
 		{0, 1, 0},
 		{-sin(angle), 0, cos(angle)}
 	};
-	return Matrix(v);
+	return Matrix{v};
 }
 
 Matrix Matrix::createRotationZ(float angle)
@@ -27,10 +27,10 @@ Matrix Matrix::createRotationZ(float angle)
 		{sin(angle), cos(angle), 0},
 		{0, 0, 1}
 	};
-	return Matrix(v);
+	return Matrix{v};
 }
 
-Matrix Matrix::operator*(const Matrix& other)
+Matrix Matrix::operator*(const Matrix& other) const
 {
     if (this->columns() != other.rows() && this->rows() != other.columns()) {
         throw invalid_argument("different sizes");
@@ -46,5 +46,4 @@ Matrix Matrix::operator*(const Matrix& other)
 		}
 		return Matrix{result};
     }
-    return Matrix{};
 }

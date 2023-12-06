@@ -3,21 +3,21 @@
 struct Colors {
 	SDL_Color Black{ 0, 0, 0, 225 };
 	SDL_Color White{ 255, 255, 255, 255 };
-};
+}colors;
 
 class RenderWindow
 {
 	int _width;
 	int _height;
 	SDL_Color _backgroundColor;
-	Render3D _render;
+	Render3D _render3D;
 	SDL_Window* _window;
 	SDL_Renderer* _renderer;
 
 public:
 
-	int width() {return _width;	};
-	int height() { return _height; };
+	[[nodiscard]] int width() const {return _width;	};
+	[[nodiscard]] int height() const { return _height; };
 	SDL_Color backgroundColor() { return _backgroundColor; };
 	void run();
 
@@ -25,15 +25,15 @@ public:
 		int _width,
 		int _height,
 		const SDL_Color& _backgroundColor,
-		const Render3D& _render,
+		const Render3D& _render3D,
 		SDL_Window* _window,
 		SDL_Renderer* _renderer)
 		: _width(_width),
-		_height(_height),
-		_backgroundColor(_backgroundColor),
-		_render(_render),
-		_window(_window),
-		_renderer(_renderer)
+          _height(_height),
+          _backgroundColor(_backgroundColor),
+          _render3D(_render3D),
+          _window(_window),
+          _renderer(_renderer)
 	{
 	};
 	~RenderWindow()

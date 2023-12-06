@@ -7,7 +7,7 @@ class Object3D
 	vector<Point> _points;
 	vector<pair<int, int>> _sides;
 	Point _center;
-	SDL_Color _color;
+	SDL_Color _color{};
 
 public:
 	
@@ -18,12 +18,12 @@ public:
 	
 	Object3D() = default;
 
-	~Object3D() {};
+	~Object3D() = default;
 
 	Object3D(
 		const vector<Point>& _points,
 		const vector<pair<int, int>>& sides,
-		const Point& center,
+		const Point& _center,
 		const SDL_Color& _color)
 		: _points(_points),
 		_sides(sides),
@@ -37,6 +37,6 @@ public:
 		Point screenCenter,
 		Point actualCenter,
 		vector<Point> points,
-		vector<pair<int, int>> sides);
+		const vector<pair<int, int>>& sides);
 };
 

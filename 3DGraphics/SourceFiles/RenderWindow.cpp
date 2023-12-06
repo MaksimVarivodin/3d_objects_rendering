@@ -1,4 +1,4 @@
-#include "RenderWindow.h"
+#include "Headers/RenderWindow.h"
 
 void RenderWindow::run()
 {
@@ -10,7 +10,7 @@ void RenderWindow::run()
                 running = false;
             }
         }
-
+        _render3D.render();
         SDL_SetRenderDrawColor(_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
         SDL_RenderClear(_renderer);
 

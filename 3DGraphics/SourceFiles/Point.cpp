@@ -1,4 +1,4 @@
-#include "Point.h"
+#include "Headers/Point.h"
 
 Point Point::operator*(Matrix matrix)
 {
@@ -9,7 +9,7 @@ Point Point::operator*(Matrix matrix)
 
 Point& Point::operator*=(const Matrix& other)
 {
-	// TODO: вставьте здесь оператор return
+	// TODO: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ return
 	(*this) = (*this) * other;
 	return *this;
 }
