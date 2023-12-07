@@ -5,5 +5,7 @@
 #include <string>
 #include <cmath>
 #include <SDL.h>
+
+#include "Windows.h"
 using namespace std;
 

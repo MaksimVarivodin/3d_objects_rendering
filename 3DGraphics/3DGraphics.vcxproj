@@ -70,6 +70,26 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
+    <PublicModuleDirectories>C:\Users\maksy\Documents\Projects\c++\3DGraphics\3DGraphics\Headers;$(PublicModuleDirectories)</PublicModuleDirectories>
+    <AllProjectBMIsArePublic>true</AllProjectBMIsArePublic>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
+    <PublicModuleDirectories>C:\Users\maksy\Documents\Projects\c++\3DGraphics\3DGraphics\Headers;$(PublicModuleDirectories)</PublicModuleDirectories>
+    <AllProjectBMIsArePublic>true</AllProjectBMIsArePublic>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
+    <PublicModuleDirectories>C:\Users\maksy\Documents\Projects\c++\3DGraphics\3DGraphics\Headers;$(PublicModuleDirectories)</PublicModuleDirectories>
+    <AllProjectBMIsArePublic>true</AllProjectBMIsArePublic>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
+    <PublicModuleDirectories>C:\Users\maksy\Documents\Projects\c++\3DGraphics\3DGraphics\Headers;$(PublicModuleDirectories)</PublicModuleDirectories>
+    <AllProjectBMIsArePublic>true</AllProjectBMIsArePublic>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -135,23 +155,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Matrix.cpp" />
-    <ClCompile Include="Object3D.cpp" />
-    <ClCompile Include="Point.cpp" />
-    <ClCompile Include="Render3D.cpp" />
-    <ClCompile Include="RenderWindow.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Header.h" />
-    <ClInclude Include="Matrix.h" />
-    <ClInclude Include="Object3D.h" />
-    <ClInclude Include="Point.h" />
-    <ClInclude Include="Render3D.h" />
-    <ClInclude Include="RenderWindow.h" />
+    <ClCompile Include="SourceFiles\Main.cpp" />
+    <ClCompile Include="SourceFiles\Object3D.cpp" />
+    <ClCompile Include="SourceFiles\Point.cpp" />
+    <ClCompile Include="SourceFiles\Render3D.cpp" />
+    <ClCompile Include="SourceFiles\RenderWindow.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Headers\Header.h" />
+    <ClInclude Include="Headers\Object3D.h" />
+    <ClInclude Include="Headers\Point.h" />
+    <ClInclude Include="Headers\Render3D.h" />
+    <ClInclude Include="Headers\RenderWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,35 +1,27 @@
 #pragma once
 #include "Render3D.h"
-struct Colors {
-	SDL_Color Black{ 0, 0, 0, 225 };
-	SDL_Color White{ 255, 255, 255, 255 };
-}colors;
+
 
 class RenderWindow
 {
-	int _width;
-	int _height;
+	// цвет фона
 	SDL_Color _backgroundColor;
+	// рендер
 	Render3D _render3D;
+	// окно (из библиотеки SDL2)
 	SDL_Window* _window;
+	// рендер (из библиотеки SDL2)
 	SDL_Renderer* _renderer;
 
 public:
-
-	[[nodiscard]] int width() const {return _width;	};
-	[[nodiscard]] int height() const { return _height; };
-	SDL_Color backgroundColor() { return _backgroundColor; };
+	// основная функция запуска программы
 	void run();
 
 	RenderWindow(
-		int _width,
-		int _height,
 		const SDL_Color& _backgroundColor,
 		const Render3D& _render3D,
 		SDL_Window* _window,
-		SDL_Renderer* _renderer)
-		: _width(_width),
-          _height(_height),
+		SDL_Renderer* _renderer):
           _backgroundColor(_backgroundColor),
           _render3D(_render3D),
           _window(_window),

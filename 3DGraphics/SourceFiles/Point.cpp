@@ -1,18 +1,5 @@
-#include "Headers/Point.h"
+#include "..\headers\Point.h"
 
-Point Point::operator*(Matrix matrix)
-{
-	Matrix point = pointToMatrix(*this);
-	Matrix result = matrix * point; // 3x3 * 3x1 = 3x1
-	return matrixToPoint(result);
-}
-
-Point& Point::operator*=(const Matrix& other)
-{
-	// TODO: �������� ����� �������� return
-	(*this) = (*this) * other;
-	return *this;
-}
 
 Point Point::move(Point movePoint)
 {
@@ -24,27 +11,44 @@ Point Point::move(Point movePoint)
 
 Point Point::rotate(float angleX, float angleY = 0, float angleZ = 0)
 {
-	Point newPoint = (*this) * Matrix::createRotationX(angleX);
-	if (angleY!= 0)
-		newPoint *= Matrix::createRotationY(angleY);
-	if (angleZ != 0)
-		newPoint *= Matrix::createRotationZ(angleZ);
-	return Point();
+	Point rotated = rotateX(angleX);
+	if (angleY != 0)
+		rotated = rotated.rotateY(angleY);
+	if (angleY != 0)
+		rotated = rotated.rotateZ(angleZ);
+	return rotated;
 }
-
-Point Point::scale(float scaleX, float scaleY, float scaleZ)
+Point Point::rotateX(float angle) {
+	return Point(
+		x,
+		cos(angle) * y - sin(angle) * z,
+		sin(angle) * y + cos(angle) * z);
+}
+Point Point::rotateY(float angle) {
+	return Point(
+		cos(angle) * x + sin(angle) * z,
+		y,
+		-sin(angle) * x + cos(angle) * z);
+}
+Point Point::rotateZ(float angle) {
+	return Point(
+		cos(angle) * x - sin(angle) * y,
+		sin(angle) * x + cos(angle) * y,
+		z);
+}
+Point Point::scale(Point scale)
 {
 	return Point(
-		x * scaleX,
-		y * scaleY,
-		z * scaleZ);
+		x * scale.x,
+		y * scale.y,
+		z * scale.z);
 }
 
-Point Point::scale(Point oldCenter, Point newCenter, float scaleX, float scaleY, float scaleZ)
+Point Point::scale(Point oldCenter, Point newCenter, Point scale)
 {
 	return 
 		 moveCenter(oldCenter, newCenter)
-		.scale(scaleX, scaleY, scaleZ)
+		.scale(scale)
 		.moveCenter(newCenter, oldCenter);
 }
 
@@ -67,10 +71,10 @@ vector<Point> Point::moveCenter(vector<Point> points, Point oldCenter, Point new
 {
 	Point difference = getDifferencePoint(newCenter, oldCenter); // 
 
-	for (size_t i = 0; i < points.size(); i++)	
-		points[i] = points[i].move(difference);
+	for (Point& point :points)	
+		point = point.move(difference);
 
-	return vector<Point>();
+	return points;
 }
 
 Point Point::moveCenter(Point oldCenter, Point newCenter)
@@ -79,58 +83,47 @@ Point Point::moveCenter(Point oldCenter, Point newCenter)
 }
 
 
-Matrix Point::pointToMatrix(const Point& point)
-{
-	vector<vector<float>> v = {
-		{point.x},
-		{point.y},
-		{point.z}
-	};
-    return Matrix(v);
-}
 
-Point Point::matrixToPoint(Matrix matrix)
-{
-	if ((matrix.columns() != 1 && matrix.rows()!= 1) || (matrix.rows() !=3 && matrix.columns() !=3)) 
-		throw invalid_argument("Matrix must be 1x3 or 3x1");
 
-	if (matrix.columns() == 1) {
-		return Point(matrix.data()[0][0], matrix.data()[1][0], matrix.data()[2][0]);
-	}
-
-	if (matrix.rows() == 1) {
-		return Point(matrix.data()[0][0], matrix.data()[0][1], matrix.data()[0][2]);
-	}
-	return Point();
-}
-
-vector<Point> Point::rotate(vector<Point> points, Point oldCenter, Point newCenter, float angleX, float angleY, float angleZ)
+vector<Point> Point::rotate(vector<Point> points, Point oldCenter, Point newCenter, Point angle)
 {
 	points = moveCenter(points, oldCenter, newCenter);
-	points = rotate(points, angleX, angleY, angleZ);
+
+	points = rotate(points, angle);
 	return moveCenter(points, newCenter, oldCenter);
 }
 
-vector<Point> Point::rotate(vector<Point> points, float angleX, float angleY, float angleZ)
+vector<Point> Point::rotate(vector<Point> points, Point rotation)
 {
-	for (size_t i = 0; i < points.size(); i++)
-		points[i] = points[i].rotate(angleX, angleY, angleZ);
+	float radianX = rotation.x * M_PI / 180;
+	float radianY = rotation.y * M_PI / 180;
+	float radianZ = rotation.z * M_PI / 180;
+	for (Point& point : points)
+		point = point.rotate(radianX, radianY, radianZ);
 	return points;
 }
 
-vector<Point> Point::scale(vector<Point> points, Point oldCenter, Point newCenter, float scaleX, float scaleY, float scaleZ)
+vector<Point> Point::scale(vector<Point> points, Point oldCenter, Point newCenter, Point scale)
 {
 	points  = moveCenter(points, oldCenter, newCenter);
 
-	points = scale(points, scaleX, scaleY, scaleZ);
+	points = Point::scale(points, scale);
 
 	return moveCenter(points, newCenter, oldCenter);
 }
 
-vector<Point> Point::scale(vector<Point> points, float scaleX, float scaleY, float scaleZ)
+vector<Point> Point::scale(vector<Point> points, Point scale)
 {
-	for (size_t i = 0; i < points.size(); i++)
-		points[i] = points[i].scale(scaleX, scaleY, scaleZ);
+	for (Point& point: points)
+		point = point.scale(scale);
 
+	return points;
+}
+
+vector<Point> Point::projectTo2D(vector<Point> points, float distance)
+{
+	for (Point& point : points) {
+		point = point.projection3DTo2D(distance);
+	}
 	return points;
 }
