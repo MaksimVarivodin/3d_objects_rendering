@@ -19,8 +19,15 @@ class Render3D
 	void addDeltas(int index);
 	// проецировать один объект на екран
 	Object3D calculateObject3DTo2D(Object3D object, int index);
+
+	thread projectionInThread(const Object3D& object, int index, promise<bool>& done);
 	// нарисовать один объект на екран
 	void drawObject(Object3D someObject);
+
+	vector<thread*> threads;
+
+	Object3D doWork(Object3D someobject, int index);
+
 public:
 
 	
@@ -29,16 +36,10 @@ public:
 
     ~Render3D();
 	/*
-		рендеринг одного объекта (включает):
-			- проецирование на екран 
-			- отрисовку на екране
-	*/
-	void renderObject(Object3D someObject, int index);
-	/*
 		рендеринг всех объектов класса
 	*/
     void renderObjects();
-
+	void runThreads();
 	Render3D(
 		const vector<Object3D>& objects,
 		float projectionDistance, 

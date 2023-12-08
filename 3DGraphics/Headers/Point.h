@@ -2,6 +2,7 @@
 #include"Header.h"
 // класс точка(вектор)
 class Point {
+
 public:
 	// координата х 
 	float x;
@@ -47,7 +48,7 @@ public:
 
 	// метод проекции массива точек на плоскость экрана
 	static vector<Point> projectTo2D(vector<Point> points, float distance);
-
+	
 	Point(float x, float y, float z) : x(x), y(y), z(z) {}
 	Point(float x, float y) : Point(x, y, 0) {};
 	Point(float x) : Point(x, 0) {};

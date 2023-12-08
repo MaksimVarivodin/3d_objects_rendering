@@ -1,5 +1,5 @@
 #pragma once
-#include "Point.h"
+#include "Polygons.h"
 
 // класс 3Д объект
 class Object3D
@@ -42,6 +42,14 @@ public:
 	// построить пирамиду
 	static Object3D Pyramid(float scale, SDL_Color color);
 
+	static Object3D Square(float scale, SDL_Color color);
+	static Object3D KohStar(const Point& center,
+		const float& radius,
+		const int& vertices,
+		const int& depth,
+		const float& z1,
+		const float& z2,
+		SDL_Color color);
 	Object3D() = default;
 
 	~Object3D() = default;

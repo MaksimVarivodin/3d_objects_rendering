@@ -30,6 +30,9 @@
     <ClCompile Include="SourceFiles\RenderWindow.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="sourceFiles\Polygons.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\Header.h">
@@ -45,6 +48,12 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Headers\RenderWindow.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\KochCurve.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\Polygons.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,60 +1,107 @@
 #include "..\headers\Render3D.h"
 
-void Render3D::renderObject(Object3D someObject, int index)
-{
-	someObject = calculateObject3DTo2D(someObject, index);
-	drawObject(someObject);
-	
-}
+mutex mtx;
+
 
 void Render3D::renderObjects() {
 	int index = 0;
-	for (const Object3D& obj : objects) {
-		renderObject(obj, index);
+	for (Object3D& obj : objects) {
+		drawObject(calculateObject3DTo2D(obj, index));
 		index++;
 	}
+	
 	SDL_RenderPresent(_renderer);
+
 };
 
 Render3D::~Render3D() = default;
 
 void Render3D::addDeltas(int index)
 {
+	mtx.lock();
 	objectRotations[index].x += objectRotations[index].x > 360? -360: 0 + rotationDeltas[index].x;
 	objectRotations[index].y += objectRotations[index].y > 360? -360: 0 + rotationDeltas[index].y;
 	objectRotations[index].z += objectRotations[index].z > 360? -360: 0 + rotationDeltas[index].z;
+	mtx.unlock();
 }
 
 Object3D Render3D::calculateObject3DTo2D(Object3D object, int index)
 {
-	object = object.rotate(objectRotations[index]);
+	mtx.lock();
+	Point rotations = objectRotations[index];
+	float distance = projectionDistance;
+	Point position = objectPositions[index];
+	mtx.unlock();
+	object = object.rotate(rotations);
 
-	object = object.projectTo2D(projectionDistance);
+	object = object.projectTo2D(distance);
 
-	object = object.moveCenter(object.center(), objectPositions[index]);
+	object = object.moveCenter(object.center(), position);
 
 	addDeltas(index); 
 
 	return object;
 }
 
+thread Render3D::projectionInThread(const Object3D& object, int index, promise<bool> &done)
+{
+	return  thread([&]() {
+		drawObject(calculateObject3DTo2D(object, index));
+		//lock_guard<mutex> guard(mtx);
+		done.set_value(true);
+		});
+}
+
 void Render3D::drawObject(Object3D someObject)
 {
-	SDL_SetRenderDrawColor(
-		_renderer,
-		someObject.color().r,
-		someObject.color().g,
-		someObject.color().b,
-		someObject.color().a);
-
-	for (pair<int, int> side : someObject.sides()) {
-		SDL_RenderDrawLine(
+	{
+		SDL_SetRenderDrawColor(
 			_renderer,
-			(int)someObject.points()[side.first].x,
-			(int)someObject.points()[side.first].y,
-			(int)someObject.points()[side.second].x,
-			(int)someObject.points()[side.second].y);
+			someObject.color().r,
+			someObject.color().g,
+			someObject.color().b,
+			someObject.color().a);
+		mtx.lock();
+		for (const pair<int, int>& side : someObject.sides()) {
+			
+			SDL_RenderDrawLine(
+				_renderer,
+				(int)someObject.points()[side.first].x,
+				(int)someObject.points()[side.first].y,
+				(int)someObject.points()[side.second].x,
+				(int)someObject.points()[side.second].y);
+		}
+		mtx.unlock();
 	}
+}
+
+void Render3D::runThreads()
+{
+	vector<thread> threads;
+	vector<Object3D> newObjects(objects);
+	for (int i = 0; i < objects.size(); i++) { 
+		threads.push_back(
+			thread([&newObjects, i, this]() {
+				mtx.lock();
+				Object3D buffer = newObjects[i];
+				mtx.unlock();
+
+				drawObject(doWork(buffer, i));				
+				}));
+	}	
+
+	for (auto& t : threads) {
+		if (t.joinable()) {
+			t.join();
+		}
+	}
+
+	SDL_RenderPresent(_renderer);
+}
+
+Object3D Render3D::doWork(Object3D someobject, int index)
+{
+	return calculateObject3DTo2D(someobject, index);
 }
 
 Render3D::Render3D() = default;

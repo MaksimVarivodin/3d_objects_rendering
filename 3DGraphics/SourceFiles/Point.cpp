@@ -98,6 +98,9 @@ vector<Point> Point::rotate(vector<Point> points, Point rotation)
 	float radianX = rotation.x * M_PI / 180;
 	float radianY = rotation.y * M_PI / 180;
 	float radianZ = rotation.z * M_PI / 180;
+	int size = sqrt(points.size());
+	int oneThreadSize = points.size() / size;
+
 	for (Point& point : points)
 		point = point.rotate(radianX, radianY, radianZ);
 	return points;

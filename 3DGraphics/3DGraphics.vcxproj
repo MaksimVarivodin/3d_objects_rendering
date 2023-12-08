@@ -97,7 +97,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>Default</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <LanguageStandard_C>Default</LanguageStandard_C>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -113,7 +113,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>Default</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <LanguageStandard_C>Default</LanguageStandard_C>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -129,7 +129,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>Default</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <LanguageStandard_C>Default</LanguageStandard_C>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -145,7 +145,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>Default</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <LanguageStandard_C>Default</LanguageStandard_C>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -161,13 +161,16 @@
     <ClCompile Include="SourceFiles\Main.cpp" />
     <ClCompile Include="SourceFiles\Object3D.cpp" />
     <ClCompile Include="SourceFiles\Point.cpp" />
+    <ClCompile Include="sourceFiles\Polygons.cpp" />
     <ClCompile Include="SourceFiles\Render3D.cpp" />
     <ClCompile Include="SourceFiles\RenderWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\Header.h" />
+    <ClInclude Include="headers\KochCurve.h" />
     <ClInclude Include="Headers\Object3D.h" />
     <ClInclude Include="Headers\Point.h" />
+    <ClInclude Include="headers\Polygons.h" />
     <ClInclude Include="Headers\Render3D.h" />
     <ClInclude Include="Headers\RenderWindow.h" />
   </ItemGroup>
