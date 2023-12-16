@@ -5,8 +5,8 @@ const int SCREEN_WIDTH = 1920;
 
 // высота экрана
 const int SCREEN_HEIGHT = 1080;
-float width = SCREEN_WIDTH;
-float height = SCREEN_HEIGHT;
+float width = SCREEN_WIDTH * 0.95;
+float height = SCREEN_HEIGHT* 0.95;
 // цвета
 struct Colors {
     SDL_Color Black{ 0, 0, 0, 225 };
@@ -136,12 +136,11 @@ int SDL_main(int argc, char** args) {
         SDL_WINDOWPOS_UNDEFINED,
         width,
         height,
-        SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_FULLSCREEN_DESKTOP);
+        SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_MAXIMIZED );
     // создание рендерера - отрисовщик (из библиотеки SDL)
     // управляет графикой в окне
     SDL_Renderer* _renderer = SDL_CreateRenderer(_window,
-        -1,
-        SDL_RENDERER_ACCELERATED |SDL_RENDERER_PRESENTVSYNC);
+        -1, SDL_RENDERER_SOFTWARE | SDL_RENDERER_PRESENTVSYNC );
 
 
 	// инициализация рендера 

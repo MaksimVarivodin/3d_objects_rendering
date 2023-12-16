@@ -25,8 +25,8 @@ void RenderWindow::run()
         _render3D[index].runThreads();
         counter++;
        
-        Sleep(0);
-        while (SDL_PollEvent(&event)) {
+        //this_thread::sleep_for(chrono::milliseconds(16));
+        while (SDL_PollEvent(&event)==1) {
             if (event.type == SDL_QUIT) {
                 running = false;
                 break;
