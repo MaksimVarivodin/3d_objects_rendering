@@ -18,6 +18,12 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -94,9 +100,9 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SFML_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>Default</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
@@ -110,9 +116,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SFML_STATIC;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>Default</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
@@ -126,9 +132,9 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SFML_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>Default</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
@@ -142,9 +148,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SFML_STATIC;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>Default</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
@@ -154,42 +160,32 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="FrameCounter.cpp" />
-    <ClCompile Include="SourceFiles\Main.cpp" />
-    <ClCompile Include="SourceFiles\Object3D.cpp" />
-    <ClCompile Include="SourceFiles\Point.cpp" />
-    <ClCompile Include="sourceFiles\Polygons.cpp" />
-    <ClCompile Include="SourceFiles\Render3D.cpp" />
-    <ClCompile Include="SourceFiles\RenderWindow.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="FrameCounter.h" />
-    <ClInclude Include="Headers\Header.h" />
-    <ClInclude Include="headers\KochCurve.h" />
-    <ClInclude Include="Headers\Object3D.h" />
-    <ClInclude Include="Headers\Point.h" />
-    <ClInclude Include="headers\Polygons.h" />
-    <ClInclude Include="Headers\Render3D.h" />
-    <ClInclude Include="Headers\RenderWindow.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\sdl2.nuget.redist.2.28.5\build\native\sdl2.nuget.redist.targets" Condition="Exists('..\packages\sdl2.nuget.redist.2.28.5\build\native\sdl2.nuget.redist.targets')" />
-    <Import Project="..\packages\sdl2.nuget.2.28.5\build\native\sdl2.nuget.targets" Condition="Exists('..\packages\sdl2.nuget.2.28.5\build\native\sdl2.nuget.targets')" />
-    <Import Project="..\packages\sdl2_ttf.nuget.redist.2.20.2\build\native\sdl2_ttf.nuget.redist.targets" Condition="Exists('..\packages\sdl2_ttf.nuget.redist.2.20.2\build\native\sdl2_ttf.nuget.redist.targets')" />
-    <Import Project="..\packages\sdl2_ttf.nuget.2.20.2\build\native\sdl2_ttf.nuget.targets" Condition="Exists('..\packages\sdl2_ttf.nuget.2.20.2\build\native\sdl2_ttf.nuget.targets')" />
+    <Import Project="..\packages\sfml_system.redist.2.6.0\build\native\sfml_system.redist.targets" Condition="Exists('..\packages\sfml_system.redist.2.6.0\build\native\sfml_system.redist.targets')" />
+    <Import Project="..\packages\sfml_system.2.6.0\build\native\sfml_system.targets" Condition="Exists('..\packages\sfml_system.2.6.0\build\native\sfml_system.targets')" />
+    <Import Project="..\packages\sfml_graphics.redist.2.6.0\build\native\sfml_graphics.redist.targets" Condition="Exists('..\packages\sfml_graphics.redist.2.6.0\build\native\sfml_graphics.redist.targets')" />
+    <Import Project="..\packages\sfml_window.redist.2.6.0\build\native\sfml_window.redist.targets" Condition="Exists('..\packages\sfml_window.redist.2.6.0\build\native\sfml_window.redist.targets')" />
+    <Import Project="..\packages\sfml_window.2.6.0\build\native\sfml_window.targets" Condition="Exists('..\packages\sfml_window.2.6.0\build\native\sfml_window.targets')" />
+    <Import Project="..\packages\sfml_graphics.2.6.0\build\native\sfml_graphics.targets" Condition="Exists('..\packages\sfml_graphics.2.6.0\build\native\sfml_graphics.targets')" />
+    <Import Project="..\packages\sfml_audio.redist.2.6.0\build\native\sfml_audio.redist.targets" Condition="Exists('..\packages\sfml_audio.redist.2.6.0\build\native\sfml_audio.redist.targets')" />
+    <Import Project="..\packages\sfml_audio.2.6.0\build\native\sfml_audio.targets" Condition="Exists('..\packages\sfml_audio.2.6.0\build\native\sfml_audio.targets')" />
+    <Import Project="..\packages\sfml_network.redist.2.6.0\build\native\sfml_network.redist.targets" Condition="Exists('..\packages\sfml_network.redist.2.6.0\build\native\sfml_network.redist.targets')" />
+    <Import Project="..\packages\sfml_network.2.6.0\build\native\sfml_network.targets" Condition="Exists('..\packages\sfml_network.2.6.0\build\native\sfml_network.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>Данный проект ссылается на пакеты NuGet, отсутствующие на этом компьютере. Используйте восстановление пакетов NuGet, чтобы скачать их.  Дополнительную информацию см. по адресу: http://go.microsoft.com/fwlink/?LinkID=322105. Отсутствует следующий файл: {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\sdl2.nuget.redist.2.28.5\build\native\sdl2.nuget.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sdl2.nuget.redist.2.28.5\build\native\sdl2.nuget.redist.targets'))" />
-    <Error Condition="!Exists('..\packages\sdl2.nuget.2.28.5\build\native\sdl2.nuget.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sdl2.nuget.2.28.5\build\native\sdl2.nuget.targets'))" />
-    <Error Condition="!Exists('..\packages\sdl2_ttf.nuget.redist.2.20.2\build\native\sdl2_ttf.nuget.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sdl2_ttf.nuget.redist.2.20.2\build\native\sdl2_ttf.nuget.redist.targets'))" />
-    <Error Condition="!Exists('..\packages\sdl2_ttf.nuget.2.20.2\build\native\sdl2_ttf.nuget.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sdl2_ttf.nuget.2.20.2\build\native\sdl2_ttf.nuget.targets'))" />
+    <Error Condition="!Exists('..\packages\sfml_system.redist.2.6.0\build\native\sfml_system.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml_system.redist.2.6.0\build\native\sfml_system.redist.targets'))" />
+    <Error Condition="!Exists('..\packages\sfml_system.2.6.0\build\native\sfml_system.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml_system.2.6.0\build\native\sfml_system.targets'))" />
+    <Error Condition="!Exists('..\packages\sfml_graphics.redist.2.6.0\build\native\sfml_graphics.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml_graphics.redist.2.6.0\build\native\sfml_graphics.redist.targets'))" />
+    <Error Condition="!Exists('..\packages\sfml_window.redist.2.6.0\build\native\sfml_window.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml_window.redist.2.6.0\build\native\sfml_window.redist.targets'))" />
+    <Error Condition="!Exists('..\packages\sfml_window.2.6.0\build\native\sfml_window.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml_window.2.6.0\build\native\sfml_window.targets'))" />
+    <Error Condition="!Exists('..\packages\sfml_graphics.2.6.0\build\native\sfml_graphics.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml_graphics.2.6.0\build\native\sfml_graphics.targets'))" />
+    <Error Condition="!Exists('..\packages\sfml_audio.redist.2.6.0\build\native\sfml_audio.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml_audio.redist.2.6.0\build\native\sfml_audio.redist.targets'))" />
+    <Error Condition="!Exists('..\packages\sfml_audio.2.6.0\build\native\sfml_audio.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml_audio.2.6.0\build\native\sfml_audio.targets'))" />
+    <Error Condition="!Exists('..\packages\sfml_network.redist.2.6.0\build\native\sfml_network.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml_network.redist.2.6.0\build\native\sfml_network.redist.targets'))" />
+    <Error Condition="!Exists('..\packages\sfml_network.2.6.0\build\native\sfml_network.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml_network.2.6.0\build\native\sfml_network.targets'))" />
   </Target>
 </Project>
