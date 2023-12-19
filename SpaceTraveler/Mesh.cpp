@@ -1,6 +1,2 @@
-#include "Mesh.h"
+#include "mesh.h"
 
-vector<Triangle> Mesh::getTriangles()
-{
-    return trians;
-}

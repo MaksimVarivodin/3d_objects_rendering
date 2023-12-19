@@ -1,6 +1,6 @@
 #pragma once
 // here I place all my include libraries
-
+#define _USE_MATH_DEFINES
 #include <SFML/Graphics.hpp>
 #include <chrono>
 #include <future>
@@ -8,5 +8,6 @@
 #include <filesystem>
 #include <iostream>
 #include <windows.h>
+#include <cmath>
 using namespace sf;
 using namespace std;
