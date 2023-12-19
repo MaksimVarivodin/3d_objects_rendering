@@ -1,38 +1,35 @@
 #pragma once
 #include "engine_math.h"
-using namespace EngineMath;
-class Triangle: public Shape
+using namespace engine_math;
+class triangle
 {
-	Vector3<float> vertices[3] = { 
-		Vector3<float>(),
-		Vector3<float>(),
-		Vector3<float>()};
+	int point_indexes_[3];
 public:
-	Triangle()
+	const int& a() const { return point_indexes_[0]; }
+	const int& b() const { return point_indexes_[1]; }
+	const int& c() const { return point_indexes_[2]; }
+	ConvexShape to_convex_shape(const vector<Vector3f>& points) const;
+	ConvexShape to_convex_shape(const vector<Vector2f>& points) const;
+	triangle() :point_indexes_()
 	{
-		update();
-	}
-	Triangle(Vector3<float> v[3])
+	};
+
+	explicit triangle(int ind[3])
 	{
-		for (size_t i = 0; i < 2; i++)		
-			vertices[i] = v[i];
-		 update();
+		point_indexes_[0] =  ind[0];
+		point_indexes_[1] =  ind[1];
+		point_indexes_[2] =  ind[2];
 	}
-	Triangle(Vector3<float> a, Vector3<float> b, Vector3<float>c)
-	{
-		vertices[0] = a;
-		vertices[1] = b;
-		vertices[2] = c;
-		update();
-	}
+	triangle(
+		const int& a,
+		const int& b,
+		const int& c) {
+		point_indexes_[0] = a;
+		point_indexes_[1] = b;
+		point_indexes_[2] = c;
+	};
 	
-	virtual unsigned int getPointCount() const {
-		return 3;	
-	}
-	virtual Vector2f getPoint(unsigned int index) const {
-		if (index >= 0 || index <= 2) {
-			return Vector2f(vertices[index].x, vertices[index].y);
-		}
-	}
 };
+
+
 
