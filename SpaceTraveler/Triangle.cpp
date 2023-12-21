@@ -1,22 +1,21 @@
 ﻿#include "triangle.h"
 
-ConvexShape triangle::to_convex_shape(const vector<Vector3f>& points) const
-{
-	ConvexShape tr;
-	tr.setPointCount(3);
 
-	tr.setPoint(0, Vector2f(points[a()].x, points[a()].y));
-	tr.setPoint(1, Vector2f(points[b()].x, points[b()].y));
-	tr.setPoint(2, Vector2f(points[c()].x, points[c()].y));
-	return tr;
+VertexArray triangle::to_triangle_vertex_array(const vector<Vector3f>& points, const Color& fill_color) const
+{
+	VertexArray array (Triangles, 3);
+	array[0] = Vertex({points[a()].x, points[a()].y}, fill_color);
+	array[1] = Vertex({points[b()].x, points[b()].y}, fill_color);
+	array[2] = Vertex({points[c()].x, points[c()].y}, fill_color);
+	return array;
 }
 
-ConvexShape triangle::to_convex_shape(const vector<Vector2f>& points) const
+VertexArray triangle::to_line_vertex_array(const vector<Vector3f>& points, const Color& outline_color) const
 {
-	ConvexShape tr(3);
-
-	tr.setPoint(0, points[a()]);
-	tr.setPoint(1, points[b()]);
-	tr.setPoint(2, points[c()]);
-	return tr;
+	VertexArray array (LineStrip, 4);
+	array[0] = Vertex({points[a()].x, points[a()].y}, outline_color);
+	array[1] = Vertex({points[b()].x, points[b()].y}, outline_color);
+	array[2] = Vertex({points[c()].x, points[c()].y}, outline_color);
+	array[3] = Vertex({points[a()].x, points[a()].y}, outline_color);
+	return array;
 }

@@ -1,13 +1,13 @@
-#include "frame_rate.h"
+п»ї#include "frame_rate.h"
 
 void frame_rate::frame_rate_method()
 {	
 	while (true) {
-		// чтобы сделать 24 замера в секунду 
-		// необходимо заснуть на 0,024-ную секунды 
-		// или на 41,(6) миллисекунды 
-		// или на 41667 микросекунды
-		// выбрал последнее
+		// С‡С‚РѕР±С‹ СЃРґРµР»Р°С‚СЊ 24 Р·Р°РјРµСЂР° РІ СЃРµРєСѓРЅРґСѓ 
+		// РЅРµРѕР±С…РѕРґРёРјРѕ Р·Р°СЃРЅСѓС‚СЊ РЅР° 0,024-РЅСѓСЋ СЃРµРєСѓРЅРґС‹ 
+		// РёР»Рё РЅР° 41,(6) РјРёР»Р»РёСЃРµРєСѓРЅРґС‹ 
+		// РёР»Рё РЅР° 41667 РјРёРєСЂРѕСЃРµРєСѓРЅРґС‹
+		// РІС‹Р±СЂР°Р» РїРѕСЃР»РµРґРЅРµРµ
 		sleep(microseconds(41667));
 
 		Lock lock(mtx_);	
@@ -35,9 +35,9 @@ void frame_rate::control_array_index()
 void frame_rate::calculate_frames()
 {
 	if (cur_index_ == 2) {
-		average_frame_rate_ = find_average(f_rate_values_[0], f_rate_values_[1], f_rate_values_[2]);
-		minimum_frame_rate_ = find_minimum(f_rate_values_[0], f_rate_values_[1], f_rate_values_[2]);
-		maximum_frame_rate_ = find_maximum(f_rate_values_[0], f_rate_values_[1], f_rate_values_[2]);
+		average_frame_rate_ = em_find_average(f_rate_values_[0], f_rate_values_[1], f_rate_values_[2]);
+		minimum_frame_rate_ = em_find_minimum(f_rate_values_[0], f_rate_values_[1], f_rate_values_[2]);
+		maximum_frame_rate_ = em_find_maximum(f_rate_values_[0], f_rate_values_[1], f_rate_values_[2]);
 	}
 	
 }

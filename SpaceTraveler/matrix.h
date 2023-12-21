@@ -1,5 +1,6 @@
-#pragma once
+﻿#pragma once
 #include "Header.h"
+
 namespace engine_math {
 	template<class T = float>
 	class matrix
@@ -9,6 +10,8 @@ namespace engine_math {
 		vector<vector<T>> data_;
 	public:
 
+		int rows ()const{return rows_;}
+		int columns () const{return columns_;}
 		/*
 		
 		Creates a transposed matrix from current instance.
@@ -18,16 +21,7 @@ namespace engine_math {
 		matrix<T> transposed();
 
 		
-		Vector3<T> to_vector3()
-		{
-			if (rows_ == 3 and columns_ == 1)
-				return Vector3<T>(
-				data_[0][0],
-				data_[1][0],
-				data_[2][0]
-				);
-			return Vector3<T>();
-		}
+		Vector3<T> to_vector3();
 
 		/*
 		
@@ -40,15 +34,19 @@ namespace engine_math {
 
 		matrix<T> operator*(const matrix<T>& m);
 
-		Vector3<T> operator*(const Vector3<T>& p);
+		matrix<T> operator/(T value);
+
+		Vector3<T> operator*(const Vector3<T>&);
 
 
-		matrix<T>& operator*=(const matrix<T>& m);
+		matrix<T>& operator*=(const matrix<T>&);
 
-		matrix<T>& operator*=(const Vector3<T>& p);
+		matrix<T>& operator*=(const Vector3<T>&);
+
+		matrix<T>& operator/=(T value);
 		
-		
-		T& operator()(const int row, const int column);
+		T operator()(const int &row, const int& column) const;
+		void operator()(const int &row, const int &column, T value);
 
 		matrix<T>(const matrix& m) :
 			matrix(m.data_, m.rows_, m.columns_) {}
@@ -63,12 +61,13 @@ namespace engine_math {
 		{
 		}
 
-		matrix<T>(const vector<vector<T>>& d):data_(d) {
+		matrix<T>(const vector<vector<T>>& d){
 			rows_ = d.size();
 			if (rows_ > 0)
 				columns_ = d[0].size();
 			else
 				columns_ = 0;
+			data_ = d;
 		}
 		
 		matrix<T>(const vector<vector<T>>& d, const int& r, const int& c)
@@ -76,6 +75,7 @@ namespace engine_math {
 
 		matrix<T>(): rows_(0), columns_(0), data_() {}
 	};
+	
 }
 
 

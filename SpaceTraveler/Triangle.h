@@ -8,8 +8,7 @@ public:
 	const int& a() const { return point_indexes_[0]; }
 	const int& b() const { return point_indexes_[1]; }
 	const int& c() const { return point_indexes_[2]; }
-	ConvexShape to_convex_shape(const vector<Vector3f>& points) const;
-	ConvexShape to_convex_shape(const vector<Vector2f>& points) const;
+	
 	triangle() :point_indexes_()
 	{
 	};
@@ -27,8 +26,10 @@ public:
 		point_indexes_[0] = a;
 		point_indexes_[1] = b;
 		point_indexes_[2] = c;
-	};
-	
+	}
+
+	[[nodiscard]] VertexArray to_triangle_vertex_array(const vector<Vector3f>& points, const Color& fill_color) const;
+	[[nodiscard]] VertexArray to_line_vertex_array(const vector<Vector3f>& points, const Color& outline_color) const;
 };
 
 

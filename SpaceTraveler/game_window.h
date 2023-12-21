@@ -13,17 +13,17 @@ class game_window : public RenderWindow
 
     projection projection_;
     mesh cube_;
-    void draw_cube();
+    mesh calculate_points(const float& angle1, const float& angle2) const;
+    void draw_triangle(const vector<VertexArray>& shapes, const vector<VertexArray>& lines);
 public:
 
 
     void run();
     void set_frame_rate_show(bool);
-    void init_cube(vector<Vector3f> points, vector<triangle> tr, const float& scale_x, const float& scale_y , const float& scale_z);
+    void init_cube(vector<Vector3f> points, vector<triangle> tr, const Vector3f& scale_point = Vector3f(1, 1,1));
 
 
-    game_window() :
-        RenderWindow(VideoMode::getDesktopMode(), "Space Traveler"),
+    game_window() :        
         t_renderer_(text_renderer::create_any_text_renderer()),
         f_r_renderer_(t_renderer_),
         projection_(getSize().y, getSize().x, 90, 1000, 0.1f)
@@ -37,11 +37,20 @@ public:
     explicit game_window(const bool& v_sync) :game_window() {
         setVerticalSyncEnabled(v_sync);
     }
-    
-    game_window(const bool& v_sync, const int& frame_rate) :
-        game_window(frame_rate)
+    game_window(const int & frame_rate, const VideoMode & mode, const string & w_name, const short& flags):RenderWindow(mode, w_name, flags)
     {
-        setVerticalSyncEnabled(v_sync);
+	    t_renderer_ = text_renderer::create_any_text_renderer();
+        f_r_renderer_ = frame_rate_renderer( t_renderer_);
+        projection_ = projection(getSize().y, getSize().x, 90, 1000, 0.1f);
+    	setFramerateLimit(frame_rate);
+    }
+     game_window(const bool & sync, const VideoMode & mode, const string & w_name, const short& flags):RenderWindow(mode, w_name, flags)
+    {
+	    t_renderer_ = text_renderer::create_any_text_renderer();
+        f_r_renderer_ = frame_rate_renderer( t_renderer_);
+        projection_ = projection(getSize().y, getSize().x, 90, 1000, 0.1f);
+    	setVerticalSyncEnabled(sync);
+     
     }
     ~game_window() override
     {

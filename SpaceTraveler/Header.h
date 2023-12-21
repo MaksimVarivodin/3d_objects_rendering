@@ -8,6 +8,8 @@
 #include <filesystem>
 #include <iostream>
 #include <windows.h>
+#include <cstdlib>
 #include <cmath>
+
 using namespace sf;
 using namespace std;
