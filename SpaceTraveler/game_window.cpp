@@ -8,7 +8,10 @@ mesh game_window::calculate_points(const float& angle1, const float& angle2) con
 	temp.rotate_x(radian_angle1)
 		.rotate_y(radian_angle2)
 		.move(Vector3f(0, 0, 3.0f));
-	temp = projection_.projection_method(temp);
+
+	temp = camera_.filter_by_normals(temp);
+	temp = camera_.projection_method(temp);
+	
 	temp
 	.move(Vector3f(1, 1, 0))
 	.scale(Vector3f(
@@ -37,7 +40,7 @@ void game_window::run()
 	float angle_x = 0;
 	float angle_y = 0;
 	mesh temp(calculate_points(angle_x, angle_y));
-	const Color	fill(127, 127, 127, 30),
+	const Color	fill(50, 50, 50),
 			outline(Color::White);
 	while (isOpen())
 	{

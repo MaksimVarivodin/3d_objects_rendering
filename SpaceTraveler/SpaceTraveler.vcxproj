@@ -155,7 +155,7 @@
     <ClCompile Include="game_window.cpp" />
     <ClCompile Include="matrix_impl.h" />
     <ClCompile Include="mesh.cpp" />
-    <ClCompile Include="projection.cpp" />
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="text_renderer.cpp" />
     <ClCompile Include="frame_rate.cpp" />
     <ClCompile Include="frame_rate_renderer.cpp" />
@@ -167,7 +167,7 @@
     <ClInclude Include="game_window.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="mesh.h" />
-    <ClInclude Include="projection.h" />
+    <ClInclude Include="camera.h" />
     <ClInclude Include="text_renderer.h" />
     <ClInclude Include="frame_rate.h" />
     <ClInclude Include="frame_rate_renderer.h" />

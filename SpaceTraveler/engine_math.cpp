@@ -163,15 +163,6 @@ float engine_math::em_z_compression(const float& z_horizon, const float& z_monit
 	return z_horizon / (z_horizon - z_monitor);
 }
 
-//vector<Vector2f> engine_math::em_move_center(const Vector2f& new_center, const Vector2f& old_center,
-//	const vector<Vector3f>& points)
-//{
-//	const Vector2f	move_v(new_center.x - old_center.x,
-//				new_center.y - old_center.y);
-//	
-//	return em_move(move_v, points);
-//}
-
 vector<Vector3f> engine_math::em_move(const Vector3f& move, const vector<Vector3f>& points)
 {
 	vector<Vector3f> result(points.size());
@@ -199,6 +190,26 @@ vector<Vector3f> engine_math::em_scale(const vector<Vector3f>& points, const Vec
 		return res;
 	}
 	return points;
+}
+
+Vector3f engine_math::em_find_vector_point(const Vector3f& a, const Vector3f& b)
+{
+	return Vector3f{
+		b.x - a.x,
+		b.y - a.y,
+		b.z - a.z
+	};
+}
+
+engine_math::matrix<> engine_math::em_find_vector_matrix(const Vector3f& a, const Vector3f& b)
+{
+	return matrix<float>{
+		{
+			{b.x - a.x},
+			{b.y - a.y},
+			{b.z - a.z}
+		}
+	};
 }
 
 Vector3f engine_math::em_cross_product_point(const Vector3f& a, const Vector3f& b)
@@ -258,4 +269,23 @@ engine_math::matrix<> engine_math::em_cross_product_normalization(const matrix<f
 		data[i][j] =  point(i, j) / to_sqrtf;
 	
 	return matrix{data};
+}
+
+float engine_math::em_dot_product_point(const Vector3f& a, const Vector3f& b)
+{
+	return 	a.x * b.x + a.y  * b.y + a.z * b.z ;
+}
+
+float engine_math::em_dot_product_matrix(const matrix<>& a, const matrix<>& b)
+{
+	if (a.rows()!= b.rows() || a.columns()!= b.columns() )
+		throw exception("not equal matrix sizes");
+
+	float sum = 0;
+	for (int i = 0; i< a.rows() ; i++)
+		for(int j = 0; j < a.columns(); j++)
+		sum += a(i, j) * b(i, j);
+
+	return sum;
+	
 }

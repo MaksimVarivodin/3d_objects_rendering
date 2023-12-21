@@ -2,11 +2,6 @@
 #include "triangle.h"
 class mesh
 {
-public:
-	mesh(const mesh& other) = default;
-	mesh(mesh&& other) noexcept = default;
-	mesh& operator=(const mesh& other) = default;
-	mesh& operator=(mesh&& other) noexcept = default;
 
 private:
 	vector<Vector3f> points_;
@@ -14,8 +9,13 @@ private:
 public:
 	vector<Vector3f> get_points()const { return points_; }
 	vector<triangle> get_triangles()const {return trians_; }
-	vector<VertexArray> to_triangle_vertex_array(const Color& color);
-	vector<VertexArray> to_line_vertex_array(const Color& color);
+
+	vector<VertexArray> to_triangle_vertex_array(const Color& color) const;
+	vector<VertexArray> to_line_vertex_array(const Color& color) const;
+	vector<Vector3f> normals_to_triangles() const;
+	vector<Vector3f> distances_to_point(const Vector3f & point) const;
+
+
 	mesh& rotate_x(const float & degrees);
 	mesh& rotate_y(const float & degrees);
 	mesh& rotate_z(const float & degrees);
@@ -32,5 +32,9 @@ public:
 		points_ = p;
 		trians_ = tr;
 	}
+	mesh(const mesh& other) = default;
+	mesh(mesh&& other) noexcept = default;
+	mesh& operator=(const mesh& other) = default;
+	mesh& operator=(mesh&& other) noexcept = default;
 };
 

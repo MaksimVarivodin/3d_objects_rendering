@@ -11,7 +11,7 @@ class game_window : public RenderWindow
 
     Mutex w_mutex_;
 
-    projection projection_;
+    camera camera_;
     mesh cube_;
     mesh calculate_points(const float& angle1, const float& angle2) const;
     void draw_triangle(const vector<VertexArray>& shapes, const vector<VertexArray>& lines);
@@ -26,7 +26,7 @@ public:
     game_window() :        
         t_renderer_(text_renderer::create_any_text_renderer()),
         f_r_renderer_(t_renderer_),
-        projection_(getSize().y, getSize().x, 90, 1000, 0.1f)
+        camera_(getSize().y, getSize().x, 90, 1000, 0.1f)
     {
     }
 
@@ -41,14 +41,14 @@ public:
     {
 	    t_renderer_ = text_renderer::create_any_text_renderer();
         f_r_renderer_ = frame_rate_renderer( t_renderer_);
-        projection_ = projection(getSize().y, getSize().x, 90, 1000, 0.1f);
+        camera_ = camera(getSize().y, getSize().x, 90, 1000, 0.1f);
     	setFramerateLimit(frame_rate);
     }
      game_window(const bool & sync, const VideoMode & mode, const string & w_name, const short& flags):RenderWindow(mode, w_name, flags)
     {
 	    t_renderer_ = text_renderer::create_any_text_renderer();
         f_r_renderer_ = frame_rate_renderer( t_renderer_);
-        projection_ = projection(getSize().y, getSize().x, 90, 1000, 0.1f);
+        camera_ = camera(getSize().y, getSize().x, 90, 1000, 0.1f);
     	setVerticalSyncEnabled(sync);
      
     }

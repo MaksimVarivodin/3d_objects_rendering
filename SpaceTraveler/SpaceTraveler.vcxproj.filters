@@ -39,7 +39,7 @@
     <ClCompile Include="matrix_impl.h">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="projection.cpp">
+    <ClCompile Include="camera.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="triangle.cpp">
@@ -74,7 +74,7 @@
     <ClInclude Include="matrix.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="projection.h">
+    <ClInclude Include="camera.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

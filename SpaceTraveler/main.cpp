@@ -4,10 +4,8 @@ constexpr int MAXIMUM_FRAME_RATE = 5000;
 int main()
 {
 
-	game_window win(true,
-		VideoMode::getDesktopMode(),
-		"Space Traveler", Style::Fullscreen);
-	//game_window win(MAXIMUM_FRAME_RATE,VideoMode(1080, 1080),	"Space Traveler");
+	game_window win(true, 	VideoMode::getDesktopMode(), "Space Traveler", Style::Default);
+	//game_window win(MAXIMUM_FRAME_RATE, VideoMode::getDesktopMode(),"Space Traveler", Style::Fullscreen);
 	vector<Vector3f> cube_vertices = {
 		/*0*/{-1, -1, -1},
 		/*1*/{+1, -1, -1},
