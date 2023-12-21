@@ -76,12 +76,26 @@ namespace engine_math {
 	vector<Vector3f> em_scale(const vector<Vector3f>& points, const Vector3f& scale_point);
 
 	/*
+	 * Создание векторов
+	 */
+
+	Vector3f em_find_vector_point(const Vector3f & a, const Vector3f & b);
+	matrix<> em_find_vector_matrix(const Vector3f & a, const Vector3f & b);
+
+	/*
 	 * произведение векторов
 	 */
+
 	Vector3f em_cross_product_point(const Vector3f& a, const Vector3f& b);
 	matrix<> em_cross_product_matrix(const Vector3f& a, const Vector3f& b);
 
 	Vector3f em_cross_product_normalization(const Vector3f & point);
 	matrix<> em_cross_product_normalization(const matrix<> & point);
+
+	/*
+	 * скалярное произведение
+	 */
+	float em_dot_product_point(const Vector3f& a, const Vector3f& b);
+	float em_dot_product_matrix(const matrix<>& a, const matrix<>& b );
 
 };
