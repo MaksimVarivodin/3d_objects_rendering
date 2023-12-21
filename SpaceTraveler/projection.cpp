@@ -1,16 +1,27 @@
 ﻿#include "projection.h"
 
-vector<Vector3f> projection::projection_method(vector<Vector3f>& points) const
+projection& projection::operator=(const projection& other)
 {
-	int iter = 0;
+	this->z_compression_ = other.z_compression_;
+	this->field_of_view_ = other.field_of_view_;
+	this->z_to_monitor_ = other.z_to_monitor_;
+	this->asp_ratio_ = other.asp_ratio_;
+	return *this;
+}
+
+mesh projection::projection_method(const mesh& m) const
+{
+	int iterator = 0;
+	const vector<Vector3f> points = m.get_points();
 	vector<Vector3f> result(points.size());
-	for (Vector3f & p: points)
+	for (const Vector3f & p: points)
 	{		
-		result[iter] = project_function(
-			asp_ratio_fov_,
+		result[iterator] = em_project_function(
+			asp_ratio_,
+			field_of_view_,
 			z_compression_,
 			z_to_monitor_, p).to_vector3();
-		iter++;
+		iterator++;
 	}			
-	return result;
+	return mesh(result, m.get_triangles());
 }
