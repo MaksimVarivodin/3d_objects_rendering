@@ -7,9 +7,12 @@
 #include <string>
 #include <filesystem>
 #include <iostream>
+#include <fstream>
+#include <strstream>
 #include <windows.h>
 #include <cstdlib>
 #include <cmath>
+#include <algorithm>
 
 using namespace sf;
 using namespace std;

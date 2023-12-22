@@ -5,13 +5,16 @@ namespace engine_math {
 	template<class T = float>
 	class matrix
 	{
+
 		int rows_;
 		int columns_;
 		vector<vector<T>> data_;
 	public:
 
 		int rows ()const{return rows_;}
+
 		int columns () const{return columns_;}
+
 		/*
 		
 		Creates a transposed matrix from current instance.

@@ -12,18 +12,19 @@ class game_window : public RenderWindow
     Mutex w_mutex_;
 
     camera camera_;
-    mesh cube_;
-    mesh calculate_points(const float& angle1, const float& angle2) const;
-    void draw_triangle(const vector<VertexArray>& shapes, const vector<VertexArray>& lines);
+    lighting light_;
+    mesh_loader object_loader_;
+
+    mesh calculate_points(mesh object, const float& angle1, const float& angle2, const float& angle3) const;
+    void draw_triangle(const vector<VertexArray>& shapes);
 public:
 
 
     void run();
     void set_frame_rate_show(bool);
-    void init_cube(vector<Vector3f> points, vector<triangle> tr, const Vector3f& scale_point = Vector3f(1, 1,1));
 
 
-    game_window() :        
+    game_window() :
         t_renderer_(text_renderer::create_any_text_renderer()),
         f_r_renderer_(t_renderer_),
         camera_(getSize().y, getSize().x, 90, 1000, 0.1f)
