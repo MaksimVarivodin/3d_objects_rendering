@@ -1,4 +1,4 @@
-#include "game_window.h"
+п»ї#include "game_window.h"
 
 mesh game_window::calculate_points(mesh object, const float& angle1, const float& angle2, const float& angle3) const
 {
@@ -59,10 +59,10 @@ void game_window::run()
 	{
 		Event event;
 		while (pollEvent(event))
-			// Пользователь нажал на «крестик» и хочет закрыть окно ?
+			// РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ РЅР°Р¶Р°Р» РЅР° В«РєСЂРµСЃС‚РёРєВ» Рё С…РѕС‡РµС‚ Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ ?
 			if (event.type == Event::Closed ||
 				( event.type == Event::KeyPressed &&  Keyboard::isKeyPressed(Keyboard::Escape)))
-				// тогда закрываем его
+				// С‚РѕРіРґР° Р·Р°РєСЂС‹РІР°РµРј РµРіРѕ
 				close();
 			
 		
