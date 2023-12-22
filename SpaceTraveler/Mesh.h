@@ -9,9 +9,8 @@ private:
 public:
 	vector<Vector3f> get_points()const { return points_; }
 	vector<triangle> get_triangles()const {return trians_; }
-
-	vector<VertexArray> to_triangle_vertex_array(const Color& color) const;
-	vector<VertexArray> to_line_vertex_array(const Color& color) const;
+	vector<VertexArray> to_triangle_vertex_array() const;
+	vector<VertexArray> to_line_vertex_array() const;
 	vector<Vector3f> normals_to_triangles() const;
 	vector<Vector3f> distances_to_point(const Vector3f & point) const;
 
@@ -21,6 +20,7 @@ public:
 	mesh& rotate_z(const float & degrees);
 	mesh& move(const Vector3f& move_point);
 	mesh& scale(const Vector3f& scale_point);
+	mesh& sort_triangles();
 
 	mesh& set_precision(const int& precision);
 	size_t count() const {return trians_.size();}

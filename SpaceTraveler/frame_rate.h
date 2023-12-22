@@ -1,5 +1,5 @@
 #pragma once
-#include "camera.h"
+#include "lighting.h"
 class frame_rate
 {
 	int frame_counter_ = 0;

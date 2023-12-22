@@ -1,22 +1,22 @@
 #include "mesh.h"
 
 
-vector<VertexArray> mesh::to_triangle_vertex_array(const Color& color) const
+vector<VertexArray> mesh::to_triangle_vertex_array() const
 {
 	vector<VertexArray> result(trians_.size());
 
 	for (size_t i = 0 ; i < trians_.size(); i++)
-			result[i] = (trians_[i].to_triangle_vertex_array(points_, color));
+			result[i] = (trians_[i].to_triangle_vertex_array(points_));
 
 	return result;
 }
 
-vector<VertexArray> mesh::to_line_vertex_array(const Color& color) const
+vector<VertexArray> mesh::to_line_vertex_array() const
 {
 	vector<VertexArray> result(trians_.size());
 
 	for (size_t i = 0 ; i < trians_.size(); i++)
-		result[i] = (trians_[i].to_line_vertex_array(points_, color));
+		result[i] = (trians_[i].to_line_vertex_array(points_));
 
 	return result;
 }
@@ -33,7 +33,7 @@ vector<Vector3f> mesh::normals_to_triangles() const
 		vec_a= em_find_vector_point(points_[trians_[i].a()], points_[trians_[i].b()]);
 		vec_b = em_find_vector_point(points_[trians_[i].a()], points_[trians_[i].c()]);
 		normal = em_cross_product_point(vec_a, vec_b);
-		vectors[i] = em_cross_product_normalization(normal);
+		vectors[i] = em_vector_normalization(normal);
 	}
 	return vectors;
 }
@@ -90,6 +90,25 @@ mesh& mesh::scale(const Vector3f& scale_point)
 {
 	points_ = em_scale(points_, scale_point);
 
+	return *this;
+}
+
+mesh& mesh::sort_triangles()
+{
+	sort(trians_.begin(), trians_.end(), 
+		[this](triangle &t1, triangle &t2)
+		{
+			float z1 = em_find_average(vector<float>{
+				points_[t1.a()].z,
+				points_[t1.b()].z,
+				points_[t1.c()].z });
+			float z2 = em_find_average(vector<float>{
+				points_[t2.a()].z,
+				points_[t2.b()].z,
+				points_[t2.c()].z });
+			return z1 > z2;
+		}
+	);
 	return *this;
 }
 

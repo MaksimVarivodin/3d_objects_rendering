@@ -26,6 +26,15 @@ namespace engine_math {
 
 	int em_find_average(const int& a, const int& b, const int& c);
 
+	template <class T>
+	T em_find_average(const vector<T>& vec)
+	{
+		T sum = T() ;
+		for(const T& v: vec)
+			sum+= v;
+		return sum / (T)(vec.size());
+	}
+
 	float ctg(const float& radian_angle);
 
 	double ctg(const double& radian_angle);
@@ -89,8 +98,8 @@ namespace engine_math {
 	Vector3f em_cross_product_point(const Vector3f& a, const Vector3f& b);
 	matrix<> em_cross_product_matrix(const Vector3f& a, const Vector3f& b);
 
-	Vector3f em_cross_product_normalization(const Vector3f & point);
-	matrix<> em_cross_product_normalization(const matrix<> & point);
+	Vector3f em_vector_normalization(const Vector3f & point);
+	matrix<> em_vector_normalization(const matrix<> & point);
 
 	/*
 	 * скалярное произведение

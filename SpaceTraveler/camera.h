@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "mesh.h"
+#include "mesh_loader.h"
 
 class camera
 {

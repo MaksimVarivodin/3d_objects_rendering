@@ -4,32 +4,53 @@ using namespace engine_math;
 class triangle
 {
 	int point_indexes_[3];
+	Color outline_ = Color::White;
+	Color fill_ = Color(50, 50, 50);
 public:
 	const int& a() const { return point_indexes_[0]; }
 	const int& b() const { return point_indexes_[1]; }
 	const int& c() const { return point_indexes_[2]; }
-	
+	int* a_pointer() {return &point_indexes_[0];}
+	int* b_pointer() {return &point_indexes_[1];}
+	int* c_pointer() {return &point_indexes_[2];}
+	void outline(const Color & color){outline_ = color;}
+	void fill(const Color & color){fill_ = color;}
+	Color outline() const {return outline_; }
+	Color fill() const {return fill_; }
 	triangle() :point_indexes_()
 	{
-	};
+	}
 
 	explicit triangle(int ind[3])
 	{
 		point_indexes_[0] =  ind[0];
 		point_indexes_[1] =  ind[1];
 		point_indexes_[2] =  ind[2];
+
 	}
+
 	triangle(
 		const int& a,
 		const int& b,
-		const int& c) {
+		const int& c){
 		point_indexes_[0] = a;
 		point_indexes_[1] = b;
 		point_indexes_[2] = c;
-	}
 
-	[[nodiscard]] VertexArray to_triangle_vertex_array(const vector<Vector3f>& points, const Color& fill_color) const;
-	[[nodiscard]] VertexArray to_line_vertex_array(const vector<Vector3f>& points, const Color& outline_color) const;
+	}
+	explicit triangle(
+		const int& a,
+		const int& b,
+		const int& c,
+		const Color & fill,
+		const Color & outline)
+	:triangle(a, b, c)
+	{
+		this->outline_ = outline;
+		this->fill_ = fill;
+	}
+	[[nodiscard]] VertexArray to_triangle_vertex_array(const vector<Vector3f>& points) const;
+	[[nodiscard]] VertexArray to_line_vertex_array(const vector<Vector3f>& points) const;
 };
 
 

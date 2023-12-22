@@ -80,9 +80,9 @@ engine_math::matrix<float> engine_math::em_y_rot_matrix(const float& radian_angl
 {
 	vector<vector<float>> data
 	{
-		{	cosf(radian_angle),	0,	sinf(radian_angle)},
-		{	0,				1,			0	},
-		{	-sinf(radian_angle),	0,	cosf(radian_angle)}
+		{	cosf(radian_angle),		0,	sinf(radian_angle)	},
+		{	0,						1,			0			},
+		{	-sinf(radian_angle),	0,	cosf(radian_angle)	}
 	};
 	return matrix(data);
 }
@@ -91,9 +91,9 @@ engine_math::matrix<float> engine_math::em_z_rot_matrix(const float& radian_angl
 {
 	vector<vector<float>> data
 	{
-		{	cosf(radian_angle), sinf(radian_angle), 0},
-		{ sinf(radian_angle),cosf(radian_angle), 0 },
-		{ 0,	0,	1 }
+		{		cosf(radian_angle), -sinf(radian_angle),0 },
+		{		sinf(radian_angle), cosf(radian_angle),	0 },
+		{		0,					0,					1 }
 	};
 	return matrix(data);
 }
@@ -232,7 +232,7 @@ engine_math::matrix<> engine_math::em_cross_product_matrix(const Vector3f& a, co
 	};
 }
 
-Vector3f engine_math::em_cross_product_normalization(const Vector3f& point)
+Vector3f engine_math::em_vector_normalization(const Vector3f& point)
 {
 	const float length = sqrtf( 
 		 point.x	* point.x
@@ -246,7 +246,7 @@ Vector3f engine_math::em_cross_product_normalization(const Vector3f& point)
 	};
 }
 
-engine_math::matrix<> engine_math::em_cross_product_normalization(const matrix<float>& point)
+engine_math::matrix<> engine_math::em_vector_normalization(const matrix<float>& point)
 {
 	
 	vector<vector<float>> data = vector(
