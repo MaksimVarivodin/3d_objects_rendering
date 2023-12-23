@@ -1,5 +1,6 @@
 #pragma once
-#include "mesh_loader.h"
+#include "engine_math.h"
+using namespace engine_math;
 class frame_rate
 {
 	int frame_counter_ = 0;

@@ -4,39 +4,12 @@
     <Filter Include="features">
       <UniqueIdentifier>{c79f40ef-1128-409b-a5ca-c60fe464791a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="math">
-      <UniqueIdentifier>{53f203e9-0636-41ca-8bf8-79ab42f37bef}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="math\environment">
-      <UniqueIdentifier>{85cc0f34-d867-414c-b42b-93b83d7a0d8c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="math\object">
-      <UniqueIdentifier>{bb9fe959-ad84-4c55-958a-65bad088c206}</UniqueIdentifier>
-    </Filter>
     <Filter Include="rendering">
       <UniqueIdentifier>{4af5edaa-126f-4a97-99b5-135aab9fa214}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="mesh.cpp">
-      <Filter>math\object</Filter>
-    </ClCompile>
-    <ClCompile Include="point.cpp">
-      <Filter>math\object</Filter>
-    </ClCompile>
-    <ClCompile Include="triangle.cpp">
-      <Filter>math\object</Filter>
-    </ClCompile>
-    <ClCompile Include="engine_math.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
-    <ClCompile Include="matrix.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
     <ClCompile Include="frame_rate.cpp">
-      <Filter>features</Filter>
-    </ClCompile>
-    <ClCompile Include="mesh_loader.cpp">
       <Filter>features</Filter>
     </ClCompile>
     <ClCompile Include="frame_rate_renderer.cpp">
@@ -49,23 +22,11 @@
       <Filter>rendering</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="engine_math.cpp">
+      <Filter>features</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="matrix.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="engine_math.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="mesh.h">
-      <Filter>math\object</Filter>
-    </ClInclude>
-    <ClInclude Include="point.h">
-      <Filter>math\object</Filter>
-    </ClInclude>
-    <ClInclude Include="triangle.h">
-      <Filter>math\object</Filter>
-    </ClInclude>
     <ClInclude Include="text_renderer.h">
       <Filter>rendering</Filter>
     </ClInclude>
@@ -78,9 +39,9 @@
     <ClInclude Include="frame_rate.h">
       <Filter>features</Filter>
     </ClInclude>
-    <ClInclude Include="mesh_loader.h">
+    <ClInclude Include="header.h" />
+    <ClInclude Include="engine_math.h">
       <Filter>features</Filter>
     </ClInclude>
-    <ClInclude Include="header.h" />
   </ItemGroup>
 </Project>

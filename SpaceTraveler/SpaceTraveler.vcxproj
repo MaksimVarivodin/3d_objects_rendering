@@ -157,28 +157,20 @@
   <ItemGroup>
     <ClCompile Include="engine_math.cpp" />
     <ClCompile Include="game_window.cpp" />
-    <ClCompile Include="mesh.cpp" />
-    <ClCompile Include="mesh_loader.cpp" />
     <ClCompile Include="text_renderer.cpp" />
     <ClCompile Include="frame_rate.cpp" />
     <ClCompile Include="frame_rate_renderer.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="matrix.cpp" />
-    <ClCompile Include="point.cpp" />
-    <ClCompile Include="triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine_math.h" />
     <ClInclude Include="game_window.h" />
-    <ClInclude Include="mesh.h" />
-    <ClInclude Include="mesh_loader.h" />
+    <ClInclude Include="point.h" />
+    <ClInclude Include="point_impl.h" />
     <ClInclude Include="text_renderer.h" />
     <ClInclude Include="frame_rate.h" />
     <ClInclude Include="frame_rate_renderer.h" />
     <ClInclude Include="header.h" />
-    <ClInclude Include="matrix.h" />
-    <ClInclude Include="point.h" />
-    <ClInclude Include="triangle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
