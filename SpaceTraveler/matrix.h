@@ -1,85 +1,109 @@
-﻿#pragma once
-#include "Header.h"
-
-namespace engine_math {
-	template<class T = float>
+#pragma once
+#include "header.h"
+namespace engine_math
+{
+	/**
+	 * \brief Matrix for 3-4 dimensional transformations
+	 */
 	class matrix
 	{
+		/**
+		 * \brief const row count
+		 */
+		static constexpr unsigned rows_ = 4;
 
-		int rows_;
-		int columns_;
-		vector<vector<T>> data_;
+		/**
+		 * \brief const columns count
+		 */
+		static constexpr unsigned columns_ = 4;
+
+		/**
+		 * \brief matrix data field
+		 */
+		float** matrix_ = {};
+		/**
+		 * \brief Fills matrix to x by columns and to y by rows with passed value
+		 * \param x 
+		 * \param y 
+		 * \param value 
+		 */
+		void fill_matrix(const unsigned& x, const unsigned& y, const float & value);
+
 	public:
+		/**
+		 * \return const row count
+		 */
+		static unsigned rows() {return rows_;}
+		/**
+		 * \return const columns count
+		 */
+		static unsigned columns(){ return columns_;}
 
-		int rows ()const{return rows_;}
 
-		int columns () const{return columns_;}
 
-		/*
+		matrix& operator=(const matrix& other) = default;
+		matrix& operator=(matrix&& other) noexcept = default;
+
+		matrix operator* (const matrix & t_m) const;
+		matrix operator* (const float & value) const;
+
+		matrix operator/(const float & value) const;
+
+		matrix& operator*= (const matrix &t_m);
+		matrix& operator*= (const float & value);
+		matrix& operator/= (const float & value);
+
+		float& operator()(const unsigned & row, const unsigned & column);
+		const float& operator()(const unsigned & row, const unsigned & column) const;
+		float**& operator()() {return matrix_;}
+		const float** get()const {return matrix_;}
+		void operator()(const float(& arg)[rows_][columns_]);
+
+		matrix& precision(const int & precision);
+		matrix& transposed();
+
+		static matrix projection(
+			const float& aspect_ratio,
+			const float& fov,
+			const float& z_compression,
+			const float& z_monitor
+			);
+		static matrix transposed(matrix t_m);
+		static const matrix& x_rotation(const float& radian_angle);
+		static const matrix& y_rotation(const float& radian_angle);
+		static const matrix& z_rotation(const float& radian_angle);
+
+
 		
-		Creates a transposed matrix from current instance.
-		@return matrix<T>
 
-		*/
-		matrix<T> transposed();
+		/**
+		 * \brief Constructor with data parameter
+		 * \param data 
+		 */
+		matrix(float**& data):matrix_(data){}
+		/**
+		 * \brief Default constructor
+		 */
+		matrix() = default;
+		/**
+		 * \brief Copy constructor
+		 * \param other 
+		 */
+		matrix(const matrix& other): matrix(){}
+		/**
+		 * \brief Copy constructor
+		 * \param other 
+		 */
+		matrix(matrix&& other) noexcept = default;	
 
-		
-		Vector3<T> to_vector3();
-
-		/*
-		
-		Creates a link to the current instance,
-		initialized by method argument value.
-		@return matrix<T>&
-
-		*/
-		matrix<T>& operator=(const matrix<T>& m);
-
-		matrix<T> operator*(const matrix<T>& m);
-
-		matrix<T> operator/(T value);
-
-		Vector3<T> operator*(const Vector3<T>&);
-
-
-		matrix<T>& operator*=(const matrix<T>&);
-
-		matrix<T>& operator*=(const Vector3<T>&);
-
-		matrix<T>& operator/=(T value);
-		
-		T operator()(const int &row, const int& column) const;
-		void operator()(const int &row, const int &column, T value);
-
-		matrix<T>(const matrix& m) :
-			matrix(m.data_, m.rows_, m.columns_) {}
-
-		matrix<T>(const int& r, const int& c) :
-			rows_(r), columns_(c),
-			data_(
-				vector<vector<T>>(
-					rows_, vector<T>(columns_, 0.0f)
-				)
-			) 
+		~matrix()
 		{
+			for(int i = 0; i< rows_;i++)
+				delete[] matrix_[i];
+			delete[] matrix_;
 		}
-
-		matrix<T>(const vector<vector<T>>& d){
-			rows_ = d.size();
-			if (rows_ > 0)
-				columns_ = d[0].size();
-			else
-				columns_ = 0;
-			data_ = d;
-		}
-		
-		matrix<T>(const vector<vector<T>>& d, const int& r, const int& c)
-		: rows_(r), columns_(c), data_(d){}
-
-		matrix<T>(): rows_(0), columns_(0), data_() {}
 	};
-	
-}
 
+}
 
 
