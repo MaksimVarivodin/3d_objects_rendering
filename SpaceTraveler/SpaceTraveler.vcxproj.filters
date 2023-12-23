@@ -1,93 +1,86 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Исходные файлы">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="features">
+      <UniqueIdentifier>{c79f40ef-1128-409b-a5ca-c60fe464791a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы заголовков">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="math">
+      <UniqueIdentifier>{53f203e9-0636-41ca-8bf8-79ab42f37bef}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы ресурсов">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="math\environment">
+      <UniqueIdentifier>{85cc0f34-d867-414c-b42b-93b83d7a0d8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math\object">
+      <UniqueIdentifier>{bb9fe959-ad84-4c55-958a-65bad088c206}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering">
+      <UniqueIdentifier>{4af5edaa-126f-4a97-99b5-135aab9fa214}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Файлы ресурсов</Filter>
-    </ClCompile>
-    <ClCompile Include="frame_rate.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="frame_rate_renderer.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="text_renderer.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="engine_math.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="game_window.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="mesh.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>math\object</Filter>
     </ClCompile>
-    <ClCompile Include="matrix_impl.h">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="camera.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClCompile Include="point.cpp">
+      <Filter>math\object</Filter>
     </ClCompile>
     <ClCompile Include="triangle.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>math\object</Filter>
     </ClCompile>
-    <ClCompile Include="lighting.cpp">
-      <Filter>Файлы заголовков</Filter>
+    <ClCompile Include="engine_math.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="matrix.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="frame_rate.cpp">
+      <Filter>features</Filter>
     </ClCompile>
     <ClCompile Include="mesh_loader.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>features</Filter>
     </ClCompile>
+    <ClCompile Include="frame_rate_renderer.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="game_window.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="text_renderer.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="frame_rate.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="frame_rate_renderer.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="header.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="text_renderer.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="matrix.h">
+      <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="engine_math.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="game_window.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="triangle.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="mesh.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>math\object</Filter>
     </ClInclude>
-    <ClInclude Include="matrix.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="point.h">
+      <Filter>math\object</Filter>
     </ClInclude>
-    <ClInclude Include="camera.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="triangle.h">
+      <Filter>math\object</Filter>
     </ClInclude>
-    <ClInclude Include="lighting.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="text_renderer.h">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="game_window.h">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="frame_rate_renderer.h">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="frame_rate.h">
+      <Filter>features</Filter>
     </ClInclude>
     <ClInclude Include="mesh_loader.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>features</Filter>
     </ClInclude>
+    <ClInclude Include="header.h" />
   </ItemGroup>
 </Project>

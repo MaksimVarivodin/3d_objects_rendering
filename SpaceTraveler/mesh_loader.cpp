@@ -3,9 +3,9 @@
 mesh* mesh_loader::load() const
 {
 
-	vector<Vector3f> points;
+	vector<point> points;
 	vector<triangle> triangles;
-	Vector3f vertice;
+	point vertice;
 	triangle tr;
 	string line;
 	char type;

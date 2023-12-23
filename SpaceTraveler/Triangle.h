@@ -10,13 +10,18 @@ public:
 	const int& a() const { return point_indexes_[0]; }
 	const int& b() const { return point_indexes_[1]; }
 	const int& c() const { return point_indexes_[2]; }
+
 	int* a_pointer() {return &point_indexes_[0];}
 	int* b_pointer() {return &point_indexes_[1];}
 	int* c_pointer() {return &point_indexes_[2];}
+
+	const VertexArray & to_line_vertex_array(const vector<point> points) const ;
 	void outline(const Color & color){outline_ = color;}
 	void fill(const Color & color){fill_ = color;}
-	Color outline() const {return outline_; }
-	Color fill() const {return fill_; }
+
+	const Color & outline() const {return outline_; }
+	const Color & fill() const {return fill_; }
+
 	triangle() :point_indexes_()
 	{
 	}
@@ -49,8 +54,6 @@ public:
 		this->outline_ = outline;
 		this->fill_ = fill;
 	}
-	[[nodiscard]] VertexArray to_triangle_vertex_array(const vector<Vector3f>& points) const;
-	[[nodiscard]] VertexArray to_line_vertex_array(const vector<Vector3f>& points) const;
 };
 
 
