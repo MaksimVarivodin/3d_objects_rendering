@@ -1,109 +1,81 @@
-#pragma once
-#include "header.h"
-namespace engine_math
-{
-	/**
-	 * \brief Matrix for 3-4 dimensional transformations
-	 */
+﻿#pragma once
+#include "Header.h"
+
+namespace engine_math {
+	template<class T = float>
 	class matrix
 	{
-		/**
-		 * \brief const row count
-		 */
-		static constexpr unsigned rows_ = 4;
 
-		/**
-		 * \brief const columns count
-		 */
-		static constexpr unsigned columns_ = 4;
-
-		/**
-		 * \brief matrix data field
-		 */
-		float** matrix_ = {};
-		/**
-		 * \brief Fills matrix to x by columns and to y by rows with passed value
-		 * \param x 
-		 * \param y 
-		 * \param value 
-		 */
-		void fill_matrix(const unsigned& x, const unsigned& y, const float & value);
-
+		size_t rows_;
+		size_t columns_;
+		vector<vector<T>> data_;
 	public:
-		/**
-		 * \return const row count
-		 */
-		static unsigned rows() {return rows_;}
-		/**
-		 * \return const columns count
-		 */
-		static unsigned columns(){ return columns_;}
 
+		size_t rows()const { return rows_; }
 
+		size_t columns() const { return columns_; }
 
-		matrix& operator=(const matrix& other) = default;
-		matrix& operator=(matrix&& other) noexcept = default;
+		/*
 
-		matrix operator* (const matrix & t_m) const;
-		matrix operator* (const float & value) const;
+		Creates a transposed matrix from current instance.
+		@return matrix<T>
 
-		matrix operator/(const float & value) const;
+		*/
+		matrix<T> transposed();
 
-		matrix& operator*= (const matrix &t_m);
-		matrix& operator*= (const float & value);
-		matrix& operator/= (const float & value);
+		static matrix<T> projection(
+			const T& aspect_ratio,
+			const T& fov,
+			const T& z_compression,
+			const T& z_monitor
+		);
 
-		float& operator()(const unsigned & row, const unsigned & column);
-		const float& operator()(const unsigned & row, const unsigned & column) const;
-		float**& operator()() {return matrix_;}
-		const float** get()const {return matrix_;}
-		void operator()(const float(& arg)[rows_][columns_]);
+		static matrix<T> x_rotation(const T& radian_angle);
+		static matrix<T> y_rotation(const T& radian_angle);
+		static matrix<T> z_rotation(const T& radian_angle);
+		/*
 
-		matrix& precision(const int & precision);
-		matrix& transposed();
+		Creates a link to the current instance,
+		initialized by method argument value.
+		@return matrix<T>&
 
-		static matrix projection(
-			const float& aspect_ratio,
-			const float& fov,
-			const float& z_compression,
-			const float& z_monitor
-			);
-		static matrix transposed(matrix t_m);
-		static const matrix& x_rotation(const float& radian_angle);
-		static const matrix& y_rotation(const float& radian_angle);
-		static const matrix& z_rotation(const float& radian_angle);
+		*/
+		matrix<T>& operator=(const matrix<T>& m);
 
+		matrix<T>& operator*=(const matrix<T>&);
 
-		
+		matrix<T>& operator/=(const T& value);
 
-		/**
-		 * \brief Constructor with data parameter
-		 * \param data 
-		 */
-		matrix(float**& data):matrix_(data){}
-		/**
-		 * \brief Default constructor
-		 */
-		matrix() = default;
-		/**
-		 * \brief Copy constructor
-		 * \param other 
-		 */
-		matrix(const matrix& other): matrix(){}
-		/**
-		 * \brief Copy constructor
-		 * \param other 
-		 */
-		matrix(matrix&& other) noexcept = default;	
+		const T& operator()(const int& row, const int& column) const;
+		void operator()(const int& row, const int& column, T value);
 
-		~matrix()
+		matrix<T>(const matrix& m) :
+			matrix(m.data_, m.rows_, m.columns_) {}
+
+		matrix<T>(const int& r, const int& c) :
+			rows_(r), columns_(c),
+			data_(
+				vector<vector<T>>(
+					rows_, vector<T>(columns_, 0.0f)
+				)
+			)
 		{
-			for(int i = 0; i< rows_;i++)
-				delete[] matrix_[i];
-			delete[] matrix_;
 		}
+
+		matrix<T>(
+			const vector<vector<T>>& d,
+			const size_t& rows,
+			const size_t& columns)
+			: rows_(rows), columns_(columns), data_(d)
+		{}
+
+		matrix<T>(const vector<vector<T>>& d, const int& r, const int& c)
+			: rows_(r), columns_(c), data_(d) {}
+
+		matrix<T>() : rows_(0), columns_(0), data_() {}
 	};
 
 }
+
 
 

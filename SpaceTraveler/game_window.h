@@ -7,13 +7,6 @@ class game_window : public RenderWindow
 
     text_renderer t_renderer_;
     frame_rate_renderer f_r_renderer_;
-    
-
-    Mutex w_mutex_;
-
-    mesh_loader object_loader_;
-
-    mesh calculate_points(mesh object, const float& angle1, const float& angle2, const float& angle3) const;
 
 public:
 

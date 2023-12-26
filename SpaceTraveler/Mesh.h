@@ -1,32 +1,31 @@
 ﻿#pragma once
 #include "triangle.h"
+template <class T>
 class mesh
 {
+	vector<point<T>*> points_;
+	vector<triangle<T>> trians_;
 
-	vector<point> points_;
-	vector<triangle> trians_;
 public:
-	vector<point> get_points()const { return points_; }
-	vector<triangle> get_triangles()const {return trians_; }
-	VertexArray to_triangle_vertex_array() const;
-	vector<VertexArray> to_line_vertex_array() const;
-	vector<point> normals_to_triangles() const;
-	vector<point> distances_to_point(const point & p) const;
+	const vector<point<T>*>&	points() {return points_;}
+	const vector<triangle<T>>&	trians() {return trians_;}
 
-	mesh& sort_triangles();
+	void points(const vector<point<T>*>&	p){ points_ = p;}
+	void trians(const vector<triangle<T>>&	t){ trians_ = t;}
 
-	size_t count() const {return trians_.size();}
-	
 	mesh() :points_(), trians_() {}
 
-	mesh(const vector<point>& p,  const vector<triangle>& tr)
+	~mesh()
 	{
-		points_ = p;
-		trians_ = tr;
+		for(size_t i = 0; i< points_.size(); i++)
+			delete points_[i];
 	}
 	mesh(const mesh& other) = default;
 	mesh(mesh&& other) noexcept = default;
 	mesh& operator=(const mesh& other) = default;
 	mesh& operator=(mesh&& other) noexcept = default;
+
+	mesh(const vector<point<T>*>& points_, const vector<triangle<T>>& trians_)
+		: points_(points_), trians_(trians_){}
 };
 

@@ -1,66 +1,58 @@
 ﻿#pragma once
-#include "point.h"
+#include "point_impl.h"
+
 namespace engine_math {
 
-	/*
-	Constant to convert degrees to radian angle:
-	PI / 180
-	@return float
-	*/
-	constexpr float ANGLE_TO_RADIAN = static_cast<float>(M_PI) / 180.0f;
-
-	/*
-	Function to find maximum between 3 numbers
-	@return float
-	*/
-	template <class T>
-	const T& em_find_maximum(const T& a, const T& b, const T& c);
-
-	template <class T>
-	const T& em_find_minimum(const T& a, const T& b, const T& c);
-
-	template <class T>
-	const T& em_find_average(const T& a, const T& b, const T& c);
-
-	float ctg(const float& radian_angle);
-
-	float em_angle_to_radian(const float& angle);
-
-	float em_aspect_ratio(const float& height, const float& width);
-	float em_field_of_view(const float & radian_angle);
-	float em_z_compression(const float & z_horizon, const float & z_monitor);
-
 	template<class T>
-	const T&  em_find_maximum(const T& a, const T& b, const T& c)
-	{
-		if (b < a) {
-			if (b <= c) 
-				return b;	
-			return c;
-		}
-		else if (c < a) 
-			return c;		
-		return a;
+	T degrees_to_radian_multiplier() {
+		return static_cast<T>(M_PI) / T(180.0);
 	}
-
 	template<class T>
-	const T& em_find_minimum(const T& a, const T& b, const T& c)
-	{
-			
+	T em_find_maximum(const T& a, const T& b, const T& c) {
 		if (a > c) {
-			if (a >= b) 
-				return a;			
+			if (a >= b)
+				return a;
 			return b;
 		}
-		else if (b > c) 
-			return b;		
+		else if (b > c)
+			return b;
 		return c;
+	}
+	template<class T>
+	T em_find_minimum(const T& a, const T& b, const T& c) {
+		if (b < a) {
+			if (b <= c)
+				return b;
+			return c;
+		}
+		else if (c < a)
+			return c;
+		return a;
+	}
+	template<class T>
+	T em_find_average(const T& a, const T& b, const T& c){
+		return (a + b + c) / T(3);
 	}
 
 	template<class T>
-	const T& em_find_average(const T& a, const T& b, const T& c)
-	{
-		return (a + b + c) / (T)3;
+	T ctg(const T& radian_angle){
+		return T(1) / T(tan(radian_angle));
+	}
+	template<class T>
+	T em_angle_to_radian(const T& angle){
+		return degrees_to_radian_multiplier<T>() * angle;
+	}
+	template<class T>
+	T em_aspect_ratio(const T& height, const T& width){
+		return height / width;
+	}
+	template<class T>
+	T em_field_of_view(const T& radian_angle){
+		return ctg(radian_angle);
+	}
+	template<class T>
+	T em_z_compression(const T& z_horizon, const T& z_monitor){
+		return z_horizon / (z_horizon - z_monitor);
 	}
 
 };
