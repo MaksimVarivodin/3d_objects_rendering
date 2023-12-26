@@ -1,0 +1,140 @@
+﻿#pragma once
+#include "matrix.h"
+using namespace engine_math;
+template<class T>
+engine_math::matrix<T> engine_math::matrix<T>::transposed()
+{
+	vector<vector<T>> tr(columns_, vector<T>(rows_));
+	for (int i = 0; i < rows_; i++)
+		for (int j = 0; j < columns_; j++) {
+			T temp = data_[i][j];
+			data_[i][j] = data_[j][i];
+			data_[j][i] = temp;
+		}
+
+
+	return matrix<T>{tr, columns_, rows_};
+}
+
+template<class T>
+inline engine_math::matrix<T> engine_math::matrix<T>::projection(const T& aspect_ratio, const T& fov, const T& z_compression, const T& z_monitor)
+{
+
+	return matrix<T>(
+		vector<vector<T>>{
+		vector<T>{	aspect_ratio* fov, 0, 0, 0	},
+			vector<T>{	0, fov, 0, 0	},
+			vector<T>{	0, 0, z_compression, 1	},
+			vector<T>{	0, 0, -z_monitor * z_compression, 0	}
+	},
+		4,
+		4
+	);
+}
+
+template<class T>
+inline matrix<T> engine_math::matrix<T>::x_rotation(const T& radian_angle)
+{
+
+	return matrix<T>(
+		vector<vector<T>>{
+			{	1, 0, 0, 0	},
+			{ 0	,	cos(radian_angle)	,	-sin(radian_angle)	,	0 },
+			{ 0	,	sin(radian_angle)	,	cos(radian_angle)	,	0 },
+			{ 0	,					0	,					0	,	0 }
+	},
+		4,
+		4
+	);
+}
+
+template<class T>
+inline matrix<T> engine_math::matrix<T>::y_rotation(const T& radian_angle)
+{
+	return matrix<T>(
+		vector<vector<T>>{
+			{	cos(radian_angle)	,	0	,	sin(radian_angle)	,	0	},
+			{					0	,	1	,					0	,	0	},
+			{	-sin(radian_angle)	,	0	,	cos(radian_angle)	,	0	},
+			{					0	,	0	,					0	,	0	}
+	},
+		4,
+		4
+	);
+}
+
+template<class T>
+inline matrix<T> engine_math::matrix<T>::z_rotation(const T& radian_angle)
+{
+	return matrix<T>(
+		vector<vector<T>>{
+			{	cos(radian_angle)	,	-sin(radian_angle)	,	0	,	0	},
+			{	sin(radian_angle)	,	cos(radian_angle)	,	0	,	0	},
+			{					0	,					0	,	1	,	0	},
+			{					0	,					0	,	0	,	0	}
+	},
+		4,
+		4
+	);
+}
+
+
+template<class T>
+engine_math::matrix<T>& engine_math::matrix<T>::operator=(const matrix& m)
+{
+	// TODO: вставьте здесь оператор return
+	data_ = m.data_;
+	rows_ = m.rows_;
+	columns_ = m.columns_;
+	return *this;
+}
+
+template<class T>
+inline engine_math::matrix<T>& engine_math::matrix<T>::operator*=(const matrix<T>& m)
+{
+	vector<vector<T>> new_data(rows_, vector<T>(m.columns_));
+
+	for (size_t i = 0; i < rows_; i++)
+		for (size_t j = 0; j < m.columns_; j++)
+			for (size_t k = 0; k < columns_; k++)
+				new_data[i][j] += data_[i][k] * m.data_[k][j];
+	columns_ = m.columns_;
+	data_ = new_data;
+	return *this;
+}
+
+template <class T>
+engine_math::matrix<T>& engine_math::matrix<T>::operator/=(const T& value)
+{
+	for (size_t i = 0; i < rows_; i++)
+		for (size_t j = 0; j < columns_; j++)
+			data_[i][j] /= value;
+	return *this;
+}
+
+template<class T>
+const T& engine_math::matrix<T>::operator()(const int& row, const int& column) const
+{
+	if (row < 0 || row >= rows_ || column < 0 || column >= columns_)
+		throw exception("out of bounds");
+	else
+	{
+		return data_[row][column];
+	}
+
+
+}
+
+template <class T>
+void engine_math::matrix<T>::operator()(const int& row, const int& column, T value)
+{
+	if (row < 0 || row >= rows_ || column < 0 || column >= columns_)
+		throw exception("out of bounds");
+	else
+	{
+		data_[row][column] = value;
+	}
+}
+
+
+
