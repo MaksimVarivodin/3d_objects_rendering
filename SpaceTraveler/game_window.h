@@ -7,26 +7,17 @@ class game_window : public RenderWindow
 
     text_renderer t_renderer_;
     frame_rate_renderer f_r_renderer_;
-    
 
-    Mutex w_mutex_;
-
-    projection projection_;
-    mesh cube_;
-    mesh calculate_points(const float& angle1, const float& angle2) const;
-    void draw_triangle(const vector<VertexArray>& shapes, const vector<VertexArray>& lines);
 public:
 
 
     void run();
     void set_frame_rate_show(bool);
-    void init_cube(vector<Vector3f> points, vector<triangle> tr, const Vector3f& scale_point = Vector3f(1, 1,1));
 
 
-    game_window() :        
+    game_window() :
         t_renderer_(text_renderer::create_any_text_renderer()),
-        f_r_renderer_(t_renderer_),
-        projection_(getSize().y, getSize().x, 90, 1000, 0.1f)
+        f_r_renderer_(t_renderer_)
     {
     }
 
@@ -41,14 +32,12 @@ public:
     {
 	    t_renderer_ = text_renderer::create_any_text_renderer();
         f_r_renderer_ = frame_rate_renderer( t_renderer_);
-        projection_ = projection(getSize().y, getSize().x, 90, 1000, 0.1f);
     	setFramerateLimit(frame_rate);
     }
      game_window(const bool & sync, const VideoMode & mode, const string & w_name, const short& flags):RenderWindow(mode, w_name, flags)
     {
 	    t_renderer_ = text_renderer::create_any_text_renderer();
         f_r_renderer_ = frame_rate_renderer( t_renderer_);
-        projection_ = projection(getSize().y, getSize().x, 90, 1000, 0.1f);
     	setVerticalSyncEnabled(sync);
      
     }
