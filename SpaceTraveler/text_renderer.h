@@ -16,7 +16,7 @@ public:
 	const Text* to_text(const string& some_string) const;
 
 	static text_renderer create_any_text_renderer(
-		const string& font_file_name = "C:\\Users\\maksy\\Documents\\Projects\\c++\\3DGraphics\\Debug\\arial\\arial_light.ttf",
+		const string& font_file_name = R"(C:\Users\maksy\Documents\Projects\c++\3DGraphics\x64\Debug\arial\arial_light.ttf)",
 		const unsigned& font_size = 14,
 		const float& rotation = 0,
 		const float& scale = 1.f,

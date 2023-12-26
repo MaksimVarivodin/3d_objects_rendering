@@ -1,58 +1,48 @@
 #pragma once
 #include "engine_math.h"
-using namespace engine_math;
+template <class T>
 class triangle
 {
-	int point_indexes_[3];
+
+	point<T>* a_ = nullptr;
+	point<T>* b_ = nullptr;
+	point<T>* c_ = nullptr;
+
 	Color outline_ = Color::White;
 	Color fill_ = Color(50, 50, 50);
+
 public:
-	const int& a() const { return point_indexes_[0]; }
-	const int& b() const { return point_indexes_[1]; }
-	const int& c() const { return point_indexes_[2]; }
+	point<T>* a(){return a_;}
+	point<T>* b(){return b_;}
+	point<T>* c(){return c_;}
 
-	int* a_pointer() {return &point_indexes_[0];}
-	int* b_pointer() {return &point_indexes_[1];}
-	int* c_pointer() {return &point_indexes_[2];}
+	void a(point<T>* val){a_ = val;}
+	void b(point<T>* val){b_ = val;}
+	void c(point<T>* val){c_ = val;}
 
-	const VertexArray & to_line_vertex_array(const vector<point> points) const ;
 	void outline(const Color & color){outline_ = color;}
 	void fill(const Color & color){fill_ = color;}
 
-	const Color & outline() const {return outline_; }
-	const Color & fill() const {return fill_; }
+	const Color& outline() const {return outline_; }
+	const Color& fill() const {return fill_; }
 
-	triangle() :point_indexes_()
-	{
-	}
 
-	explicit triangle(int ind[3])
-	{
-		point_indexes_[0] =  ind[0];
-		point_indexes_[1] =  ind[1];
-		point_indexes_[2] =  ind[2];
-
-	}
+	triangle() = default;
 
 	triangle(
-		const int& a,
-		const int& b,
-		const int& c){
-		point_indexes_[0] = a;
-		point_indexes_[1] = b;
-		point_indexes_[2] = c;
-
-	}
-	explicit triangle(
-		const int& a,
-		const int& b,
-		const int& c,
-		const Color & fill,
-		const Color & outline)
-	:triangle(a, b, c)
+		point<T>* a_, 
+		point<T>* b_,
+		point<T>* c_,
+		const Color& outline_,
+		const Color& fill_)
+		: a_(a_), b_(b_), c_(c_), outline_(outline_), fill_(fill_)
 	{
-		this->outline_ = outline;
-		this->fill_ = fill;
+	}
+
+	bool operator> (const triangle<T>& other){
+		T z1 = em_find_average(a_->z, b_->z, c_->z);
+		T z2 = em_find_average(other.a_->z, other.b_->z, other.c_->z);
+		return z1 > z2;
 	}
 };
 
