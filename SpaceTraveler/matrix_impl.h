@@ -17,34 +17,17 @@ engine_math::matrix<T> engine_math::matrix<T>::transposed()
 }
 
 template<class T>
-inline engine_math::matrix<T> engine_math::matrix<T>::projection(const T& aspect_ratio, const T& fov, const T& z_compression, const T& z_monitor)
-{
-
-	return matrix<T>(
-		vector<vector<T>>{
-		vector<T>{	aspect_ratio* fov, 0, 0, 0	},
-			vector<T>{	0, fov, 0, 0	},
-			vector<T>{	0, 0, z_compression, 1	},
-			vector<T>{	0, 0, -z_monitor * z_compression, 0	}
-	},
-		4,
-		4
-	);
-}
-
-template<class T>
 inline matrix<T> engine_math::matrix<T>::x_rotation(const T& radian_angle)
 {
 
 	return matrix<T>(
 		vector<vector<T>>{
-			{	1, 0, 0, 0	},
-			{ 0	,	cos(radian_angle)	,	-sin(radian_angle)	,	0 },
-			{ 0	,	sin(radian_angle)	,	cos(radian_angle)	,	0 },
-			{ 0	,					0	,					0	,	0 }
+			{	1, 0, 0	},
+			{ 0	,	cosf(radian_angle)	,	-sinf(radian_angle)},
+			{ 0	,	sinf(radian_angle)	,	cosf(radian_angle)}
 	},
-		4,
-		4
+		3,
+		3
 	);
 }
 
@@ -53,13 +36,12 @@ inline matrix<T> engine_math::matrix<T>::y_rotation(const T& radian_angle)
 {
 	return matrix<T>(
 		vector<vector<T>>{
-			{	cos(radian_angle)	,	0	,	sin(radian_angle)	,	0	},
-			{					0	,	1	,					0	,	0	},
-			{	-sin(radian_angle)	,	0	,	cos(radian_angle)	,	0	},
-			{					0	,	0	,					0	,	0	}
+			{	cos(radian_angle)	,	0	,	sin(radian_angle)},
+			{					0	,	1	,					0},
+			{	-sin(radian_angle)	,	0	,	cos(radian_angle)}
 	},
-		4,
-		4
+		3,
+		3
 	);
 }
 
@@ -68,13 +50,12 @@ inline matrix<T> engine_math::matrix<T>::z_rotation(const T& radian_angle)
 {
 	return matrix<T>(
 		vector<vector<T>>{
-			{	cos(radian_angle)	,	-sin(radian_angle)	,	0	,	0	},
-			{	sin(radian_angle)	,	cos(radian_angle)	,	0	,	0	},
-			{					0	,					0	,	1	,	0	},
-			{					0	,					0	,	0	,	0	}
+			{	cos(radian_angle)	,	-sin(radian_angle)	,	0	},
+			{	sin(radian_angle)	,	cos(radian_angle)	,	0	},
+			{					0	,					0	,	1	}
 	},
-		4,
-		4
+		3,
+		3
 	);
 }
 
@@ -97,7 +78,7 @@ inline engine_math::matrix<T>& engine_math::matrix<T>::operator*=(const matrix<T
 	for (size_t i = 0; i < rows_; i++)
 		for (size_t j = 0; j < m.columns_; j++)
 			for (size_t k = 0; k < columns_; k++)
-				new_data[i][j] += data_[i][k] * m.data_[k][j];
+				new_data[i][j] += data_[i][k] * m(k,j);
 	columns_ = m.columns_;
 	data_ = new_data;
 	return *this;

@@ -23,13 +23,6 @@ namespace engine_math {
 		*/
 		matrix<T> transposed();
 
-		static matrix<T> projection(
-			const T& aspect_ratio,
-			const T& fov,
-			const T& z_compression,
-			const T& z_monitor
-		);
-
 		static matrix<T> x_rotation(const T& radian_angle);
 		static matrix<T> y_rotation(const T& radian_angle);
 		static matrix<T> z_rotation(const T& radian_angle);
