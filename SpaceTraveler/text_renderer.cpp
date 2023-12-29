@@ -20,7 +20,7 @@ text_renderer text_renderer::create_any_text_renderer(
 {
 	auto* result = new font_text{};
 	result->font = new Font{};
-	if (!result->font->loadFromFile(font_file_name))
+	if (!result->font->loadFromFile( get_current_dir() + font_file_name))
 	{
 		cout << "Could not load file";
 	}

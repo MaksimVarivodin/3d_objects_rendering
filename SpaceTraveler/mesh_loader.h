@@ -5,7 +5,7 @@ class mesh_loader
 {
 	
 public:
-	string dir_path_ = R"(C:\Users\maksy\Documents\Projects\c++\3DGraphics\SpaceTraveler\objects)";
+	string dir_path_ = "";
 	string file_name_ = "VideoShip";
 	string extension_ = ".obj";
 
@@ -15,6 +15,10 @@ public:
 
 		vector<triangle<T>> triangles;
 		points.reserve(3000);
+
+		vector<point<T>> normals;
+		normals.reserve(3000);
+
 		point<T>* vertice;
 		size_t a, b, c;
 		triangle<T> tr;
@@ -45,22 +49,34 @@ public:
 				break;
 			case 'f':
 				s >> a >> b >> c;
-				a--; b--; c--;
+				a--;
+				b--;
+				c--;
 
-				tr.a(points[a]);
-				tr.b(points[b]);
-				tr.c(points[c]);
+				tr = triangle{
+					points[a],
+					points[b],
+					points[c],
+					a,
+					b,
+					c		
+				};
 
 				triangles.push_back(tr);
+
+				normals.push_back(tr.normal());
+
 				break;
 			default:
 				break;
 			}
 		}
-		return mesh(points, triangles);
+		return mesh(points, triangles, normals);
 	}
 
-	mesh_loader() = default;
+	mesh_loader(){
+		dir_path_= get_current_dir() +  R"(\objects)";
+	}
 
 	mesh_loader(const string& dir_path_, const string& file_name_, const string& extension_)
 		: dir_path_(dir_path_), file_name_(file_name_), extension_(extension_)
