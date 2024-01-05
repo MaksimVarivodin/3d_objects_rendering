@@ -13,15 +13,15 @@ class frame_rate
 	Mutex mtx_;
 	Thread frame_rate_thread_;	
 
-	void frame_rate_method();
-	void control_array_index();
+	void frame_rate_thread_method();
+	void set_array_index();
 	void calculate_frames();
 
 public :
 	frame_rate()
 		:
 	f_rate_values_(),
-	frame_rate_thread_(&frame_rate::frame_rate_method, this)
+	frame_rate_thread_(&frame_rate::frame_rate_thread_method, this)
 		
 	{
 		
@@ -29,7 +29,7 @@ public :
 	frame_rate(const frame_rate& other) 
 		:
 		f_rate_values_(),
-	frame_rate_thread_(&frame_rate::frame_rate_method, this){
+	frame_rate_thread_(&frame_rate::frame_rate_thread_method, this){
 		frame_counter_ = other.frame_counter_;
 	}
 	~frame_rate()
@@ -42,10 +42,11 @@ public :
 	void count();
 	void stop();
 
-	int get_average_frame_rate() ;
-	int get_minimum_frame_rate() ;
-	int get_maximum_frame_rate() ;
-
+	int get_average_frame_rate();
+	int get_minimum_frame_rate();
+	int get_maximum_frame_rate();
+	float get_elapsed_time();
+	string to_string();
 
 };
 

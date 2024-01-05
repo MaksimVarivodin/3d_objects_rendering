@@ -1,26 +1,35 @@
 #include "trnsform.h"
 
 template<class T>
-inline mesh<T> trnsform<T>::transformation(const mesh<T>& object, const camera<T>& cam, const light<T>& l, const point<T>& move, const point<T>& scale, const point<T>& radian)
+inline mesh<T> trnsform<T>::transformation(
+	const mesh<T>& object_,
+	const point<T>& radian_angles_,
+	const point<T>& object_move_,
+	const point<T>& object_scale_,
+	const camera<T>& camera_,
+	const light<T>& light_,	
+	const Vector2<T>& coordinate_invertion_)
 {
-	mesh<T> temp(object);
+	mesh<T> temp(object_);
 	camera<T> cam_temp;
 
-	temp.rotate(set_angles(radian));
+	temp.rotate(set_angles(radian_angles_));
 
-	temp.move(point<T>{0, 0, 7});
+	temp.move(object_move_);
 
-	filter_by_normals(temp, cam);
-
-	color_filtering(temp, l);
-
-	projection(temp, cam);
 	
-	temp.move(move);
 
-	temp.scale(scale);
+	filter_by_normals(temp, camera_);
+
+	color_filtering(temp, light_);
+
+	projection(temp, camera_);		
 
 	temp.sort_triangles();
+
+	temp.scale(object_scale_);
+
+	to_screen_coordinate_plane(temp, coordinate_invertion_);
 
 	return temp;
 }
@@ -95,4 +104,13 @@ inline void trnsform<T>::color_filtering(mesh<T>& object, const light<T>& l)
 	}
 	object.trians(tr);
 
+}
+
+template<class T>
+inline void trnsform<T>::to_screen_coordinate_plane(mesh<T>& object, const Vector2<T>& coordinate_invertion)
+{
+	for(point<T>* pointer: object.points()){
+		pointer->x *= coordinate_invertion.x;
+		pointer->y *= coordinate_invertion.y;
+	}
 }

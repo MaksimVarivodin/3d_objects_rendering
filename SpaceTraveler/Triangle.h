@@ -13,7 +13,7 @@ class triangle
 	size_t c_index_ = 0;
 
 	Color outline_ = Color::White;
-	Color fill_ = Color(50, 50, 50);
+	Color fill_ = Color(150, 150, 150);
 
 public:
 	point<T>* a() { return a_; }

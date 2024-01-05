@@ -50,11 +50,14 @@ public:
 
 	Vector2<T> to_Vector2(){
 		return Vector2<T>{
-		this->x,
-		this->y
+			(T)this->x,
+			(T)this->y			
 		};
 	}
 
+	void print();
+	template<class U>
+	static void print_vector2(const Vector2<U>&);
 	static T dot_product(const point<T>& a, const point<T>& b);
 	static point<T> cross_product(const point<T>& a, const point<T>& b);
 
@@ -62,3 +65,5 @@ public:
 	static point<T> normalized_vector(const point<T> & a, const point<T> & b);
 
 };
+
+

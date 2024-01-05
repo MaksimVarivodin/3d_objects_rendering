@@ -1,50 +1,39 @@
 #pragma once
-#include "frame_rate_renderer.h"
+#include "text_renderer.h"
 class game_window : public RenderWindow
 {
     bool show_frame_rate_ = true;
-    frame_rate f_per_sec_;
+    bool debug_mode_ = true;
+    frame_rate frames_per_sec_;
 
-    text_renderer t_renderer_;
-    frame_rate_renderer f_r_renderer_;
+    text_renderer text_renderer_;
 
 public:
 
 
     void run();
     void set_frame_rate_show(bool);
+    void set_debug_mode(const bool & debug_mode = false){ debug_mode_ = debug_mode;}
 
-
-    game_window() :
-        t_renderer_(text_renderer::create_any_text_renderer()),
-        f_r_renderer_(t_renderer_)
-    {
+    game_window(const VideoMode & mode = VideoMode::getDesktopMode(), const string & w_name = "", const short& flags = Style::Default) :
+        RenderWindow(mode, w_name, flags),
+        text_renderer_(text_renderer::load_text_renderer(R"(\arial\arial_light.ttf)")){
+        text_renderer_.set_text_properties();
     }
 
-    explicit game_window(const int& frame_rate):game_window() {
+    explicit game_window(const int& frame_rate, const VideoMode & mode, const string & w_name, const short& flags): game_window(mode, w_name, flags)  {
+        
         setFramerateLimit(frame_rate);
     }
 
-    explicit game_window(const bool& v_sync) :game_window() {
+    explicit game_window(const bool& v_sync, const VideoMode & mode, const string & w_name, const short& flags) :game_window(mode, w_name, flags) {
         setVerticalSyncEnabled(v_sync);
     }
-    game_window(const int & frame_rate, const VideoMode & mode, const string & w_name, const short& flags):RenderWindow(mode, w_name, flags)
-    {
-	    t_renderer_ = text_renderer::create_any_text_renderer();
-        f_r_renderer_ = frame_rate_renderer( t_renderer_);
-    	setFramerateLimit(frame_rate);
-    }
-     game_window(const bool & sync, const VideoMode & mode, const string & w_name, const short& flags):RenderWindow(mode, w_name, flags)
-    {
-	    t_renderer_ = text_renderer::create_any_text_renderer();
-        f_r_renderer_ = frame_rate_renderer( t_renderer_);
-    	setVerticalSyncEnabled(sync);
-     
-    }
+
     ~game_window() override
     {
        this->RenderWindow::~RenderWindow();
-        f_per_sec_.stop();
+        frames_per_sec_.stop();
     }
 
 };

@@ -47,16 +47,30 @@ public:
 
 	point<T> normals(const size_t & ind){return normals_[ind];}
 
-	VertexArray to_draw_triangles(){
+	VertexArray to_filled_triangles(){
 
 		VertexArray array(Triangles,  triangle_size()* 3);
-		for(size_t i = 0; i< triangle_size(); i++){
-			array[i* 3		] = Vertex{(*trians_[i].a()).to_Vector2(),trians_[i].fill()};
-			array[i* 3 + 1	] = Vertex{(*trians_[i].b()).to_Vector2(), trians_[i].fill()};
-			array[i* 3 + 2	] = Vertex{(*trians_[i].c()).to_Vector2(), trians_[i].fill()};
+		for(size_t i = 0, j = 0; i < triangle_size(); i++, j += 3){
+			array[j		] = Vertex{(*trians_[i].a()).to_Vector2(), trians_[i].fill()};
+			array[j + 1	] = Vertex{(*trians_[i].b()).to_Vector2(), trians_[i].fill()};
+			array[j + 2	] = Vertex{(*trians_[i].c()).to_Vector2(), trians_[i].fill()};
 		}
 		
 		return array;
+	}
+	VertexArray to_outline_triangles(){
+
+		VertexArray outline_triangles(Lines,  triangle_size()* 6);
+		for(size_t i = 0, j = 0; i < triangle_size(); i++, j += 6){
+			outline_triangles[j		] = Vertex{(*trians_[i].a()).to_Vector2(), trians_[i].outline()};
+			outline_triangles[j + 1	] = Vertex{(*trians_[i].b()).to_Vector2(), trians_[i].outline()};
+			outline_triangles[j + 2	] = Vertex{(*trians_[i].b()).to_Vector2(), trians_[i].outline()};
+			outline_triangles[j + 3	] = Vertex{(*trians_[i].c()).to_Vector2(), trians_[i].outline()};
+			outline_triangles[j + 4	] = Vertex{(*trians_[i].c()).to_Vector2(), trians_[i].outline()};
+			outline_triangles[j	+ 5	] = Vertex{(*trians_[i].a()).to_Vector2(), trians_[i].outline()};
+		}
+		
+		return outline_triangles;
 	}
 
 	mesh() :points_(), trians_() {}
