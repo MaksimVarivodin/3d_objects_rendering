@@ -181,6 +181,37 @@ inline point<T> point<T>::projection(const  T& aspect_ratio, const  T& fov, cons
 }
 
 template<class T>
+inline void point<T>::print()
+{
+	string type_name{typeid(T).name()};
+	cout << "point<" 
+		+ type_name
+		+ ">: {"
+		<< this->x 
+		<< ", " 
+		<< this->y 
+		<<  ", " 
+		<< this->z 
+		<<"}"
+		<< endl;
+}
+
+template<class T>
+template<class U>
+inline void point<T>::print_vector2(const Vector2<U>& vec)
+{
+	string type_name{typeid(U).name()};
+		cout << "point<" 
+		+ type_name
+		+ ">: {"
+		<< vec.x 
+		<< ", " 
+		<< vec.y  
+		<<"}"
+		<< endl;
+}
+
+template<class T>
 inline T point<T>::dot_product(const point<T>& a, const point<T>& b)
 {
 	return a.x * b.x + a.y * b.y + a.z * b.z;
