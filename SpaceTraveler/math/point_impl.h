@@ -3,7 +3,7 @@ template<class T>
 inline point<T> point<T>::operator+(const T& value) const
 {
 	return point<T>{
-			this->x + value,
+		this->x + value,
 			this->y + value,
 			this->z + value
 	};
@@ -173,26 +173,32 @@ inline point<T> point<T>::projection(const  T& aspect_ratio, const  T& fov, cons
 	point<T> result{
 		aspect_ratio * fov * this->x,
 		fov * this->y,
-		z_compression* (this->z - z_monitor)	
+		z_compression * (this->z - z_monitor)
 	};
 	if (this->z != T(0))
 		result /= this->z;
 	return result;
 }
-
+template<class T>
+Vector2<T> point<T>::to_Vector2() {
+	return Vector2<T>{
+		(T)this->x,
+		(T)this->y
+	};
+}
 template<class T>
 inline void point<T>::print()
 {
-	string type_name{typeid(T).name()};
-	cout << "point<" 
+	string type_name{ typeid(T).name() };
+	cout << "point<"
 		+ type_name
 		+ ">: {"
-		<< this->x 
-		<< ", " 
-		<< this->y 
-		<<  ", " 
-		<< this->z 
-		<<"}"
+		<< this->x
+		<< ", "
+		<< this->y
+		<< ", "
+		<< this->z
+		<< "}"
 		<< endl;
 }
 
@@ -200,14 +206,14 @@ template<class T>
 template<class U>
 inline void point<T>::print_vector2(const Vector2<U>& vec)
 {
-	string type_name{typeid(U).name()};
-		cout << "point<" 
+	string type_name{ typeid(U).name() };
+	cout << "point<"
 		+ type_name
 		+ ">: {"
-		<< vec.x 
-		<< ", " 
-		<< vec.y  
-		<<"}"
+		<< vec.x
+		<< ", "
+		<< vec.y
+		<< "}"
 		<< endl;
 }
 
@@ -221,7 +227,7 @@ template<class T>
 inline point<T> point<T>::cross_product(const point<T>& a, const point<T>& b)
 {
 	return point<T>{
-			a.y* b.z - a.z * b.y,
+		a.y* b.z - a.z * b.y,
 			a.z* b.x - a.x * b.z,
 			a.x* b.y - a.y * b.x
 	};

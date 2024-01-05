@@ -1,4 +1,4 @@
-﻿#include "game_window.h"
+﻿#include "renderers\game_window.h"
 constexpr int MAXIMUM_FRAME_RATE = 5000;
 //int WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow)
 int main()

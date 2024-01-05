@@ -151,34 +151,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="camera.cpp" />
-    <ClCompile Include="game_window.cpp" />
-    <ClCompile Include="header_impl.cpp" />
-    <ClCompile Include="light.cpp" />
-    <ClCompile Include="matrix_impl.h" />
-    <ClCompile Include="mesh_renderer.cpp" />
-    <ClCompile Include="text_renderer.cpp" />
-    <ClCompile Include="frame_rate.cpp" />
+    <ClCompile Include="engine_object_classes\camera.cpp" />
+    <ClCompile Include="engine_object_classes\light.cpp" />
+    <ClCompile Include="features\frame_rate.cpp" />
+    <ClCompile Include="features\header_impl.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="trnsform_impl.h" />
+    <ClCompile Include="renderers\game_window.cpp" />
+    <ClCompile Include="renderers\mesh_renderer.cpp" />
+    <ClCompile Include="renderers\text_renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="camera.h" />
-    <ClInclude Include="copy_pointer.h" />
-    <ClInclude Include="engine_math.h" />
-    <ClInclude Include="game_window.h" />
-    <ClInclude Include="light.h" />
-    <ClInclude Include="matrix.h" />
-    <ClInclude Include="mesh.h" />
-    <ClInclude Include="mesh_loader.h" />
-    <ClInclude Include="mesh_renderer.h" />
-    <ClInclude Include="point.h" />
-    <ClInclude Include="point_impl.h" />
-    <ClInclude Include="text_renderer.h" />
-    <ClInclude Include="frame_rate.h" />
-    <ClInclude Include="header.h" />
-    <ClInclude Include="trnsform.h" />
-    <ClInclude Include="triangle.h" />
+    <ClInclude Include="engine_object_classes\camera.h" />
+    <ClInclude Include="engine_object_classes\light.h" />
+    <ClInclude Include="engine_object_classes\mesh.h" />
+    <ClInclude Include="features\frame_rate.h" />
+    <ClInclude Include="headers\header.h" />
+    <ClInclude Include="math\engine_math.h" />
+    <ClInclude Include="math\matrix.h" />
+    <ClInclude Include="math\matrix_impl.h" />
+    <ClInclude Include="math\point.h" />
+    <ClInclude Include="math\point_impl.h" />
+    <ClInclude Include="math\triangle.h" />
+    <ClInclude Include="math\trnsform.h" />
+    <ClInclude Include="math\trnsform_impl.h" />
+    <ClInclude Include="renderers\game_window.h" />
+    <ClInclude Include="renderers\mesh_renderer.h" />
+    <ClInclude Include="renderers\text_renderer.h" />
+    <ClInclude Include="tools\mesh_loader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

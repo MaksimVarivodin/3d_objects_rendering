@@ -1,4 +1,4 @@
-#include "header.h"
+#include "..\header.h"
 string get_current_dir() {
 	string result;
 	char* output = new char[500];

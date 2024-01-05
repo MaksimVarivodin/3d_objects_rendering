@@ -1,5 +1,5 @@
 #pragma once
-#include "mesh.h"
+#include "..\engine_object_classes\mesh.h"
 template <class T>
 class mesh_loader
 {

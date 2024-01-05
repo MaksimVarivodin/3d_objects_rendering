@@ -48,12 +48,7 @@ public:
 	const  T& z_compression,
 	const  T& z_monitor);
 
-	Vector2<T> to_Vector2(){
-		return Vector2<T>{
-			(T)this->x,
-			(T)this->y			
-		};
-	}
+	Vector2<T> to_Vector2();
 
 	void print();
 	template<class U>

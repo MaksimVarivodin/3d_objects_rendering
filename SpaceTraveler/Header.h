@@ -14,8 +14,18 @@
 #include <cstdlib>
 #include <cmath>
 #include <algorithm>
-#include "copy_pointer.h"
 using namespace sf;
 using namespace std;
 
 string get_current_dir();
+
+namespace engine_math {
+	template <class T>
+	T* copy(T* to_copy) {
+		T* to_return;
+		to_return = new T(*to_copy);
+		return to_return;
+	}
+}
+
+using namespace engine_math;
