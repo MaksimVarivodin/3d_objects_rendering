@@ -1,5 +1,5 @@
 #pragma once
-#include "triangle.h"
+#include "..\math\triangle.h"
 template <class T>
 class light
 {

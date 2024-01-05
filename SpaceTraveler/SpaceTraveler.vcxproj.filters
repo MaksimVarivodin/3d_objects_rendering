@@ -25,110 +25,95 @@
     <Filter Include="renderers">
       <UniqueIdentifier>{a9abf66e-e929-484d-945c-537715fcdb23}</UniqueIdentifier>
     </Filter>
-    <Filter Include="headers">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="main">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="math\transform">
       <UniqueIdentifier>{f0ab2e7f-c9cf-420b-9bfc-d67ebbc6f022}</UniqueIdentifier>
     </Filter>
-    <Filter Include="objects">
+    <Filter Include="engine_objects">
       <UniqueIdentifier>{99b62308-fab3-4cb3-b2ec-ee47aa773c17}</UniqueIdentifier>
     </Filter>
-    <Filter Include="objects\mesh">
+    <Filter Include="engine_objects\mesh">
       <UniqueIdentifier>{0b003b92-4fb0-4ad9-9f82-f85e15e07f89}</UniqueIdentifier>
     </Filter>
-    <Filter Include="objects\light">
+    <Filter Include="engine_objects\light">
       <UniqueIdentifier>{88605487-a683-42e4-9804-0701845be459}</UniqueIdentifier>
     </Filter>
-    <Filter Include="objects\camera">
+    <Filter Include="engine_objects\camera">
       <UniqueIdentifier>{88358258-c9dc-450b-a5cf-76c0e32767d5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>main</Filter>
-    </ClCompile>
-    <ClCompile Include="matrix_impl.h">
-      <Filter>math\matrix</Filter>
-    </ClCompile>
-    <ClCompile Include="frame_rate.cpp">
+    <ClCompile Include="features\frame_rate.cpp">
       <Filter>features</Filter>
     </ClCompile>
-    <ClCompile Include="text_renderer.cpp">
-      <Filter>renderers</Filter>
-    </ClCompile>
-    <ClCompile Include="game_window.cpp">
-      <Filter>renderers</Filter>
-    </ClCompile>
-    <ClCompile Include="trnsform_impl.h">
-      <Filter>math\transform</Filter>
-    </ClCompile>
-    <ClCompile Include="light.cpp">
-      <Filter>objects\light</Filter>
-    </ClCompile>
-    <ClCompile Include="camera.cpp">
-      <Filter>objects\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="mesh_renderer.cpp">
-      <Filter>renderers</Filter>
-    </ClCompile>
-    <ClCompile Include="header_impl.cpp">
+    <ClCompile Include="features\header_impl.cpp">
       <Filter>features</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="renderers\game_window.cpp">
+      <Filter>renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="renderers\mesh_renderer.cpp">
+      <Filter>renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="renderers\text_renderer.cpp">
+      <Filter>renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_object_classes\camera.cpp">
+      <Filter>engine_objects\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_object_classes\light.cpp">
+      <Filter>engine_objects\light</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="header.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="matrix.h">
-      <Filter>math\matrix</Filter>
-    </ClInclude>
-    <ClInclude Include="triangle.h">
-      <Filter>math\triangle</Filter>
-    </ClInclude>
-    <ClInclude Include="point.h">
-      <Filter>math\point</Filter>
-    </ClInclude>
-    <ClInclude Include="point_impl.h">
-      <Filter>math\point</Filter>
-    </ClInclude>
-    <ClInclude Include="engine_math.h">
-      <Filter>math\functions</Filter>
-    </ClInclude>
-    <ClInclude Include="mesh.h">
-      <Filter>objects\mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="mesh_loader.h">
-      <Filter>tools</Filter>
-    </ClInclude>
-    <ClInclude Include="frame_rate.h">
+    <ClInclude Include="features\frame_rate.h">
       <Filter>features</Filter>
     </ClInclude>
-    <ClInclude Include="text_renderer.h">
-      <Filter>renderers</Filter>
+    <ClInclude Include="headers\header.h" />
+    <ClInclude Include="math\engine_math.h">
+      <Filter>math\functions</Filter>
     </ClInclude>
-    <ClInclude Include="game_window.h">
-      <Filter>renderers</Filter>
+    <ClInclude Include="math\matrix.h">
+      <Filter>math\matrix</Filter>
     </ClInclude>
-    <ClInclude Include="trnsform.h">
+    <ClInclude Include="math\matrix_impl.h">
+      <Filter>math\matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="math\point.h">
+      <Filter>math\point</Filter>
+    </ClInclude>
+    <ClInclude Include="math\point_impl.h">
+      <Filter>math\point</Filter>
+    </ClInclude>
+    <ClInclude Include="math\trnsform.h">
       <Filter>math\transform</Filter>
     </ClInclude>
-    <ClInclude Include="light.h">
-      <Filter>objects\light</Filter>
+    <ClInclude Include="math\trnsform_impl.h">
+      <Filter>math\transform</Filter>
     </ClInclude>
-    <ClInclude Include="camera.h">
-      <Filter>objects\camera</Filter>
+    <ClInclude Include="math\triangle.h">
+      <Filter>math\triangle</Filter>
     </ClInclude>
-    <ClInclude Include="copy_pointer.h">
+    <ClInclude Include="renderers\game_window.h">
+      <Filter>renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="renderers\mesh_renderer.h">
+      <Filter>renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="renderers\text_renderer.h">
+      <Filter>renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\mesh_loader.h">
       <Filter>tools</Filter>
     </ClInclude>
-    <ClInclude Include="mesh_renderer.h">
-      <Filter>renderers</Filter>
+    <ClInclude Include="engine_object_classes\camera.h">
+      <Filter>engine_objects\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="engine_object_classes\light.h">
+      <Filter>engine_objects\light</Filter>
+    </ClInclude>
+    <ClInclude Include="engine_object_classes\mesh.h">
+      <Filter>engine_objects\mesh</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
