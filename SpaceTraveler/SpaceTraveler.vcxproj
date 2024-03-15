@@ -179,9 +179,6 @@
     <ClInclude Include="renderers\text_renderer.h" />
     <ClInclude Include="tools\mesh_loader.h" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="Readme.md" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
