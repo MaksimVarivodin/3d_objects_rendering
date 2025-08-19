@@ -5,19 +5,17 @@
 #ifndef POINT_HPP
 #define POINT_HPP
 
-#include <vector>
+#include <array>
 
-namespace SpaceEngine
+namespace engine_lib
 {
     using namespace std;
 
-    template <class T>
-    class matrix;
     /**
      * @enum axis
      * @brief Represents the axes in a 2D, 3D, or 4D space.
      *
-     * This enum is used to specify the axis for various operations in the SpaceEngine::point class.
+     * This enum is used to specify the axis for various operations in the engine_lib::point class.
      */
     enum axis: unsigned char
     {
@@ -37,16 +35,17 @@ namespace SpaceEngine
      * coordinates and the ability to set coordinates.
      *
      * @param T The type of the coordinates.
+     * @param N The number of dimensions of the point.
      *
      * @throws invalid_argument If an index is out of range or if division by zero is attempted.
      */
-    template <class T>
+    template <class T, size_t N>
     class point
     {
         /**
          * @param coordinates_ array of coordinates for the point.
          */
-        vector<T> coordinates_ = {};
+        array<T, N> coordinates_;
 
     public:
         /**
@@ -54,10 +53,7 @@ namespace SpaceEngine
          *
          * This constructor initializes a point with an empty array of coordinates.
          */
-
-        point() = default;
-
-        
+        point();
         
 
         
@@ -67,7 +63,7 @@ namespace SpaceEngine
          * This constructor initializes a point from initializer list.
          */
         template <typename... Args>
-        point(size_t N, Args... args);
+        point(Args... args);
 
         /**
          * @brief Constructor for the point class that takes an array of coordinates.
@@ -77,7 +73,7 @@ namespace SpaceEngine
          * @param coordinates The array of coordinates to initialize the point with.
          */
 
-        point(const vector<T>& coordinates);
+        point(const array<T, N>& coordinates);
 
 
         /**
@@ -97,7 +93,7 @@ namespace SpaceEngine
          * @tparam N The number of dimensions.
          * @return An array containing the coordinates of the point.
          */
-        vector<T> get_coordinates() const;
+        array<T, N> get_coordinates() const;
 
         /**
          * @brief Returns the number of dimensions of the point.
@@ -143,17 +139,6 @@ namespace SpaceEngine
          */
         void set(size_t index, T value);
 
-        /**
-         * @brief Sets the number of dimensions of the point.
-         *
-         * This function sets the number of dimensions of the point.
-         * If the new number of dimensions is less than the current number of dimensions,
-         * the extra coordinates are discarded. If the new number of dimensions is greater
-         * than the current number of dimensions, the new coordinates are initialized to zero.
-         *
-         * @param count The new number of dimensions for the point.
-         */
-        void set_axis_count(size_t count);
 
         /**
          * @brief Adds another point to this point.
@@ -165,7 +150,8 @@ namespace SpaceEngine
          * @param other The point to add to this point.
          * @return A new point that is the result of adding this point and the other point.
          */
-        point operator+(const point& other) const;
+        template <size_t M>
+        point operator+(const point<T, M>& other) const;
 
 
         /**
@@ -178,7 +164,8 @@ namespace SpaceEngine
          * @param other The point to subtract from this point.
          * @return A new point that is the result of subtracting this point and the other point.
          */
-        point operator-(const point& other) const;
+        template <size_t M>
+        point operator-(const point<T, M>& other) const;
 
 
         /**
@@ -191,8 +178,8 @@ namespace SpaceEngine
          * @param other The point to add to this point.
          * @return A reference to this point, which has been modified in-place.
          */
-
-        point& operator+=(const point& other);
+        template <size_t M>
+        point& operator+=(const point<T, M>& other);
 
 
         /**
@@ -205,36 +192,9 @@ namespace SpaceEngine
          * @param other The point to subtract from this point.
          * @return A reference to this point, which has been modified in-place.
          */
-        point& operator-=(const point& other);
+        template <size_t M>
+        point& operator-=(const point<T, M>& other);
 
-
-        /**
-         * @brief Adds a scalar value to each coordinate of the point.
-         * @param value The value to add to each coordinate.
-         * @return A new point with the added value.
-         */
-        point operator+(T value) const;
-
-        /**
-         * @brief Adds a scalar value to each coordinate of the point in-place.
-         * @param value The value to add to each coordinate.
-         * @return A reference to the modified point.
-         */
-        point& operator+=(T value);
-
-        /**
-         * @brief Subtracts a scalar value from each coordinate of the point.
-         * @param value The value to subtract from each coordinate.
-         * @return A new point with the subtracted value.
-         */
-        point operator-(T value) const;
-
-        /**
-         * @brief Subtracts a scalar value from each coordinate of the point in-place.
-         * @param value The value to subtract from each coordinate.
-         * @return A reference to the modified point.
-         */
-        point& operator-=(T value);
 
         /**
          * @brief Multiplies this point by another point.
@@ -246,17 +206,6 @@ namespace SpaceEngine
          * @return A new point that is the result of multiplying this point and the other point.
          */
         point operator*(const point& other) const;
-
-        /**
-         * @brief Multiplies this point by a matrix.
-         *
-         * This function multiplies this point by a matrix.
-         * The result is a new point with coordinates that are the products of the corresponding coordinates of this point and the matrix.
-         *
-         * @param m The matrix to multiply this point by.
-         * @return A new point that is the result of multiplying this point and the matrix.
-         */
-        point operator*(const matrix<T>& m) const;
 
 
         /**
@@ -308,16 +257,7 @@ namespace SpaceEngine
          */
         point& operator*=(const point& other);
 
-        /** 
-         * @brief Multiplies this point by a matrix in-place.
-         *
-         * This function multiplies this point by a matrix and modifies this point in-place.
-         * The result is a new point with coordinates that are the products of the corresponding coordinates of this point and the matrix.
-         *
-         * @param m The matrix to multiply this point by.
-         * @return A reference to this point, which has been modified in-place.
-         */
-        point& operator*=(const matrix<T>& m);
+
         /**
          * @brief Divides this point by another point in-place.
          *
@@ -346,48 +286,17 @@ namespace SpaceEngine
          * @throws std::invalid_argument if the given value is zero.
          */
         point& operator/=(T value);
-
-
-        bool operator!=(const point& other) const;
-        /**
-         * @brief Checks if another point is compatible with this point.
-         *
-         * This function checks if another point is compatible with this point,
-         * meaning that they have the same number of dimensions.
-         * If the number of dimensions of the other point is less than the number of dimensions of this point,
-         * an exception of type invalid_argument is thrown.
-         *
-         * @param other The point to check compatibility with.
-         * @throws invalid_argument If the number of dimensions of the other point is less than the number of dimensions of this point.
-         */
-        void check_compatible(const point& other) const;
     };
 
-    namespace point_constraints
-    {
-        /**
-         * @brief A global zero point with 4 axes (x, y, z, w) initialized to (0, 0, 0, 1).
-         *
-         * This point can be used as a reference or origin in various calculations.
-         */
-        template <class T>
-        static inline point<T> zero_point{4, T(0), T(0), T(0), T(1)};
-
-        /**
-         * @brief Sets the number of axes for the global zero point.
-         *
-         * This function allows changing the number of axes for the global zero point.
-         * If the new number of axes is less than 1, an exception of type invalid_argument is thrown.
-         * The coordinates of the zero point are adjusted accordingly, with all coordinates set to zero
-         * except for the last coordinate, which is set to one if there are at least two axes.
-         *
-         * @param axes The new number of axes for the global zero point.
-         * @throws invalid_argument If the new number of axes is less than 1.
-         */
-        template <class T>
-        void set_global_zero_axes(size_t axes);
-    };
-} // SpaceEngine
+    template <class T>
+    using point1D = point<T, 1>;
+    template <class T>
+    using point2D = point<T, 2>;
+    template <class T>
+    using point3D = point<T, 3>;
+    template <class T>
+    using point4D = point<T, 4>;
+} // engine_lib
 
 
 #endif //POINT_HPP

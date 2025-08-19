@@ -4,12 +4,11 @@
 
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
-#define _USE_MATH_DEFINES
+
 #include "../point/point.hpp"
 #include "../direction/direction.hpp"
-#include <cmath>
 
-namespace SpaceEngine
+namespace engine_lib
 {
     using namespace std;
 
@@ -17,38 +16,30 @@ namespace SpaceEngine
     * @brief Template class representing a matrix of size NxM.
     *
     * @tparam T Type of elements in the matrix.
+    * @tparam N Number of rows in the matrix.
+    * @tparam M Number of columns in the matrix.
     */
-    template <class T>
+    template <class T, size_t N, size_t M>
     class matrix
     {
     private:
         /*
          * Table containing the elements of the matrix.
          */
-        vector<vector<T>> table_ = {};
-        size_t rows_ = 0; ///< Number of rows in the matrix.
-        size_t columns_ = 0; ///< Number of columns in the matrix.
+        array<array<T, M>, N> table_;
 
     public:
         /**
          * @brief Default constructor. Initializes the matrix with zeros.
          */
-        matrix() = default;
-
-        /**
-         * @brief Constructor that initializes the matrix with the given size.
-         *
-         * @param rows Number of rows in the matrix.
-         * @param columns Number of columns in the matrix.
-         */
-        matrix(size_t rows, size_t columns);
+        matrix();
 
         /**
          * @brief Constructor that initializes the matrix with the given data.
          *
          * @param data Array of arrays representing the matrix elements.
          */
-        matrix(const vector<vector<T>>& data);
+        matrix(const array<array<T, M>, N>& data);
 
 
         /**
@@ -56,14 +47,14 @@ namespace SpaceEngine
          *
          * @param data Array of points representing the matrix elements.
          */
-        matrix(const vector<point<T>>& data);
+        matrix(const array<point<T, M>, N>& data);
 
         /**
          * @brief Constructor that initializes the matrix with the given array of directions.
          *
          * @param data Array of directions representing the matrix elements.
          */
-        matrix(const vector<direction<T>>& data);
+        matrix(const array<direction<T, M>, N>& data);
 
 
         /**
@@ -79,34 +70,34 @@ namespace SpaceEngine
          * @return Number of rows.
          */
         [[nodiscard]] size_t rows() const;
-        /**
-         * @brief Returns the number of columns in the matrix.
-         *
-         * @return Number of columns.
-         */
-        [[nodiscard]] size_t columns() const;
+
         /**
          * @brief Returns the row at the specified index.
          *
          * @param row Index of the row to retrieve.
          * @return Reference to the row at the specified index.
          */
-        const vector<T>& get_row(size_t row) const;
+        const array<T, M>& get_row(size_t row) const;
 
         /**
          * @brief Returns the entire table of the matrix.
          *
          * @return Constant reference to the table of the matrix.
          */
-        const vector<vector<T>>& get_table() const;
+        const array<array<T, M>, N>& get_table() const;
 
         /**
          * @brief Returns a reference to the entire table of the matrix.
          *
          * @return Reference to the table of the matrix.
          */
-        vector<vector<T>>& ref_table();
-
+        array<array<T, M>, N>& ref_table();
+        /**
+         * @brief Returns the number of columns in the matrix.
+         *
+         * @return Number of columns.
+         */
+        [[nodiscard]] size_t columns() const;
 
         /**
          * @brief Access the element at the given row and column.
@@ -139,14 +130,14 @@ namespace SpaceEngine
          *
          * @return Array containing the main diagonal elements.
          */
-        vector<T> main_diagonal() const;
+        array<T, N> main_diagonal() const;
 
         /**
          * @brief Get the secondary diagonal elements of the matrix.
          *
          * @return Array containing the secondary diagonal elements.
          */
-        vector<T> secondary_diagonal() const;
+        array<T, N> secondary_diagonal() const;
 
         /**
          * @brief Calculate the trace of the matrix.
@@ -227,8 +218,8 @@ namespace SpaceEngine
          * @param other Matrix to multiply with.
          * @return New matrix resulting from the multiplication.
          */
-
-        matrix<T> operator*(const matrix<T>& other) const;
+        template <size_t G, size_t H>
+        matrix<T, N, H> operator*(const matrix<T, G, H>& other) const;
         /**
          * @brief Multiply the matrix by another matrix.
          *
@@ -237,8 +228,8 @@ namespace SpaceEngine
          * @param other Matrix to multiply with.
          * @return New matrix resulting from the multiplication.
          */
-
-        matrix<T>& operator*=(const matrix<T>& other);
+        template <size_t G, size_t H>
+        matrix<T, N, H>& operator*=(const matrix<T, G, H>& other);
         /**
         * @brief Divide the matrix by another matrix.
         *
@@ -247,8 +238,8 @@ namespace SpaceEngine
         * @param other Matrix to divide with.
         * @return New matrix resulting from the division.
         */
-
-        matrix<T> operator/(const matrix<T>& other) const;
+        template <size_t G, size_t H>
+        matrix<T, N, H> operator/(const matrix<T, G, H>& other) const;
         /**
         * @brief Divide the matrix by another matrix.
         *
@@ -257,8 +248,8 @@ namespace SpaceEngine
         * @param other Matrix to divide with.
         * @return New matrix resulting from the division.
         */
-
-        matrix<T>& operator/=(const matrix<T>& other);
+        template <size_t G, size_t H>
+        matrix<T, N, H>& operator/=(const matrix<T, G, H>& other);
         /**
          * @brief Add another matrix to the current matrix.
          *
@@ -296,7 +287,7 @@ namespace SpaceEngine
          *
          * @return New matrix resulting from the transpose operation.
          */
-        matrix<T> transposed_matrix() const;
+        matrix<T, M, N> transposed_matrix() const;
 
         /**
          * @brief Calculate the minor matrix by removing the given row and column.
@@ -305,7 +296,7 @@ namespace SpaceEngine
          * @param column Column index to remove.
          * @return New matrix resulting from the minor operation.
          */
-        matrix<T> minor_matrix(size_t row, size_t column) const;
+        matrix<T, N - 1, M - 1> minor_matrix(size_t row, size_t column) const;
 
         /**
          * @brief Calculate the minor of the element at the given row and column.
@@ -472,98 +463,186 @@ namespace SpaceEngine
          */
         [[nodiscard]] bool is_echelon_matrix() const;
 
-
-        void check_validity() const;
+        /**
+         * @brief Virtual destructor.
+         */
+        virtual ~matrix() = default;
 
         /**
          * @brief Create an identity matrix of size NxM.
          *
          * @return Identity matrix.
          */
-        static matrix identity_matrix(size_t rows_columns);
-
-        /**
-         * @brief Create a rotation matrix around the X-axis.
-         *
-         * @param theta Angle in radians.
-         * @param rows Number of rows in the resulting matrix.
-         * @param columns Number of columns in the resulting matrix.
-         * @return Rotation matrix around the X-axis.
-         */
-        static matrix x_rotation_matrix(T theta, size_t rows = 4, size_t columns = 4);
-
-        /*
-         * @brief Create a rotation matrix around the Y-axis.
-         *
-         * @param theta Angle in radians.
-         * @param rows Number of rows in the resulting matrix.
-         * @param columns Number of columns in the resulting matrix.
-         * @return Rotation matrix around the Y-axis.
-         */
-        static matrix y_rotation_matrix(T theta, size_t rows = 4, size_t columns = 4);
-
-        /**
-         * @brief Create a rotation matrix around the Z-axis.
-         *
-         * @param theta Angle in radians.
-         * @param rows Number of rows in the resulting matrix.
-         * @param columns Number of columns in the resulting matrix.
-         * @return Rotation matrix around the Z-axis.
-         */
-        static matrix z_rotation_matrix(T theta, size_t rows = 4, size_t columns = 4);
-
-        /**
-         * @brief Create a rotation matrix based on the given angles.
-         *
-         * @param theta Angles in radians for rotation around each axis.
-         * @param rows Number of rows in the resulting matrix.
-         * @param columns Number of columns in the resulting matrix.
-         * @return Rotation matrix based on the given angles.
-         */
-        static matrix rotation_matrix(point<T> theta, size_t rows = 4, size_t columns = 4);
-
-        /**
-         * @brief Create a projection matrix.
-         * @param AspectRatio Aspect ratio of the projection.
-         * @param Near clipping plane distance.
-         * @param Far clipping plane distance.
-         * @param FOV Field of view in degrees.
-         * @param rows Number of rows in the resulting matrix.
-         * @param columns Number of columns in the resulting matrix.
-         * @return Projection matrix.
-         */
-        static matrix projection_matrix(T AspectRatio, T Near = 0.1, T Far = 1000.0, T FOV = 90.0, size_t rows = 4,
-                                        size_t columns = 4);
-
-        /**
-         * @brief Create a translation matrix based on the given translation vector.
-         *
-         * @param translation Translation vector.
-         * @return Translation matrix.
-         */
-        static matrix translation_matrix(point<T> translation);
-
-
-        /**
-         * @brief Create a point-at matrix based on the given position, target, and up vector.
-         *
-         * @param pos Position of the point.
-         * @param target Target point to look at.
-         * @param up Up vector.
-         * @return Point-at matrix.
-         */
-        static matrix point_at(const point<T>& pos, const point<T>& target, const point<T>& up);
-
-        /**
-         * @brief Create a look-at matrix based on the given position, target, and up vector.
-         * @param pos  Position of the camera.
-         * @param target  Target point to look at.
-         * @param up  Up vector.
-         * @return Look-at matrix.
-         */
-        static matrix look_at(const point<T>& pos, const point<T>& target, const point<T>& up);
+        static matrix identity_matrix();
     };
-} // SpaceEngine
+
+    /**
+     * @brief Specialization of the matrix class for 1x1 matrices.
+     *
+     * @tparam T Type of elements in the matrix.
+     */
+    template <class T>
+    class matrix1x1 final : public matrix<T, 1, 1>
+    {
+    public:
+        /**
+         * @brief Default constructor. Initializes the matrix with zeros.
+         */
+        matrix1x1<T>();
+
+        /**
+         * @brief Copy constructor.
+         *
+         * @param other Matrix to be copied.
+         */
+        matrix1x1<T>(const matrix1x1<T>& other);
+
+        /**
+         * @brief Constructor that initializes the matrix with the given data.
+         *
+         * @param data Array of arrays representing the matrix elements.
+         */
+        matrix1x1<T>(const array<array<T, 1>, 1>& data);
+
+        /**
+         * @brief Constructor that initializes the matrix with the given data.
+         *
+         * @param other Matrix to be copied.
+         */
+        matrix1x1<T>(const matrix<T, 1, 1>& other);
+
+        /**
+         * @brief Calculate the determinant of the matrix.
+         *
+         * @return Determinant of the matrix.
+         */
+        T determinant() const override;
+    };
+
+    /**
+ * @brief Specialization of the matrix class for 2x2 matrices.
+ *
+ * @tparam T Type of elements in the matrix.
+ */
+    template <class T>
+    class matrix2x2 final : public matrix<T, 2, 2>
+    {
+    public:
+        /**
+         * @brief Default constructor. Initializes the matrix with zeros.
+         */
+        matrix2x2<T>();
+
+        /**
+         * @brief Copy constructor.
+         *
+         * @param other Matrix to be copied.
+         */
+        matrix2x2<T>(const matrix2x2<T>& other);
+
+        /**
+         * @brief Constructor that initializes the matrix with the given data.
+         *
+         * @param data Array of arrays representing the matrix elements.
+         */
+        matrix2x2<T>(const array<array<T, 2>, 2>& data);
+
+        /**
+         * @brief Constructor that initializes the matrix with the given data.
+         *
+         * @param other Matrix to be copied.
+         */
+        matrix2x2<T>(const matrix<T, 2, 2>& other);
+
+        /**
+         * @brief Calculate the determinant of the matrix.
+         *
+         * @return Determinant of the matrix.
+         */
+        T determinant() const override;
+    };
+
+    /**
+     * @brief Specialization of the matrix class for 3x3 matrices.
+     *
+     * @tparam T Type of elements in the matrix.
+     */
+    template <class T>
+    class matrix3x3 final : public matrix<T, 3, 3>
+    {
+    public:
+        /**
+         * @brief Default constructor. Initializes the matrix with zeros.
+         */
+        matrix3x3<T>();
+
+        /**
+         * @brief Copy constructor.
+         *
+         * @param other Matrix to be copied.
+         */
+        matrix3x3<T>(const matrix3x3<T>& other);
+
+        /**
+         * @brief Constructor that initializes the matrix with the given data.
+         *
+         * @param data Array of arrays representing the matrix elements.
+         */
+        matrix3x3<T>(const array<array<T, 3>, 3>& data);
+
+        /**
+         * @brief Constructor that initializes the matrix with the given data.
+         *
+         * @param other Matrix to be copied.
+         */
+        matrix3x3<T>(const matrix<T, 3, 3>& other);
+
+        /**
+         * @brief Calculate the determinant of the matrix.
+         *
+         * @return Determinant of the matrix.
+         */
+        T determinant() const override;
+    };
+
+    template <class T, size_t M>
+    class matrix1D final : public matrix<T, 1, M>
+    {
+    public:
+        /**
+         * @brief Constructor that initializes the matrix with the given direction class.
+         *
+         * @param data Array of directions representing the matrix elements.
+         */
+        matrix1D(const direction<T, M>& data);
+
+        /**
+         * @brief Constructor that initializes the matrix with the given  point class.
+         *
+         * @param data Array of points representing the matrix elements.
+         */
+        matrix1D(const point<T, M>& data);
+
+        /**
+         * @brief Constructor that initializes the matrix with the given row of data.
+         *
+         * @param data Array of arrays representing the matrix elements.
+         */
+        matrix1D(const array<T, M>& data);
+
+        /**
+         * @brief Default constructor. Initializes the matrix with an empty array.
+         */
+        matrix1D();
+        /**
+         * @brief Copy constructor.
+         *
+         * @param other Matrix to be copied.
+         */
+        template <size_t N>
+        matrix1D(const matrix<T, N, M>& other);
+    };
+} // engine_lib
 
 #endif //MATRIX_HPP
 #include "matrix.inl"

@@ -4,9 +4,9 @@
 #include <chrono>
 #include <SFML/Graphics.hpp>
 #include "BackgroundThread/BackgroundThread.hpp"
-#include "matrix/matrix.hpp"
-#include "point/point.hpp"
-#include "direction/direction.hpp"
+#include "math/matrix/matrix.hpp"
+#include "math/point/point.hpp"
+#include "math/direction/direction.hpp"
 #include <vector>
 #include <cmath>
 using namespace se;

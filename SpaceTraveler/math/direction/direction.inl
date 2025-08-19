@@ -1,439 +1,482 @@
 #ifndef DIRECTION_INL
 #define DIRECTION_INL
 
-namespace SpaceEngine
+namespace engine_lib
 {
     using namespace std;
 
-    template <class T>
-    bool almost_equal(T a, T b,
-                      T rel_eps = T(1e-6),
-                      T abs_eps = T(1e-12))
-    {
-        static_assert(std::is_floating_point_v<T>, "floating only");
-        if (std::isnan(a) || std::isnan(b)) return false;
-        if (std::isinf(a) || std::isinf(b)) return a == b;
-        T diff = std::fabs(a - b);
-        if (diff <= abs_eps) return true;
-        return diff <= rel_eps * std::max(std::fabs(a), std::fabs(b));
-    }
-
-    template <class T>
-    direction<T>::direction(const point<T>& beginning, const point<T>& end)
-        : beginning_(make_shared<point<T>>(beginning)),
-          end_(make_shared<point<T>>(end))
-    {
-        if (beginning_->axes() != end_->axes())
-            throw std::invalid_argument("Beginning and end points must have the same number of axes");
-        set_cached_values(beginning_, end_);
-    }
-
-    template <class T>
-    direction<T>::direction(const point<T>& end)
-        : beginning_(shared_ptr<point<T>>(&point_constraints::zero_point<T>, [](point<T>*)
-          {
-          })),
-          end_(make_shared<point<T>>(end)),
-          cachedLength_(-1)
-    {
-        if (beginning_->axes() != end_->axes())
-            throw std::invalid_argument("Beginning and end points must have the same number of axes");
-        set_cached_values(beginning_, end_);
-    }
-
-    template <class T>
-    direction<T>::direction(point<T>* end)
-        : beginning_(shared_ptr<point<T>>(&point_constraints::zero_point<T>, [](point<T>*)
-          {
-          })),
-          end_(shared_ptr<point<T>>(end, [](point<T>*)
-          {
-          }))
-    {
-        if (beginning_->axes() != end_->axes())
-            throw std::invalid_argument("Beginning and end points must have the same number of axes");
-        set_cached_values(beginning_, end_);
-    }
-
-
-    template <class T>
-    direction<T>::direction(point<T>* begin, point<T>* end)
-        : beginning_(shared_ptr<point<T>>(begin, [](point<T>*)
-          {
-          })),
-          end_(shared_ptr<point<T>>(end, [](point<T>*)
-          {
-          }))
-    {
-        if (beginning_->axes() != end_->axes())
-            throw std::invalid_argument("Beginning and end points must have the same number of axes");
-        set_cached_values(beginning_, end_);
-    }
-
-    template <class T>
-    direction<T>::direction(const shared_ptr<point<T>>& begin, const shared_ptr<point<T>>& end)
-        : beginning_(begin),
-          end_(end)
-    {
-        if (beginning_->axes() != end_->axes())
-            throw std::invalid_argument("Beginning and end points must have the same number of axes");
-        set_cached_values(beginning_, end_);
-    }
-
-    template <class T>
-    direction<T>::direction(const direction& other)
-        : direction(other.beginning_, other.end_)
+    template <class T, size_t N>
+    direction<T, N>::direction()
+        : point<T, N>()
     {
     }
 
-    template <class T>
-    direction<T>& direction<T>::operator=(const direction& other)
+    template <class T, size_t N>
+    direction<T, N>::direction(initializer_list<T> init)
+        : point<T, N>(init),
+          beginning_({0}),
+          end_(point<T, N>::get_coordinates())
     {
-        direction<T> copy(other);
-        *this = std::move(copy);
-        return *this;
     }
 
-    template <class T>
-    direction<T>::direction(direction&& other) noexcept
-        : beginning_{
-              std::move(other.beginning_)
-          },
-          end_{
-              std::move(other.end_)
-          },
-          cachedLength_(other.cachedLength_),
-          cachedRadiusDirection_(other.cachedRadiusDirection_),
-          cachedUnitDirection_(other.cachedUnitDirection_)
+    template <class T, size_t N>
+    direction<T, N>::direction(const point<T, N>& direction_point)
+        : point<T, N>(direction_point),
+          beginning_({0}),
+          end_(direction_point.get_coordinates())
     {
-        other.beginning_.reset();
-        other.end_.reset();
-        other.cachedLength_ = T(-1);
-        cachedRadiusDirection_ = point<T>{cachedRadiusDirection_.axes()};
-        cachedUnitDirection_ = point<T>{cachedUnitDirection_.axes()};
     }
 
-    template <class T>
-    direction<T>& direction<T>::operator=(direction&& other) noexcept
+    template <class T, size_t N>
+    direction<T, N>::direction(const point<T, N>& a, const point<T, N>& b)
+        : point<T, N>(b - a),
+          beginning_(a.get_coordinates()),
+          end_(b.get_coordinates())
     {
-        if (this != &other)
-        {
-            this->beginning_ = std::move(other.beginning_);
-            this->end_ = std::move(other.end_);
-            cachedLength_ = other.cachedLength_;
-            cachedRadiusDirection_ = other.cachedRadiusDirection_;
-            cachedUnitDirection_ = other.cachedUnitDirection_;
-            other.cachedLength_ = T(-1);
-            cachedRadiusDirection_ = point<T>{cachedRadiusDirection_.axes()};
-            cachedUnitDirection_ = point<T>{cachedUnitDirection_.axes()};
-            other.beginning_.reset();
-            other.end_.reset();
-        }
-        return *this;
     }
 
-    template <class T>
-    point<T> direction<T>::get_beginning() const
+    template <class T, size_t N>
+    direction<T, N>::direction(const array<T, N>& direction_coordinates)
+        : direction(point<T, N>(direction_coordinates))
     {
-        return *beginning_;
     }
 
-    template <class T>
-    point<T> direction<T>::get_end() const
+    template <class T, size_t N>
+    direction<T, N>::direction(const array<T, N>& a, const array<T, N>& b)
+        : direction(point<T, N>(a), point<T, N>(b))
     {
-        return *end_;
     }
 
-    template <class T>
-    T direction<T>::get_length() const
+    template <class T, size_t N>
+    direction<T, N>::direction(const direction<T, N>& other)
+        : point<T, N>(other.get_coordinates()),
+          beginning_(other.beginning_),
+          end_(other.end_)
     {
-        return cachedLength_;
     }
 
-    template <class T>
-    direction<T> direction<T>::get_unit_direction() const
+    template <class T, size_t N>
+    array<T, N> direction<T, N>::get_beginning() const
     {
-        return direction(cachedUnitDirection_);
+        return beginning_;
     }
 
-    template <class T>
-    direction<T> direction<T>::get_radius_direction() const
+    template <class T, size_t N>
+    array<T, N> direction<T, N>::get_end() const
     {
-        return direction(cachedRadiusDirection_);
+        return end_;
     }
 
 
-    template <class T>
-    T direction<T>::length(shared_ptr<point<T>> beginning, shared_ptr<point<T>> end) const
+    template <class T, size_t N>
+    T direction<T, N>::length() const
     {
         T sum(0);
-        for (auto r = *end - *beginning; T i : r.get_coordinates())
+        for (T i : this->get_coordinates())
             sum += i * i;
         return T(sqrt(sum));
     }
 
-    template <class T>
-    T direction<T>::cos_axis_angle(size_t axis) const
+    template <class T, size_t N>
+    T direction<T, N>::cos_axis_angle(size_t axis) const
     {
-        return this->get_radius_direction().get_end().coordinate(axis) / cachedLength_;
+        return this->coordinate(axis) / length();
     }
 
-    template <class T>
-    T direction<T>::cos_vector_angle(const direction<T>& other) const
+    template <class T, size_t N>
+    T direction<T, N>::cos_vector_angle(const direction<T, N>& other) const
     {
-        check_compatible(other);
         T sum(0);
-        auto a = this->get_radius_direction().get_end();
-        auto b = other.get_radius_direction().get_end();
-        if (a->axes() != b->axes())
-            throw std::invalid_argument("Cosine angle requires directions with the same number of axes");
-        for (size_t i = 0; i < a.axes(); ++i)
-            sum += a.coordinate(i) * b.coordinate(i);
-        return sum / (this->get_length() * other.get_length());
+        for (size_t i = 0; i < N; ++i)
+            sum += this->coordinate(i) * other.coordinate(i);
+        return sum / (this->length() * other.length());
     }
 
-    template <class T>
-    T direction<T>::projection(const direction<T>& other) const
+    template <class T, size_t N>
+    T direction<T, N>::projection(const direction<T, N>& other) const
     {
-        check_compatible(other);
         if (other.zero_direction())
             throw std::invalid_argument("Cannot project on zero-direction");
-        return dot_product(other) / other.get_length();
+        return dot_product(other) / other.length();
     }
 
-    template <class T>
-    T direction<T>::dot_product(const direction<T>& other) const
+    template <class T, size_t N>
+    direction<T, N> direction<T, N>::cross_product(const direction<T, N>& other) const
     {
-        check_compatible(other);
-
-        T sum(0);
-        auto a = this->get_radius_direction().get_end();
-        auto b = other.get_radius_direction().get_end();
-
-        for (size_t i = 0; i < a.axes(); ++i)
-            sum += a.coordinate(i) * b.coordinate(i);
-        return sum;
-    }
-
-    template <class T>
-    direction<T> direction<T>::cross_product(const direction<T>& other) const
-    {
-        check_compatible(other);
-        auto a = this->get_radius_direction().get_end();
-        auto b = other.get_radius_direction().get_end();
-
-        if (a.axes() < 3 || b.axes() < 3)
-            throw std::invalid_argument("Cross product is only defined for 3D directions");
-
-        point<T> result(a.axes());
-        result[x] = a.coordinate(y) * b.coordinate(z) - a.coordinate(z) * b.coordinate(y);
-        result[y] = a.coordinate(z) * b.coordinate(x) - a.coordinate(x) * b.coordinate(z);
-        result[z] = a.coordinate(x) * b.coordinate(y) - a.coordinate(y) * b.coordinate(x);
-        if (a.axes() > 3)
-            result[w] = T(1);
-        return direction(result);
+        static_assert(N >= 3, "Cross product only defined for 3D vectors");
+        direction<T, N> result;
+        result[x] = this->coordinate(y) * other.coordinate(z) - this->coordinate(z) * other.coordinate(y);
+        result[y] = this->coordinate(z) * other.coordinate(x) - this->coordinate(x) * other.coordinate(z);
+        result[z] = this->coordinate(x) * other.coordinate(y) - this->coordinate(y) * other.coordinate(x);
+        result.beginning_ = {0};
+        result.end_ = result.get_coordinates();
+        return result;
     }
 
 
-    template <class T>
-    direction<T> direction<T>::ort() const
+    template <class T, size_t N>
+    direction<T, N> direction<T, N>::ort() const
     {
-        auto o = this->get_radius_direction().get_end();
-
-        if (almost_equal(cachedLength_, T(0.0)))
-            throw std::invalid_argument("Cannot divide by zero");
-        return {o / cachedLength_};
+        array<T, N> ort_coordinates;
+        T l(length());
+        for (size_t i = 0; i < N; ++i)
+            ort_coordinates[i] = this->coordinates_[i] / l;
+        return direction<T, N>(ort_coordinates);
     }
 
-    template <class T>
-
-    bool direction<T>::equal(const direction<T>& other) const
+    template <class T, size_t N>
+    direction<T, N>& direction<T, N>::ort()
     {
-        check_compatible(other);
-        auto a = this->get_radius_direction().get_end();
-        auto b = other.get_radius_direction().get_end();
+        T l(length());
+        for (T& i : this->get_coordinates())
+            i /= l;
+        beginning_ = array<T, N>({0});
+        end_ = this->get_coordinates();
+        return *this;
+    }
 
-        for (int i = 0; i < a.axes(); ++i)
-            if (a[i] != b[i])
+    template <class T, size_t N>
+    bool direction<T, N>::equal(const direction<T, N>& other) const
+    {
+        for (int i = 0; i < N; ++i)
+            if (this->coordinate[i] != other.coordinate(i))
                 return false;
-
         return true;
     }
 
 
-    template <class T>
-
-    bool direction<T>::orthogonal(const direction<T>& other) const
+    template <class T, size_t N>
+    bool direction<T, N>::orthogonal(const direction<T, N>& other) const
     {
         return dot_product(other) == 0;
     }
 
-    template <class T>
-
-    bool direction<T>::collinear(const direction<T>& other) const
+    template <class T, size_t N>
+    bool direction<T, N>::collinear(const direction<T, N>& other) const
     {
-        check_compatible(other);
         if (zero_direction() || other.zero_direction())
-            throw std::invalid_argument("Cannot calculate collinearity with zero-direction");
-        auto a = this->get_radius_direction().get_end();
-        auto b = other.get_radius_direction().get_end();
-
-        // Найдем первую ненулевую координату в векторе b
-        size_t non_zero_index = a.axes();
-        for (size_t i = 0; i < a.axes(); ++i)
+            throw std::invalid_argument("Cannot calculate colinearity with zero-direction");
+        T division(this->coordinate(0) / other.coordinate(0));
+        for (int i = 1; i < N; ++i)
         {
-            if (!almost_equal(b.coordinate(i), T(0.0)))
-            {
-                non_zero_index = i;
-                break;
-            }
-        }
-
-        if (non_zero_index == a.axes())
-            return false; // b - нулевой вектор
-
-        T division = a.coordinate(non_zero_index) / b.coordinate(non_zero_index);
-
-        for (size_t i = 0; i < a.axes(); ++i)
-        {
-            T expected = division * b.coordinate(i);
-            if (!almost_equal(a.coordinate(i), expected))
+            T division2 = this->coordinate(i) / other.coordinate(i);
+            if (division != division2)
                 return false;
         }
         return true;
     }
 
 
-    template <class T>
-
-    bool direction<T>::zero_direction() const
+    template <class T, size_t N>
+    T direction<T, N>::dot_product(const direction<T, N>& other) const
     {
-        auto a = this->get_radius_direction().get_end();
-        for (T i : a.get_coordinates())
-            if (!almost_equal(i, T(0.0)))
+        T sum(0);
+        for (size_t i = 0; i < N; ++i)
+            sum += this->coordinate(i) * other.coordinate(i);
+        return sum;
+    }
+
+
+    template <class T, size_t N>
+    bool direction<T, N>::zero_direction() const
+    {
+        for (T i : this->coordinates_)
+            if (i != 0)
                 return false;
         return true;
     }
 
     // ========================= Operator implementations =========================
 
-    template <class T>
-    direction<T> direction<T>::operator+(const point<T>& other) const
+    // Point<T, M> arguments
+    template <class T, size_t N>
+    template <size_t M>
+    direction<T, N> direction<T, N>::operator+(const point<T, M>& other) const
     {
-        auto A = get_beginning();
-        auto B = get_end();
-        return direction(A, B + other);
+        point<T, N> p = point<T, N>::template operator+<M>(other);
+        direction<T, N> res(p);
+        res.beginning_ = beginning_;
+        for (size_t i = 0; i < N; ++i)
+            res.end_[i] = res.beginning_[i] + res.coordinate(i);
+        return res;
     }
 
-    template <class T>
-    direction<T> direction<T>::operator-(const point<T>& other) const
+    template <class T, size_t N>
+    template <size_t M>
+    direction<T, N> direction<T, N>::operator-(const point<T, M>& other) const
     {
-        auto A = get_beginning();
-        auto B = get_end();
-        return direction(A, B - other);
+        point<T, N> p = point<T, N>::template operator-<M>(other);
+        direction<T, N> res(p);
+        res.beginning_ = beginning_;
+        for (size_t i = 0; i < N; ++i)
+            res.end_[i] = res.beginning_[i] + res.coordinate(i);
+        return res;
     }
 
-    // direction<T> arguments (forward to point versions)
-    template <class T>
-    direction<T> direction<T>::operator+(const direction<T>& other) const
+    template <class T, size_t N>
+    template <size_t M>
+    direction<T, N>& direction<T, N>::operator+=(const point<T, M>& other)
     {
-        auto A = get_beginning();
-        auto B = get_end();
-        auto C = other.get_beginning();
-        auto D = other.get_end();
-        return direction(A, B + (D - C));
+        point<T, N>::template operator+=<M>(other);
+        for (size_t i = 0; i < N; ++i)
+            end_[i] = beginning_[i] + this->coordinate(i);
+        return *this;
     }
 
-    template <class T>
-    direction<T> direction<T>::operator-(const direction<T>& other) const
+    template <class T, size_t N>
+    template <size_t M>
+    direction<T, N>& direction<T, N>::operator-=(const point<T, M>& other)
     {
-        auto A = get_beginning();
-        auto B = get_end();
-        auto C = other.get_beginning();
-        auto D = other.get_end();
-        return direction(A, B - (D - C));
+        point<T, N>::template operator-=<M>(other);
+        for (size_t i = 0; i < N; ++i)
+            end_[i] = beginning_[i] + this->coordinate(i);
+        return *this;
     }
 
+    // direction<T, M> arguments (forward to point versions)
+    template <class T, size_t N>
+    template <size_t M>
+    direction<T, N> direction<T, N>::operator+(const direction<T, M>& other) const
+    {
+        const point<T, M>& as_point = static_cast<const point<T, M>&>(other);
+        return this->template operator+<M>(as_point);
+    }
+
+    template <class T, size_t N>
+    template <size_t M>
+    direction<T, N> direction<T, N>::operator-(const direction<T, M>& other) const
+    {
+        const point<T, M>& as_point = static_cast<const point<T, M>&>(other);
+        return this->template operator-<M>(as_point);
+    }
+
+    template <class T, size_t N>
+    template <size_t M>
+    direction<T, N>& direction<T, N>::operator+=(const direction<T, M>& other)
+    {
+        const point<T, M>& as_point = static_cast<const point<T, M>&>(other);
+        this->template operator+=<M>(as_point);
+        return *this;
+    }
+
+    template <class T, size_t N>
+    template <size_t M>
+    direction<T, N>& direction<T, N>::operator-=(const direction<T, M>& other)
+    {
+        const point<T, M>& as_point = static_cast<const point<T, M>&>(other);
+        this->template operator-=<M>(as_point);
+        return *this;
+    }
 
     // Same-N point element-wise ops
-    template <class T>
-    direction<T> direction<T>::operator*(const point<T>& other) const
+    template <class T, size_t N>
+    direction<T, N> direction<T, N>::operator*(const point<T, N>& other) const
     {
-        auto a = get_beginning();
-        auto b = get_end();
-        return direction(a / other, b / other);
+        point<T, N> p = point<T, N>::operator*(other);
+        direction<T, N> res(p);
+        // Умножаем обе точки вектора
+        for (size_t i = 0; i < N; ++i)
+        {
+            res.beginning_[i] = beginning_[i] * other.coordinate(i);
+            res.end_[i] = end_[i] * other.coordinate(i);
+        }
+        return res;
     }
 
-    template <class T>
-    direction<T> direction<T>::operator/(const point<T>& other) const
+    template <class T, size_t N>
+    direction<T, N> direction<T, N>::operator/(const point<T, N>& other) const
     {
-        auto a = get_beginning();
-        auto b = get_end();
-        return direction(a / other, b / other);
+        // Проверяем деление на ноль
+        for (size_t i = 0; i < N; ++i)
+        {
+            if (other.coordinate(i) == T(0))
+            {
+                throw std::invalid_argument("Cannot divide by zero");
+            }
+        }
+
+        point<T, N> p = point<T, N>::operator/(other);
+        direction<T, N> res(p);
+        // Делим обе точки вектора
+        for (size_t i = 0; i < N; ++i)
+        {
+            res.beginning_[i] = beginning_[i] / other.coordinate(i);
+            res.end_[i] = end_[i] / other.coordinate(i);
+        }
+        return res;
     }
 
+    template <class T, size_t N>
+    direction<T, N>& direction<T, N>::operator*=(const point<T, N>& other)
+    {
+        point<T, N>::operator*=(other);
+        // Умножаем обе точки вектора
+        for (size_t i = 0; i < N; ++i)
+        {
+            beginning_[i] *= other.coordinate(i);
+            end_[i] *= other.coordinate(i);
+        }
+        return *this;
+    }
+
+    template <class T, size_t N>
+    direction<T, N>& direction<T, N>::operator/=(const point<T, N>& other)
+    {
+        // Проверяем деление на ноль
+        for (size_t i = 0; i < N; ++i)
+        {
+            if (other.coordinate(i) == T(0))
+            {
+                throw std::invalid_argument("Cannot divide by zero");
+            }
+        }
+
+        point<T, N>::operator/=(other);
+        // Делим обе точки вектора
+        for (size_t i = 0; i < N; ++i)
+        {
+            beginning_[i] /= other.coordinate(i);
+            end_[i] /= other.coordinate(i);
+        }
+        return *this;
+    }
 
     // Same-N direction element-wise ops (forward to point ones)
-    template <class T>
-    direction<T> direction<T>::operator*(const direction<T>& other) const
+    template <class T, size_t N>
+    direction<T, N> direction<T, N>::operator*(const direction<T, N>& other) const
     {
-        auto A = get_beginning();
-        auto B = get_end();
-        auto C = other.get_beginning();
-        auto D = other.get_end();
-
-        return direction(A * C, B * D);
+        point<T, N> p = point<T, N>::operator*(other);
+        direction<T, N> res(p);
+        // Умножаем обе точки вектора
+        for (size_t i = 0; i < N; ++i)
+        {
+            res.beginning_[i] = beginning_[i] * other.coordinate(i);
+            res.end_[i] = end_[i] * other.coordinate(i);
+        }
+        return res;
     }
 
-    template <class T>
-    direction<T> direction<T>::operator/(const direction<T>& other) const
+    template <class T, size_t N>
+    direction<T, N> direction<T, N>::operator/(const direction<T, N>& other) const
     {
-        auto A = get_beginning();
-        auto B = get_end();
-        auto C = other.get_beginning();
-        auto D = other.get_end();
+        // Проверяем деление на ноль
+        for (size_t i = 0; i < N; ++i)
+        {
+            if (other.coordinate(i) == T(0))
+            {
+                throw std::invalid_argument("Cannot divide by zero");
+            }
+        }
 
-        return direction(A / C, B / D);
+        point<T, N> p = point<T, N>::operator/(other);
+        direction<T, N> res(p);
+        // Делим обе точки вектора
+        for (size_t i = 0; i < N; ++i)
+        {
+            res.beginning_[i] = beginning_[i] / other.coordinate(i);
+            res.end_[i] = end_[i] / other.coordinate(i);
+        }
+        return res;
     }
 
+    template <class T, size_t N>
+    direction<T, N>& direction<T, N>::operator*=(const direction<T, N>& other)
+    {
+        point<T, N>::operator*=(other);
+        // Умножаем обе точки вектора
+        for (size_t i = 0; i < N; ++i)
+        {
+            beginning_[i] *= other.coordinate(i);
+            end_[i] *= other.coordinate(i);
+        }
+        return *this;
+    }
+
+    template <class T, size_t N>
+    direction<T, N>& direction<T, N>::operator/=(const direction<T, N>& other)
+    {
+        // Проверяем деление на ноль
+        for (size_t i = 0; i < N; ++i)
+        {
+            if (other.coordinate(i) == T(0))
+            {
+                throw std::invalid_argument("Cannot divide by zero");
+            }
+        }
+
+        point<T, N>::operator/=(other);
+        // Делим обе точки вектора
+        for (size_t i = 0; i < N; ++i)
+        {
+            beginning_[i] /= other.coordinate(i);
+            end_[i] /= other.coordinate(i);
+        }
+        return *this;
+    }
 
     // Scalar ops
-    template <class T>
-    direction<T> direction<T>::operator*(T value) const
+    template <class T, size_t N>
+    direction<T, N> direction<T, N>::operator*(T value) const
     {
-        auto A = get_beginning();
-        auto B = get_end();
-        return direction(A * value, B * value);
+        point<T, N> p = point<T, N>::operator*(value);
+        direction<T, N> res(p);
+        // Умножаем обе точки вектора на скаляр
+        for (size_t i = 0; i < N; ++i)
+        {
+            res.beginning_[i] = beginning_[i] * value;
+            res.end_[i] = end_[i] * value;
+        }
+        return res;
     }
 
-    template <class T>
-    direction<T> direction<T>::operator/(T value) const
+    template <class T, size_t N>
+    direction<T, N> direction<T, N>::operator/(T value) const
     {
-        auto A = get_beginning();
-        auto B = get_end();
-        return direction(A / value, B / value);
+        if (value == T(0))
+        {
+            throw std::invalid_argument("Cannot divide by zero");
+        }
+
+        point<T, N> p = point<T, N>::operator/(value);
+        direction<T, N> res(p);
+        // Делим обе точки вектора на скаляр
+        for (size_t i = 0; i < N; ++i)
+        {
+            res.beginning_[i] = beginning_[i] / value;
+            res.end_[i] = end_[i] / value;
+        }
+        return res;
     }
 
-    template <class T>
-
-    void direction<T>::check_compatible(const direction& other) const
+    template <class T, size_t N>
+    direction<T, N>& direction<T, N>::operator*=(T value)
     {
-        auto A = get_beginning();
-        auto B = get_end();
-        auto C = other.get_beginning();
-        auto D = other.get_end();
-        if (A.axes() != B.axes() ||
-            A.axes() != C.axes() ||
-            C.axes() != D.axes())
-            throw std::invalid_argument("Directions must have the same number of axes");
+        point<T, N>::operator*=(value);
+        // Умножаем обе точки вектора на скаляр
+        for (size_t i = 0; i < N; ++i)
+        {
+            beginning_[i] *= value;
+            end_[i] *= value;
+        }
+        return *this;
     }
 
-    template <class T>
-    void direction<T>::set_cached_values(const shared_ptr<point<T>>& begin, const shared_ptr<point<T>>& end)
+    template <class T, size_t N>
+    direction<T, N>& direction<T, N>::operator/=(T value)
     {
-        cachedLength_ = this->length(begin, end);
-        cachedRadiusDirection_ = *end - *begin;
-        cachedUnitDirection_ = cachedRadiusDirection_ / cachedLength_;
+        if (value == T(0))
+        {
+            throw std::invalid_argument("Cannot divide by zero");
+        }
+
+        point<T, N>::operator/=(value);
+        // Делим обе точки вектора на скаляр
+        for (size_t i = 0; i < N; ++i)
+        {
+            beginning_[i] /= value;
+            end_[i] /= value;
+        }
+        return *this;
     }
 }
 #endif

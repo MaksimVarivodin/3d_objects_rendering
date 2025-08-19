@@ -5,100 +5,85 @@
 #define MATRIX_INL
 
 
-namespace SpaceEngine
+namespace engine_lib
 {
     using namespace std;
 
-
-    template <class T>
-    matrix<T>::matrix(size_t rows, size_t columns)
-        : table_(rows, vector<T>(columns)),
-          rows_(rows),
-          columns_(columns)
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M>::matrix()
+        : table_({})
     {
-        if (rows_ == 0 || columns_ == 0)
-            throw invalid_argument("Matrix cannot have zero rows or columns");
-        check_validity();
     }
 
-    template <class T>
-    matrix<T>::matrix(const vector<vector<T>>& data)
-        : table_(data),
-          rows_(data.empty() ? 0 : data.size()),
-          columns_(data.empty() ? 0 : data[0].size())
-    {
-        if (rows_ == 0 || columns_ == 0)
-            throw invalid_argument("Matrix cannot have zero rows or columns");
-        check_validity();
-    }
-
-    template <class T>
-    matrix<T>::matrix(const vector<point<T>>& data)
-        : table_(
-              data.empty() ? 0 : data.size(),
-              data.empty() ? vector<T>() : vector<T>(data[0].axes())),
-          rows_(data.empty() ? 0 : data.size()),
-          columns_(data.empty() ? 0 : data[0].axes())
-    {
-        for (size_t i = 0; i < rows_; i++)
-            table_[i] = data[i].get_coordinates();
-        check_validity();
-    }
-
-    template <class T>
-    matrix<T>::matrix(const vector<direction<T>>& data)
-        : table_(
-              data.empty() ? 0 : data.size(),
-              data.empty() ? vector<T>() : vector<T>(data[0].axes())),
-          rows_(data.empty() ? 0 : data.size()),
-          columns_(data.empty() ? 0 : data[0].axes())
-    {
-        for (size_t i = 0; i < rows_; i++)
-            table_[i] = data[i].get_radius_direction().get_coordinates();
-        check_validity();
-    }
-
-    template <class T>
-    matrix<T>::matrix(const matrix& other)
-        : matrix(other.table_)
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M>::matrix(const array<array<T, M>, N>& data)
+        : table_(data)
     {
     }
 
 
-    template <class T>
-    size_t matrix<T>::rows() const
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M>::matrix(const array<point<T, M>, N>& data)
     {
-        return rows_;
+        for (int i(0); i < N; ++i)
+            assert(data[i].axes() == M, "All rows must have the same size");
+
+        for (int i(0); i < N; ++i)
+            this->table_[i] = data[i].get_coordinates();
     }
 
-    template <class T>
-    size_t matrix<T>::columns() const
+
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M>::matrix(const array<direction<T, M>, N>& data)
     {
-        return table_.empty() ? 0 : table_[0].size();
+        for (int i(0); i < N; ++i)
+            assert(data[i].axes() == M);
+
+        for (int i(0); i < N; ++i)
+            this->table_[i] = data[i].get_coordinates();
     }
 
-    template <class T>
-    const vector<T>& matrix<T>::get_row(size_t row) const
+
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M>::matrix(const matrix<T, N, M>& other)
+        : table_(other.table_)
     {
-        if (row < rows())
+    }
+
+    template <class T, size_t N, size_t M>
+    size_t matrix<T, N, M>::rows() const
+    {
+        return N;
+    }
+
+    template <class T, size_t N, size_t M>
+    const array<T, M>& matrix<T, N, M>::get_row(size_t row) const
+    {
+        if (row < N)
             return &table_[row];
     }
 
-    template <class T>
-    const vector<vector<T>>& matrix<T>::get_table() const
+    template <class T, size_t N, size_t M>
+    const array<array<T, M>, N>& matrix<T, N, M>::get_table() const
     {
         return table_;
     }
 
-    template <class T>
-    vector<vector<T>>& matrix<T>::ref_table()
+    template <class T, size_t N, size_t M>
+    array<array<T, M>, N>& matrix<T, N, M>::ref_table()
     {
         return table_;
     }
 
+    template <class T, size_t N, size_t M>
+    size_t matrix<T, N, M>::columns() const
+    {
+        return M;
+    }
 
-    template <class T>
-    T& matrix<T>::operator()(size_t row, size_t column)
+
+    template <class T, size_t N, size_t M>
+    T& matrix<T, N, M>::operator()(size_t row, size_t column)
     {
         if (!is_row_valid(row))
             throw std::out_of_range("Invalid row index");
@@ -107,8 +92,8 @@ namespace SpaceEngine
         return table_[row][column];
     }
 
-    template <class T>
-    const T& matrix<T>::operator()(size_t row, size_t column) const
+    template <class T, size_t N, size_t M>
+    const T& matrix<T, N, M>::operator()(size_t row, size_t column) const
     {
         if (!is_row_valid(row))
             throw std::out_of_range("Invalid row index");
@@ -118,36 +103,36 @@ namespace SpaceEngine
     }
 
 
-    template <class T>
-    size_t matrix<T>::find_non_zero_value(size_t row) const
+    template <class T, size_t N, size_t M>
+    size_t matrix<T, N, M>::find_non_zero_value(size_t row) const
     {
         T zero(0);
-        for (size_t i(0); i < columns(); ++i)
+        for (size_t i(0); i < M; ++i)
             if (table_[row][i] != zero)
                 return i;
-        return columns();
+        return M;
     }
 
-    template <class T>
-    vector<T> matrix<T>::main_diagonal() const
+    template <class T, size_t N, size_t M>
+    array<T, N> matrix<T, N, M>::main_diagonal() const
     {
-        vector<T> result({0});
-        for (size_t i(0); i < rows(); ++i)
+        array<T, N> result({0});
+        for (size_t i(0); i < N; ++i)
             result[i] = table_[i][i];
         return result;
     }
 
-    template <class T>
-    vector<T> matrix<T>::secondary_diagonal() const
+    template <class T, size_t N, size_t M>
+    array<T, N> matrix<T, N, M>::secondary_diagonal() const
     {
-        vector<T> result({0});
-        for (size_t i(0); i < rows(); ++i)
-            result[i] = table_[rows() - 1 - i][i];
+        array<T, N> result({0});
+        for (size_t i(0); i < N; ++i)
+            result[i] = table_[N - 1 - i][i];
         return result;
     }
 
-    template <class T>
-    T matrix<T>::trace() const
+    template <class T, size_t N, size_t M>
+    T matrix<T, N, M>::trace() const
     {
         auto diagonal(main_diagonal());
         T sum(0);
@@ -156,214 +141,219 @@ namespace SpaceEngine
         return sum;
     }
 
-    template <class T>
-    matrix<T> matrix<T>::operator+(T value) const
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M> matrix<T, N, M>::operator+(T value) const
     {
         matrix result;
-        for (size_t i(0); i < rows(); ++i)
-            for (size_t j(0); j < columns(); ++j)
+        for (size_t i(0); i < N; ++i)
+            for (size_t j(0); j < M; ++j)
                 result[i][j] = table_[i][j] + value;
         return result;
     }
 
-    template <class T>
-    matrix<T>& matrix<T>::operator+=(T value)
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M>& matrix<T, N, M>::operator+=(T value)
     {
-        for (size_t i(0); i < rows(); ++i)
-            for (size_t j(0); j < columns(); ++j)
+        for (size_t i(0); i < N; ++i)
+            for (size_t j(0); j < M; ++j)
                 table_[i][j] += value;
         return *this;
     }
 
-    template <class T>
-    matrix<T> matrix<T>::operator-(T value) const
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M> matrix<T, N, M>::operator-(T value) const
     {
         matrix result;
-        for (size_t i(0); i < rows(); ++i)
-            for (size_t j(0); j < columns(); ++j)
+        for (size_t i(0); i < N; ++i)
+            for (size_t j(0); j < M; ++j)
                 result[i][j] = table_[i][j] - value;
         return result;
     }
 
-    template <class T>
-    matrix<T>& matrix<T>::operator-=(T value)
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M>& matrix<T, N, M>::operator-=(T value)
     {
-        for (size_t i(0); i < rows(); ++i)
-            for (size_t j(0); j < columns(); ++j)
+        for (size_t i(0); i < N; ++i)
+            for (size_t j(0); j < M; ++j)
                 table_[i][j] -= value;
         return *this;
     }
 
-    template <class T>
-    matrix<T> matrix<T>::operator*(T value) const
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M> matrix<T, N, M>::operator*(T value) const
     {
-        matrix<T> result(rows_, columns_);
-        for (size_t i(0); i < rows(); ++i)
-            for (size_t j(0); j < columns(); ++j)
+        matrix<T, N, M> result;
+        for (size_t i(0); i < N; ++i)
+            for (size_t j(0); j < M; ++j)
                 result[i][j] = table_[i][j] * value;
         return result;
     }
 
-    template <class T>
-    matrix<T>& matrix<T>::operator*=(T value)
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M>& matrix<T, N, M>::operator*=(T value)
     {
-        for (size_t i(0); i < rows(); ++i)
-            for (size_t j(0); j < columns(); ++j)
+        for (size_t i(0); i < N; ++i)
+            for (size_t j(0); j < M; ++j)
                 table_[i][j] *= value;
         return *this;
     }
 
-    template <class T>
-    matrix<T> matrix<T>::operator/(T value) const
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M> matrix<T, N, M>::operator/(T value) const
     {
         if (value == T(0))
             throw invalid_argument("Division by zero");
-        matrix<T> result(rows_, columns_);
-        for (size_t i(0); i < rows(); ++i)
-            for (size_t j(0); j < columns(); ++j)
+        matrix<T, N, M> result;
+        for (size_t i(0); i < N; ++i)
+            for (size_t j(0); j < M; ++j)
                 result[i][j] = table_[i][j] / value;
         return result;
     }
 
-    template <class T>
-    matrix<T>& matrix<T>::operator/=(T value)
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M>& matrix<T, N, M>::operator/=(T value)
     {
         if (value == T(0))
             throw invalid_argument("Division by zero");
 
-        for (size_t i(0); i < rows(); ++i)
-            for (size_t j(0); j < columns(); ++j)
+        for (size_t i(0); i < N; ++i)
+            for (size_t j(0); j < M; ++j)
                 table_[i][j] /= value;
         return *this;
     }
 
-    template <class T>
-    matrix<T> matrix<T>::operator*(const matrix<T>& other) const
+    template <class T, size_t N, size_t M>
+    template <size_t G, size_t H>
+    matrix<T, N, H> matrix<T, N, M>::operator*(const matrix<T, G, H>& other) const
     {
-        if (columns_ != other.rows_)
-            throw invalid_argument("Invalid matrix size");
-        matrix<T> result(rows_, other.columns_);
+        if (M != G)
+            throw invalid_argument("Matrices dimensions mismatch");
 
-        for (size_t i(0); i < rows(); ++i)
-            for (size_t j(0); j < other.columns(); ++j)
-                for (size_t k(0); k < columns(); ++k)
-                    result(i, j) += table_[j][k] * other(k, i);
+        matrix<T, N, H> result;
+
+        for (int i(0); i < N; ++i)
+            for (int j(0); j < H; ++j)
+                for (int k(0); k < M; ++k)
+                    result(i, j) += table_[i][k] * other(k, j);
         return result;
     }
 
-    template <class T>
-    matrix<T>& matrix<T>::operator*=(const matrix<T>& other)
+    template <class T, size_t N, size_t M>
+    template <size_t G, size_t H>
+    matrix<T, N, H>& matrix<T, N, M>::operator*=(const matrix<T, G, H>& other)
     {
         *this = this->operator*(other);
         return *this;
     }
 
-    template <class T>
-    matrix<T> matrix<T>::operator/(const matrix<T>& other) const
+    template <class T, size_t N, size_t M>
+    template <size_t G, size_t H>
+    matrix<T, N, H> matrix<T, N, M>::operator/(const matrix<T, G, H>& other) const
     {
-        if (!is_square_matrix())
-            throw out_of_range("Matrix is not square");
+        if (M != G)
+            throw invalid_argument("Matrices dimensions mismatch");
 
-        matrix<T> result({{}});
+        matrix<T, N, H> result({{}});
 
-        for (int i(0); i < rows(); ++i)
-            for (int j(0); j < other.columns(); ++j)
-                for (int k(0); k < columns(); ++k)
+        for (int i(0); i < N; ++i)
+            for (int j(0); j < H; ++j)
+                for (int k(0); k < M; ++k)
                 {
                     if (other[k][j] == T(0))
                         throw invalid_argument("Division by zero in matrix division");
-                    result[i][j] += table_[j][k] / other[k][i];
+                    result[i][j] += table_[i][k] / other[k][j];
                 }
 
         return result;
     }
 
-    template <class T>
-    matrix<T>& matrix<T>::operator/=(const matrix<T>& other)
+    template <class T, size_t N, size_t M>
+    template <size_t G, size_t H>
+    matrix<T, N, H>& matrix<T, N, M>::operator/=(const matrix<T, G, H>& other)
     {
         *this = this->operator/(other);
         return *this;
     }
 
-    template <class T>
-    matrix<T> matrix<T>::operator+(const matrix<T>& other) const
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M> matrix<T, N, M>::operator+(const matrix<T, N, M>& other) const
     {
-        matrix<T> result(rows_, columns_);
-        for (size_t i(0); i < rows(); ++i)
-            for (size_t j(0); j < columns(); ++j)
+        matrix<T, N, M> result;
+        for (size_t i(0); i < N; ++i)
+            for (size_t j(0); j < M; ++j)
                 result.table_[i][j] = table_[i][j] + other.table_[i][j];
         return result;
     }
 
-    template <class T>
-    matrix<T>& matrix<T>::operator+=(const matrix<T>& other)
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M>& matrix<T, N, M>::operator+=(const matrix<T, N, M>& other)
     {
-        for (size_t i(0); i < rows(); ++i)
-            for (size_t j(0); j < columns(); ++j)
+        for (size_t i(0); i < N; ++i)
+            for (size_t j(0); j < M; ++j)
                 table_[i][j] += other.table_[i][j];
         return *this;
     }
 
-    template <class T>
-    matrix<T> matrix<T>::operator-(const matrix<T>& other) const
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M> matrix<T, N, M>::operator-(const matrix<T, N, M>& other) const
     {
-        matrix<T> result(rows_, columns_);
-        for (size_t i(0); i < rows(); ++i)
-            for (size_t j(0); j < columns(); ++j)
+        matrix<T, N, M> result;
+        for (size_t i(0); i < N; ++i)
+            for (size_t j(0); j < M; ++j)
                 result[i][j] = table_[i][j] - other.table_[i][j];
         return result;
     }
 
-    template <class T>
-    matrix<T>& matrix<T>::operator-=(const matrix<T>& other)
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M>& matrix<T, N, M>::operator-=(const matrix<T, N, M>& other)
     {
-        for (size_t i(0); i < rows(); ++i)
-            for (size_t j(0); j < columns(); ++j)
+        for (size_t i(0); i < N; ++i)
+            for (size_t j(0); j < M; ++j)
                 table_[i][j] -= other[i][j];
         return *this;
     }
 
-    template <class T>
-    matrix<T> matrix<T>::transposed_matrix() const
+    template <class T, size_t N, size_t M>
+    matrix<T, M, N> matrix<T, N, M>::transposed_matrix() const
     {
-        matrix<T> result(columns_, rows_);
-        for (size_t i(0); i < columns(); ++i)
-            for (size_t j(0); j < rows(); ++j)
+        matrix<T, M, N> result;
+        for (size_t i(0); i < M; ++i)
+            for (size_t j(0); j < N; ++j)
                 result[i][j] = table_[j][i];
         return result;
     }
 
-    template <class T>
-    matrix<T> matrix<T>::minor_matrix(size_t row, size_t column) const
+    template <class T, size_t N, size_t M>
+    matrix<T, N - 1, M - 1> matrix<T, N, M>::minor_matrix(size_t row, size_t column) const
     {
-        matrix<T> minor(rows_ - 1, columns_ - 1);
-        size_t i(0);
+        matrix<T, N - 1, M - 1> minor;
+        int i(0);
         // upper half
         for (; i < row; ++i)
         {
             // left rectangle
-            for (size_t j(0); j < column; ++j)
+            for (int j(0); j < column; ++j)
                 minor(i, j) = table_[i][j];
             // right rectangle
-            for (size_t k(column + 1); k < columns_; ++k)
+            for (int k(column + 1); k < M; ++k)
                 minor(i, k - 1) = table_[i][k];
         }
         i++;
         // lower half
-        for (; i < rows_; ++i)
+        for (; i < N; ++i)
         {
             // left rectangle
-            for (size_t j(0); j < column; ++j)
+            for (int j(0); j < column; ++j)
                 minor(i - 1, j) = table_[i][j];
             // right rectangle
-            for (size_t k(column + 1); k < columns_; ++k)
+            for (int k(column + 1); k < M; ++k)
                 minor(i - 1, k - 1) = table_[i][k];
         }
         return minor;
     }
 
-    template <class T>
-    T matrix<T>::minor(size_t row, size_t column) const
+    template <class T, size_t N, size_t M>
+    T matrix<T, N, M>::minor(size_t row, size_t column) const
     {
         if (!is_row_valid(row))
             throw out_of_range("Row index out of range");
@@ -374,44 +364,41 @@ namespace SpaceEngine
     }
 
 
-    template <class T>
-    matrix<T> matrix<T>::L_decomposition() const
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M> matrix<T, N, M>::L_decomposition() const
     {
-        if (!is_square_matrix())
-            throw out_of_range("Matrix is not square");
-        auto L(identity_matrix(rows_)),
+        static_assert(N == M, "Matrix must be square for LU decomposition");
+        auto L(identity_matrix()),
              U(*this);
-        for (int i(0); i < rows(); ++i)
-            for (int j(i + 1); j < rows(); ++j)
+        for (int i(0); i < N; ++i)
+            for (int j(i + 1); j < N; ++j)
             {
                 L(j, i) = U(j, i) / U(i, i);
-                for (int k(i); k < rows(); ++k)
+                for (int k(i); k < N; ++k)
                     U(j, k) -= U(i, k) * L(j, i);
             }
 
         return L;
     }
 
-    template <class T>
-    matrix<T> matrix<T>::U_decomposition() const
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M> matrix<T, N, M>::U_decomposition() const
     {
-        if (!is_square_matrix())
-            throw out_of_range("Matrix is not square");
-
+        assert(N == M, "Matrix must be square for LU decomposition");
         auto U(*this);
-        for (size_t i(0); i < rows(); ++i)
-            for (size_t j(i + 1); j < rows(); ++j)
+        for (int i(0); i < N; ++i)
+            for (int j(i + 1); j < N; ++j)
             {
                 T temp(U(j, i) / U(i, i));
-                for (size_t k(i); k < rows(); ++k)
+                for (int k(i); k < N; ++k)
                     U(j, k) -= U(i, k) * temp;
             }
 
         return U;
     }
 
-    template <class T>
-    T matrix<T>::algebraic_complement(size_t row, size_t column) const
+    template <class T, size_t N, size_t M>
+    T matrix<T, N, M>::algebraic_complement(size_t row, size_t column) const
     {
         if (!is_row_valid(row))
             throw out_of_range("Row index out of range");
@@ -424,80 +411,59 @@ namespace SpaceEngine
         return m * pow(T(-1), T(p));
     }
 
-    template <class T>
-    matrix<T> matrix<T>::union_matrix() const
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M> matrix<T, N, M>::union_matrix() const
     {
-        if (!is_square_matrix())
-            throw out_of_range("Matrix is not square");
-        matrix<T> result(rows_, columns_);
-        for (size_t i(0); i < rows(); ++i)
-            for (size_t j(0); j < columns(); ++j)
+        static_assert(N == M, "Matrix must be square for union");
+        matrix<T, N, M> result;
+        for (size_t i(0); i < N; ++i)
+            for (size_t j(0); j < M; ++j)
                 result(i, j) = algebraic_complement(i, j);
         return result;
     }
 
-    template <class T>
-    matrix<T> matrix<T>::inverted_matrix() const
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M> matrix<T, N, M>::inverted_matrix() const
     {
-        if (!is_square_matrix())
-            throw out_of_range("Matrix is not square");
+        static_assert(N == M, "Matrix must be square for inverse calculation");
         T det(determinant());
         if (det == T(0))
             throw std::invalid_argument("Matrix is singular (determinant is zero)");
 
-        matrix<T> inv;
-        for (size_t i(0); i < rows(); ++i)
-            for (size_t j(0); j < rows(); ++j)
+        matrix<T, N, M> inv;
+        for (size_t i(0); i < N; ++i)
+            for (size_t j(0); j < N; ++j)
                 inv(i, j) = algebraic_complement(j, i) / det;
         return inv;
     }
 
 
-    template <class T>
-    T matrix<T>::determinant() const
+    template <class T, size_t N, size_t M>
+    T matrix<T, N, M>::determinant() const
     {
-        if (!is_square_matrix())
-            throw out_of_range("Matrix is not square");
-        // Handle special cases for small matrices
-        // 1x1
-        if (rows_ == 1)
-            return table_[0][0];
-        // 2x2
-        if (rows_ == 2)
-            return table_[0][0] * table_[1][1] - table_[0][1] * table_[1][0];
-        // 3x3
-        // Using Sarrus' rule for 3x3 matrices
-        if (rows_ == 3)
-            return table_[0][0] * table_[1][1] * table_[2][2]
-                + table_[0][1] * table_[1][2] * table_[2][0]
-                + table_[0][2] * table_[1][0] * table_[2][1]
-                - table_[0][2] * table_[1][1] * table_[2][0]
-                - table_[0][1] * table_[1][0] * table_[2][2]
-                - table_[0][0] * table_[1][2] * table_[2][1];
-        // For larger matrices, use LU decomposition
-        // and calculate the product of the diagonal elements of U
+        assert(N == M, "Matrix must be square for determinant calculation");
         auto U(U_decomposition());
         T determinant(1);
-        for (size_t i(0); i < rows(); ++i)
+        for (int i(0); i < N; ++i)
             determinant *= U(i, i);
         return determinant;
     }
 
 
-    template <class T>
-    bool matrix<T>::is_row_valid(size_t row) const
+    template <class T, size_t N, size_t M>
+    bool matrix<T, N, M>::is_row_valid(size_t row) const
     {
-        return row < rows();
+        return row < N;
     }
 
-    template <class T>
-    bool matrix<T>::is_column_valid(size_t column) const
+    template <class T, size_t N, size_t M>
+    bool matrix<T, N, M>::is_column_valid(size_t column) const
     {
-        return column < columns();
+        return column < M;
     }
 
-    template <class T>
-    bool matrix<T>::is_zero_row(size_t row) const
+    template <class T, size_t N, size_t M>
+    bool matrix<T, N, M>::is_zero_row(size_t row) const
     {
         T zero(0);
         for (auto& value : table_[row])
@@ -506,8 +472,8 @@ namespace SpaceEngine
         return true;
     }
 
-    template <class T>
-    bool matrix<T>::is_zero_column(size_t column) const
+    template <class T, size_t N, size_t M>
+    bool matrix<T, N, M>::is_zero_column(size_t column) const
     {
         T zero(0);
         for (auto& row : table_)
@@ -516,8 +482,8 @@ namespace SpaceEngine
         return true;
     }
 
-    template <class T>
-    bool matrix<T>::is_non_zero_row(size_t row) const
+    template <class T, size_t N, size_t M>
+    bool matrix<T, N, M>::is_non_zero_row(size_t row) const
     {
         T zero(0);
         for (auto& value : table_[row])
@@ -526,8 +492,8 @@ namespace SpaceEngine
         return true;
     }
 
-    template <class T>
-    bool matrix<T>::is_non_zero_column(size_t column) const
+    template <class T, size_t N, size_t M>
+    bool matrix<T, N, M>::is_non_zero_column(size_t column) const
     {
         T zero(0);
         for (auto& row : table_)
@@ -536,8 +502,8 @@ namespace SpaceEngine
         return true;
     }
 
-    template <class T>
-    bool matrix<T>::is_zero_matrix() const
+    template <class T, size_t N, size_t M>
+    bool matrix<T, N, M>::is_zero_matrix() const
     {
         T zero(0);
         for (auto& row : table_)
@@ -547,27 +513,27 @@ namespace SpaceEngine
         return true;
     }
 
-    template <class T>
-    bool matrix<T>::is_square_matrix() const
+    template <class T, size_t N, size_t M>
+    bool matrix<T, N, M>::is_square_matrix() const
     {
-        return rows() == columns();
+        return N == M;
     }
 
 
-    template <class T>
-    bool matrix<T>::is_vector_row() const
+    template <class T, size_t N, size_t M>
+    bool matrix<T, N, M>::is_vector_row() const
     {
-        return rows() == 1;
+        return N == 1;
     }
 
-    template <class T>
-    bool matrix<T>::is_vector_column() const
+    template <class T, size_t N, size_t M>
+    bool matrix<T, N, M>::is_vector_column() const
     {
-        return columns() == 1;
+        return M == 1;
     }
 
-    template <class T>
-    bool matrix<T>::is_diagonal_matrix() const
+    template <class T, size_t N, size_t M>
+    bool matrix<T, N, M>::is_diagonal_matrix() const
     {
         if (!is_square_matrix())
             return false;
@@ -576,10 +542,10 @@ namespace SpaceEngine
         for (auto& value : diagonal_elements)
             if (value == zero)
                 return false;
-        for (int i(0); i < rows(); ++i)
+        for (int i(0); i < N; ++i)
         {
             // upper triangular part
-            for (int j(i + 1); j < rows(); ++j)
+            for (int j(i + 1); j < N; ++j)
                 if (table_[i][j] != zero)
                     return false;
             // diagonal part
@@ -593,8 +559,8 @@ namespace SpaceEngine
         return true;
     }
 
-    template <class T>
-    bool matrix<T>::is_identity_matrix() const
+    template <class T, size_t N, size_t M>
+    bool matrix<T, N, M>::is_identity_matrix() const
     {
         if (!is_square_matrix())
             return false;
@@ -604,10 +570,10 @@ namespace SpaceEngine
         for (auto& value : diagonal_elements)
             if (value == zero)
                 return false;
-        for (int i(0); i < rows(); ++i)
+        for (int i(0); i < N; ++i)
         {
             // upper triangular part
-            for (int j(i + 1); j < rows(); ++j)
+            for (int j(i + 1); j < N; ++j)
                 if (table_[i][j] != zero)
                     return false;
             // diagonal part
@@ -621,25 +587,25 @@ namespace SpaceEngine
         return true;
     }
 
-    template <class T>
-    bool matrix<T>::is_upper_triangular_matrix() const
+    template <class T, size_t N, size_t M>
+    bool matrix<T, N, M>::is_upper_triangular_matrix() const
     {
         T zero(0);
-        for (int i(0); i < rows(); ++i)
+        for (int i(0); i < N; ++i)
         {
             // upper triangular part
-            for (int j(i + 1); j < columns(); ++j)
+            for (int j(i + 1); j < M; ++j)
                 if (table_[i][j] != zero)
                     return false;
         }
         return true;
     }
 
-    template <class T>
-    bool matrix<T>::is_lower_triangular_matrix() const
+    template <class T, size_t N, size_t M>
+    bool matrix<T, N, M>::is_lower_triangular_matrix() const
     {
         T zero(0);
-        for (int i(0); i < rows(); ++i)
+        for (int i(0); i < N; ++i)
         {
             // lower triangular part
             for (int j(0); j < i; ++j)
@@ -649,321 +615,188 @@ namespace SpaceEngine
         return true;
     }
 
-    template <class T>
-    bool matrix<T>::is_echelon_matrix() const
+    template <class T, size_t N, size_t M>
+    bool matrix<T, N, M>::is_echelon_matrix() const
     {
         T zero(0);
         size_t row(0),
-               found_non_zero(columns());
+               found_non_zero(M);
 
-        for (; row < rows(); ++row)
+        for (; row < N; ++row)
         {
             // here we check if the next line non-zero index
             // is larger than on the previous line
             size_t non_zero(find_non_zero_value(row));
-            if (non_zero == columns())
+            if (non_zero == M)
                 break;
-            if (found_non_zero == columns() || non_zero > found_non_zero)
+            if (found_non_zero == M || non_zero > found_non_zero)
                 found_non_zero = non_zero;
             else if (found_non_zero >= non_zero)
                 return false;
         }
-        for (; row < rows(); ++row)
+        for (; row < N; ++row)
             if (!is_zero_row(row))
                 return false;
         return true;
     }
 
-    template <class T>
-    void matrix<T>::check_validity() const
+    template <class T, size_t N, size_t M>
+    matrix<T, N, M> matrix<T, N, M>::identity_matrix()
     {
-        if (table_.size() != rows())
-            throw std::invalid_argument("Number of rows does not match the size of the table");
-        for (const auto& row : table_)
-            if (row.size() != columns_)
-                throw std::invalid_argument("Number of columns does not match the size of the table");
-    }
+        static_assert(N == M, "Matrix dimensions must be equal");
+        matrix<T, N, M> identity;
 
-
-    template <class T>
-    matrix<T> matrix<T>::identity_matrix(size_t rows_columns)
-    {
-        matrix<T> identity(rows_columns, rows_columns);
-
-        for (size_t i(0); i < rows_columns; ++i)
+        for (int i(0); i < N; ++i)
             identity(i, i) = T(1);
 
         return identity;
     }
 
     template <class T>
-    matrix<T> matrix<T>::x_rotation_matrix(T theta, size_t rows, size_t columns)
+    matrix1x1<T>::matrix1x1()
+        : matrix<T, 1, 1>()
     {
-        if (rows < 3 || columns < 3)
-            throw invalid_argument("Rotation matrix must be at least 3x3");
-        matrix<T> rotation(rows, columns);
-
-        rotation(0, 0) = T(1);
-        rotation(1, 1) = cos(theta);
-        rotation(1, 2) = sin(theta);
-        rotation(2, 1) = -sin(theta);
-        rotation(2, 2) = cos(theta);
-        if (rows >= 4 && columns >= 4)
-            rotation(3, 3) = T(1);
-        return rotation;
     }
 
     template <class T>
-    matrix<T> matrix<T>::y_rotation_matrix(T theta, size_t rows, size_t columns)
+    matrix1x1<T>::matrix1x1(const array<array<T, 1>, 1>& data)
+        : matrix<T, 1, 1>(data)
     {
-        if (rows < 3 || columns < 3)
-            throw invalid_argument("Rotation matrix must be at least 3x3");
-        matrix<T> rotation(rows, columns);
-
-        rotation(0, 0) = cos(theta);
-        rotation(0, 2) = sin(theta);
-        rotation(2, 0) = -sin(theta);
-        rotation(2, 2) = cos(theta);
-        rotation(1, 1) = T(1);
-        if (rows >= 4 && columns >= 4)
-            rotation(3, 3) = T(1);
-        return rotation;
     }
 
     template <class T>
-    matrix<T> matrix<T>::z_rotation_matrix(T theta, size_t rows, size_t columns)
+    matrix1x1<T>::matrix1x1(const matrix1x1<T>& other)
+        : matrix<T, 1, 1>(other)
     {
-        if (rows < 3 || columns < 3)
-            throw invalid_argument("Rotation matrix must be at least 3x3");
-        matrix<T> rotation(rows, columns);
-
-        rotation(0, 0) = cos(theta);
-        rotation(0, 1) = sin(theta);
-        rotation(1, 0) = -sin(theta);
-        rotation(1, 1) = cos(theta);
-        rotation(2, 2) = T(1);
-        if (rows >= 4 && columns >= 4)
-            rotation(3, 3) = T(1);
-        return rotation;
     }
 
     template <class T>
-    matrix<T> matrix<T>::rotation_matrix(point<T> theta, size_t rows, size_t columns)
+    matrix1x1<T>::matrix1x1(const matrix<T, 1, 1>& other)
+        : matrix<T, 1, 1>(other)
     {
-        if (theta.axes() < 3 || rows < 3 || columns < 3)
-            throw invalid_argument("Rotation matrix must be at least 3x3");
-        return x_rotation_matrix(theta.coordinate(x), rows, columns) *
-            y_rotation_matrix(theta.coordinate(y), rows, columns) *
-            z_rotation_matrix(theta.coordinate(z), rows, columns);
     }
 
     template <class T>
-    matrix<T> matrix<T>::projection_matrix(T AspectRatio, T Near, T Far, T FOV, size_t rows, size_t columns)
+    T matrix1x1<T>::determinant() const
     {
-        /*if (rows < 4 || columns < 4)
-            throw invalid_argument("Rotation matrix must be at least 4x4");
-
-        matrix<T> rotation(rows, columns);
-        T FovRad = T(1) / (tan(FOV* T(M_PI) / T(360) ));
-
-        rotation(0, 0) = AspectRatio * FovRad;
-        rotation(1, 1) = FovRad;
-        rotation(2, 2) = Far / (Far - Near);
-        rotation(2, 3) = (-Far * Near) / (Far - Near);
-        rotation(3, 2) = T(1);
-        
-        rotation(3, 3) = T(0);
-        return rotation;*/
-        if (rows < 4 || columns < 4)
-            throw invalid_argument("Projection matrix must be at least 4x4");
-
-        matrix<T> proj(rows, columns);
-        T FovRad = T(1) / tan(FOV * T(0.5) * (T(M_PI) / T(180)));
-
-        proj(0, 0) = AspectRatio * FovRad;
-        proj(1, 1) = FovRad;
-        proj(2, 2) = Far / (Far - Near);
-        proj(2, 3) = (-Far * Near) / (Far - Near);
-        proj(3, 2) = T(1);
-        proj(3, 3) = T(0);
-        return proj;
+        return (*this)(0, 0);
     }
 
     template <class T>
-    matrix<T> matrix<T>::translation_matrix(point<T> translation)
+    matrix2x2<T>::matrix2x2()
+        : matrix<T, 2, 2>()
     {
-        if (translation.axes() < 1)
-            throw invalid_argument("Translation must have at least one axis");
-        matrix<T> translation_matrix(identity_matrix(translation.axes()));
-        /*
-            [1  ][      ][      ][  ]
-            [   ][1     ][      ][  ]
-            [   ][      ][1     ][  ]
-            [tx ][ty    ][tz    ][1 ]
-         */
-        for (size_t i = 0; i < translation.axes() - 1; i++)
-            translation_matrix(translation.axes() - 1,i ) = translation.coordinate(i);
-
-        return translation_matrix;
     }
 
     template <class T>
-    inline matrix<T> matrix<T>::point_at(const point<T>& pos, const point<T>& target, const point<T>& up)
+    matrix2x2<T>::matrix2x2(const matrix2x2<T>& other)
+        : matrix<T, 2, 2>(other)
     {
-        /*auto forwardDir = direction(target - pos).get_unit_direction().get_end();
-        auto a = forwardDir * direction(up).dot_product(forwardDir);
-        auto newUpDir = direction(up - a).get_unit_direction();
-        auto rightDir = newUpDir.cross_product(forwardDir).get_unit_direction();
-
-        point<T> r = rightDir.get_end();
-        point<T> u = newUpDir.get_end();
-        point<T> f = forwardDir;
-
-        matrix<T> m = identity_matrix(4);
-        
-        m(0,0)=r[x]; m(0, 1)=r[y]; m(0, 2)=r[z];m(0, 3)= T(0);
-        m(1,0)=u[x]; m(1, 1)=u[y]; m(1, 2)=u[z];m(1, 3)= T(0);
-        m(2,0)=f[x]; m(2, 1)=f[y]; m(2, 2)=f[z];m(2, 3)= T(0);
-        m(3,0)=pos.coordinate(x);
-        m(3,1)=pos.coordinate(y);
-        m(3,2)=pos.coordinate(z);
-        m(3,3)= T(1);
-        return m;*/
-        /*
-            [ rx  ux  fx  0 ]
-            [ ry  uy  fy  0 ]
-            [ rz  uz  fz  0 ]
-            [ tx  ty  tz  1 ]
-         */
-
-        
-        auto forwardDir = direction(target - pos).get_unit_direction();
-        auto a = forwardDir.get_end() * direction(up).dot_product(forwardDir);
-        auto newUpDir = direction(up - a).get_unit_direction();
-        auto rightDir = newUpDir.cross_product(forwardDir);
-
-        point<T> r = rightDir.get_end();
-        point<T> u = newUpDir.get_end();
-        point<T> f = forwardDir.get_end();
-
-        matrix<T> m = identity_matrix(4);
-    
-        m(0,0)=r[x]; m(0, 1)=u[x]; m(0, 2)=f[x]; m(0, 3)=pos.coordinate(x);
-        m(1,0)=r[y]; m(1, 1)=u[y]; m(1, 2)=f[y]; m(1, 3)=pos.coordinate(y);
-        m(2,0)=r[z]; m(2, 1)=u[z]; m(2, 2)=f[z]; m(2, 3)=pos.coordinate(z);
-        m(3,0)=T(0); m(3, 1)=T(0); m(3, 2)=T(0); m(3, 3)=T(1);
-    
-        return m;
     }
 
     template <class T>
-    matrix<T> matrix<T>::look_at(const point<T>& pos, const point<T>& target, const point<T>& up)
+    matrix2x2<T>::matrix2x2(const array<array<T, 2>, 2>& data)
+        : matrix<T, 2, 2>(data)
     {
-        /*matrix<T> m = point_at(pos, target, up);
-        
-        matrix<T> inv = matrix(pos.axes(), pos.axes());
-        
-        for (int i=0;i<3;++i)
-            for (int j=0;j<3;++j)
-                inv(i,j) = m(j,i);
-        inv(0, 3) = T(0);
-        inv(1, 3) = T(0);
-        inv(2, 3) = T(0);
-/*
-        matrix.m[3][0] = -(m.m[3][0] * matrix.m[0][0] + m.m[3][1] * matrix.m[1][0] + m.m[3][2] * matrix.m[2][0]);
-        matrix.m[3][1] = -(m.m[3][0] * matrix.m[0][1] + m.m[3][1] * matrix.m[1][1] + m.m[3][2] * matrix.m[2][1]);
-        matrix.m[3][2] = -(m.m[3][0] * matrix.m[0][2] + m.m[3][1] * matrix.m[1][2] + m.m[3][2] * matrix.m[2][2]);
-                
- #1#
-        inv(3, 0 ) = -(m(3, 0) * inv(0, 0) + m(3, 1) * inv(1, 0) + m(3, 2) * inv(2, 0));
-        inv(3, 1 ) = -(m(3, 0) * inv(0, 1) + m(3, 1) * inv(1, 1) + m(3, 2) * inv(2, 1));
-        inv(3, 2 ) = -(m(3, 0) * inv(0, 2) + m(3, 1) * inv(1, 2) + m(3, 2) * inv(2, 2));
-        inv(3, 3 ) = T(1);
-        return inv;*/
-        /*matrix<T> m = point_at(pos, target, up);
-    
-        // Быстрое инвертирование для ортонормальной матрицы вида
-        matrix<T> inv(4, 4);
-    
-        // Транспонирование части вращения 3x3
-        for (int i = 0; i < 3; ++i)
-            for (int j = 0; j < 3; ++j)
-                inv(i, j) = m(j, i);
-
-        // Вычисление нового смещения
-        inv(0, 3) = -(m(0, 0) * m(0, 3) + m(1, 0) * m(1, 3) + m(2, 0) * m(2, 3));
-        inv(1, 3) = -(m(0, 1) * m(0, 3) + m(1, 1) * m(1, 3) + m(2, 1) * m(2, 3));
-        inv(2, 3) = -(m(0, 2) * m(0, 3) + m(1, 2) * m(1, 3) + m(2, 2) * m(2, 3));
-    
-        inv(3, 0) = T(0);
-        inv(3, 1) = T(0);
-        inv(3, 2) = T(0);
-        inv(3, 3) = T(1);
-    
-        return inv;*/
-
-        // Вектор "вперед" (новый Z)
-        auto forward = direction<T>(target - pos).get_unit_direction();
-
-        // Вектор "вверх" (новый Y)
-        auto a = forward.get_end() * direction<T>(up).dot_product(forward);
-        auto up_dir = direction<T>(up - a).get_unit_direction();
-
-        // Вектор "вправо" (новый X)
-        auto right_dir = up_dir.cross_product(forward);
-
-        point<T> r = right_dir.get_end();
-        point<T> u = up_dir.get_end();
-        point<T> f = forward.get_end();
-
-        matrix<T> m(4, 4);
-
-        m(0, 0) = r.coordinate(x); m(0, 1) = r.coordinate(y); m(0, 2) = r.coordinate(z); m(0, 3) = -direction<T>(pos).dot_product(right_dir);
-        m(1, 0) = u.coordinate(x); m(1, 1) = u.coordinate(y); m(1, 2) = u.coordinate(z); m(1, 3) = -direction<T>(pos).dot_product(up_dir);
-        m(2, 0) = f.coordinate(x); m(2, 1) = f.coordinate(y); m(2, 2) = f.coordinate(z); m(2, 3) = -direction<T>(pos).dot_product(forward);
-        m(3, 0) = T(0);            m(3, 1) = T(0);            m(3, 2) = T(0);            m(3, 3) = T(1);
-
-        return m;
-    }
-
-
-    template <class T>
-    point<T> point<T>::operator*(const matrix<T>& m) const
-    {
-        if (axes() != m.columns())
-            throw invalid_argument("Point axes must match matrix columns for multiplication.");
-
-        point<T> result(m.rows());
-        for (size_t i = 0; i < m.rows(); ++i)
-        {
-            T sum = T(0);
-            for (size_t j = 0; j < axes(); ++j)
-            {
-                sum += m(i, j) * coordinate(j);
-            }
-            result[i] = sum;
-        }
-
-        // Handle homogeneous coordinate w
-        if (result.axes() == 4)
-        {
-            T w = result.coordinate(3);
-            if (w != T(0) && w != T(1))
-            {
-                for (size_t i = 0; i < 3; ++i)
-                {
-                    result[i] /= w;
-                }
-            }
-        }
-        return result;
     }
 
     template <class T>
-    point<T>& point<T>::operator*=(const matrix<T>& m)
+    matrix2x2<T>::matrix2x2(const matrix<T, 2, 2>& other)
+        : matrix<T, 2, 2>(other)
     {
-        *this = *this * m;
-        return *this;
     }
-} // SpaceEngine
+
+    template <class T>
+    T matrix2x2<T>::determinant() const
+    {
+        return matrix<T, 2, 2>::operator()(0, 0) * matrix<T, 2, 2>::operator()(1, 1)
+            - matrix<T, 2, 2>::operator()(0, 1) * matrix<T, 2, 2>::operator()(1, 0);
+    }
+
+    template <class T>
+    matrix3x3<T>::matrix3x3()
+        : matrix<T, 3, 3>()
+    {
+    }
+
+    template <class T>
+    matrix3x3<T>::matrix3x3(const matrix3x3<T>& other)
+        : matrix<T, 3, 3>(other)
+    {
+    }
+
+    template <class T>
+    matrix3x3<T>::matrix3x3(const array<array<T, 3>, 3>& data)
+        : matrix<T, 3, 3>(data)
+    {
+    }
+
+    template <class T>
+    matrix3x3<T>::matrix3x3(const matrix<T, 3, 3>& other)
+        : matrix<T, 3, 3>(other)
+    {
+    }
+
+    template <class T>
+    T matrix3x3<T>::determinant() const
+    {
+        T main_tr1(
+              this->operator()(0, 0) *
+              this->operator()(1, 1) *
+              this->operator()(2, 2)),
+          main_tr2(
+              this->operator()(2, 1) *
+              this->operator()(1, 0) *
+              this->operator()(0, 2)),
+          main_tr3(
+              this->operator()(0, 1) *
+              this->operator()(1, 2) *
+              this->operator()(2, 0)),
+          sec_tr1(
+              this->operator()(2, 0) *
+              this->operator()(1, 1) *
+              this->operator()(0, 2)),
+          sec_tr2(
+              this->operator()(1, 0) *
+              this->operator()(0, 1) *
+              this->operator()(2, 2)),
+          sec_tr3(
+              this->operator()(0, 0) *
+              this->operator()(1, 2) *
+              this->operator()(2, 1));
+        return (main_tr1 + main_tr2 + main_tr3) - (sec_tr1 + sec_tr2 + sec_tr3);
+    }
+
+    template <class T, size_t M>
+    matrix1D<T, M>::matrix1D(const direction<T, M>& data)
+        : matrix<T, 1, M>(array{data})
+    {
+    }
+
+    template <class T, size_t M>
+    matrix1D<T, M>::matrix1D(const array<T, M>& data)
+        : matrix<T, 1, M>(array{data})
+    {
+    }
+
+    template <class T, size_t M>
+    matrix1D<T, M>::matrix1D()
+        : matrix<T, 1, M>({})
+    {
+    }
+
+    template <class T, size_t M>
+    template <size_t N>
+    matrix1D<T, M>::matrix1D(const matrix<T, N, M>& other)
+    {
+        static_assert(N == 1, "Matrix must have one row");
+        matrix<T, 1, M>::ref_table() = other.get_table();        
+    }
+
+    template <class T, size_t M>
+    matrix1D<T, M>::matrix1D(const point<T, M>& data)
+        : matrix<T, 1, M>(array{data})
+    {
+    }
+} // engine_lib
 #endif
