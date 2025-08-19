@@ -18,6 +18,21 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="JaggedArray\JaggedArray.inl" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="direction\direction.hpp" />
+    <ClInclude Include="direction\direction.inl" />
+    <ClInclude Include="JaggedArray\JaggedArray.h" />
+    <ClInclude Include="matrix\matrix.hpp" />
+    <ClInclude Include="matrix\matrix.inl" />
+    <ClInclude Include="point\point.hpp" />
+    <ClInclude Include="point\point.inl" />
+    <ClInclude Include="BackgroundThread\BackgroundThread.hpp" />
+    <ClInclude Include="BackgroundThread\BackgroundThread.inl" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -116,16 +131,16 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>SFML_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\IDE\SFML-2.6.1-x64\SFML-2.6.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>sfml3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp23</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\IDE\SFML-2.6.1-x64\SFML-2.6.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-graphics-s-d.lib;sfml-window-s-d.lib;sfml-system-s-d.lib;sfml-audio-s-d.lib;opengl32.lib;winmm.lib;gdi32.lib;freetype.lib;openal32.lib;flac.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;ogg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>sfml3\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics-s-d.lib;sfml-window-s-d.lib;sfml-system-s-d.lib;sfml-audio-s-d.lib;opengl32.lib;winmm.lib;gdi32.lib;freetype.lib;flac.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;ogg.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -136,7 +151,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>SFML_STATIC;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\IDE\SFML-2.6.1-x64\SFML-2.6.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Projects\c++\3d_objects_rendering\packages\SFML-3.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
@@ -146,39 +161,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\IDE\SFML-2.6.1-x64\SFML-2.6.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\Projects\c++\3d_objects_rendering\packages\SFML-3.0.0\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics-s.lib;sfml-window-s.lib;sfml-system-s.lib;sfml-audio-s.lib;opengl32.lib;winmm.lib;gdi32.lib;freetype.lib;openal32.lib;flac.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;ogg.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="engine_object_classes\camera.cpp" />
-    <ClCompile Include="engine_object_classes\light.cpp" />
-    <ClCompile Include="features\frame_rate.cpp" />
-    <ClCompile Include="features\header_impl.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="renderers\game_window.cpp" />
-    <ClCompile Include="renderers\mesh_renderer.cpp" />
-    <ClCompile Include="renderers\text_renderer.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="engine_object_classes\camera.h" />
-    <ClInclude Include="engine_object_classes\light.h" />
-    <ClInclude Include="engine_object_classes\mesh.h" />
-    <ClInclude Include="features\frame_rate.h" />
-    <ClInclude Include="headers\header.h" />
-    <ClInclude Include="math\engine_math.h" />
-    <ClInclude Include="math\matrix.h" />
-    <ClInclude Include="math\matrix_impl.h" />
-    <ClInclude Include="math\point.h" />
-    <ClInclude Include="math\point_impl.h" />
-    <ClInclude Include="math\triangle.h" />
-    <ClInclude Include="math\trnsform.h" />
-    <ClInclude Include="math\trnsform_impl.h" />
-    <ClInclude Include="renderers\game_window.h" />
-    <ClInclude Include="renderers\mesh_renderer.h" />
-    <ClInclude Include="renderers\text_renderer.h" />
-    <ClInclude Include="tools\mesh_loader.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
