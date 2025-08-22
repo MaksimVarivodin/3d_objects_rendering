@@ -4,63 +4,67 @@
 #include <chrono>
 #include <SFML/Graphics.hpp>
 #include "BackgroundThread/BackgroundThread.hpp"
-#include "math/matrix/matrix.hpp"
-#include "math/point/point.hpp"
 #include "math/direction/direction.hpp"
+#include "math/point/point.hpp"
+#include "math/matrix/matrix.hpp"
+
 #include <vector>
 #include <cmath>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <filesystem>
+#include <algorithm>
 using namespace se;
-using namespace engine_lib;
 
 
-matrix<point<float, 4>, 12, 3> generateMeshCube()
+std::vector<std::vector<SpaceEngine::point<float>>> generateMeshCube()
 {
-    auto meshCube = matrix{
-        array<array<point<float, 4>, 3>, 12>{
-            {
-                // South face, triangle 1
-                {point<float, 4>{0.0, 0.0, 0.0}, point<float, 4>{0.0, 1.0, 0.0}, point<float, 4>{1.0, 1.0, 0.0}},
-                // South face, triangle 2
-                {point<float, 4>{0.0, 0.0, 0.0}, point<float, 4>{1.0, 1.0, 0.0}, point<float, 4>{1.0, 0.0, 0.0}},
+    std::vector<std::vector<SpaceEngine::point<float>>> triangles = {
+        {
+            // South face, triangle 1
+            {{4, 0.0f, 0.0f, 0.0f}, {4, 0.0f, 1.0f, 0.0f}, {4, 1.0f, 1.0f, 0.0f}},
+            // South face, triangle 2
+            {{4, 0.0f, 0.0f, 0.0f}, {4, 1.0f, 1.0f, 0.0f}, {4, 1.0f, 0.0f, 0.0f}},
 
-                // East face, triangle 1
-                {point<float, 4>{1.0, 0.0, 0.0}, point<float, 4>{1.0, 1.0, 0.0}, point<float, 4>{1.0, 1.0, 1.0}},
-                // East face, triangle 2
-                {point<float, 4>{1.0, 0.0, 0.0}, point<float, 4>{1.0, 1.0, 1.0}, point<float, 4>{1.0, 0.0, 1.0}},
+            // East face, triangle 1
+            {{4, 1.0f, 0.0f, 0.0f}, {4, 1.0f, 1.0f, 0.0f}, {4, 1.0f, 1.0f, 1.0f}},
+            // East face, triangle 2
+            {{4, 1.0f, 0.0f, 0.0f}, {4, 1.0f, 1.0f, 1.0f}, {4, 1.0f, 0.0f, 1.0f}},
 
-                // North face, triangle 1
-                {point<float, 4>{1.0, 0.0, 1.0}, point<float, 4>{1.0, 1.0, 1.0}, point<float, 4>{0.0, 1.0, 1.0}},
-                // North face, triangle 2
-                {point<float, 4>{1.0, 0.0, 1.0}, point<float, 4>{0.0, 1.0, 1.0}, point<float, 4>{0.0, 0.0, 1.0}},
+            // North face, triangle 1
+            {{4, 1.0f, 0.0f, 1.0f}, {4, 1.0f, 1.0f, 1.0f}, {4, 0.0f, 1.0f, 1.0f}},
+            // North face, triangle 2
+            {{4, 1.0f, 0.0f, 1.0f}, {4, 0.0f, 1.0f, 1.0f}, {4, 0.0f, 0.0f, 1.0f}},
 
-                // West face, triangle 1
-                {point<float, 4>{0.0, 0.0, 1.0}, point<float, 4>{0.0, 1.0, 1.0}, point<float, 4>{0.0, 1.0, 0.0}},
-                // West face, triangle 2
-                {point<float, 4>{0.0, 0.0, 1.0}, point<float, 4>{0.0, 1.0, 0.0}, point<float, 4>{0.0, 0.0, 0.0}},
+            // West face, triangle 1
+            {{4, 0.0f, 0.0f, 1.0f}, {4, 0.0f, 1.0f, 1.0f}, {4, 0.0f, 1.0f, 0.0f}},
+            // West face, triangle 2
+            {{4, 0.0f, 0.0f, 1.0f}, {4, 0.0f, 1.0f, 0.0f}, {4, 0.0f, 0.0f, 0.0f}},
 
-                // Top face, triangle 1
-                {point<float, 4>{0.0, 1.0, 0.0}, point<float, 4>{0.0, 1.0, 1.0}, point<float, 4>{1.0, 1.0, 1.0}},
-                // Top face, triangle 2
-                {point<float, 4>{0.0, 1.0, 0.0}, point<float, 4>{1.0, 1.0, 1.0}, point<float, 4>{1.0, 1.0, 0.0}},
+            // Top face, triangle 1
+            {{4, 0.0f, 1.0f, 0.0f}, {4, 0.0f, 1.0f, 1.0f}, {4, 1.0f, 1.0f, 1.0f}},
+            // Top face, triangle 2
+            {{4, 0.0f, 1.0f, 0.0f}, {4, 1.0f, 1.0f, 1.0f}, {4, 1.0f, 1.0f, 0.0f}},
 
-                // Bottom face, triangle 1
-                {point<float, 4>{1.0, 0.0, 1.0}, point<float, 4>{0.0, 0.0, 1.0}, point<float, 4>{0.0, 0.0, 0.0}},
-                // Bottom face, triangle 2
-                {point<float, 4>{1.0, 0.0, 1.0}, point<float, 4>{0.0, 0.0, 0.0}, point<float, 4>{1.0, 0.0, 0.0}}
-            }
+            // Bottom face, triangle 1
+            {{4, 1.0f, 0.0f, 1.0f}, {4, 0.0f, 0.0f, 1.0f}, {4, 0.0f, 0.0f, 0.0f}},
+            // Bottom face, triangle 2
+            {{4, 1.0f, 0.0f, 1.0f}, {4, 0.0f, 0.0f, 0.0f}, {4, 1.0f, 0.0f, 0.0f}}
         }
     };
-    return meshCube;
+    return triangles;
 }
 
-sf::VertexArray arrayToLineTriangle(const std::array<std::array<float, 2>, 3>& points)
+sf::VertexArray arrayToLineTriangle(const std::tuple<std::vector<point<float>>, sf::Color>& points)
 {
     sf::VertexArray lines(sf::PrimitiveType::LineStrip, 4);
-
-    lines[0].position = sf::Vector2f(points[0][0], points[0][1]);
-    lines[1].position = sf::Vector2f(points[1][0], points[1][1]);
-    lines[2].position = sf::Vector2f(points[2][0], points[2][1]);
-    lines[3].position = sf::Vector2f(points[0][0], points[0][1]); // замкнуть обратно
+    
+    auto &[tr, color] = points;
+    lines[0].position = sf::Vector2f(tr[0].coordinate(0), tr[0].coordinate(1));
+    lines[1].position = sf::Vector2f(tr[1].coordinate(0), tr[1].coordinate(1));
+    lines[2].position = sf::Vector2f(tr[2].coordinate(0), tr[2].coordinate(1));
+    lines[3].position = sf::Vector2f(tr[0].coordinate(0), tr[0].coordinate(1)); // замкнуть обратно
 
     for (int i = 0; i < 4; i++)
         lines[i].color = sf::Color::White;
@@ -68,77 +72,89 @@ sf::VertexArray arrayToLineTriangle(const std::array<std::array<float, 2>, 3>& p
     return lines;
 }
 
-sf::VertexArray arrayToTriangles(const std::array<std::array<float, 2>, 3>& points, sf::Color color)
+sf::VertexArray arrayToTriangles(const std::tuple<std::vector<point<float>>, sf::Color>& points)
 {
-    sf::VertexArray triangles(sf::PrimitiveType::Triangles, points.size());
+    auto &[tr, color] = points;
+    sf::VertexArray triangles(sf::PrimitiveType::Triangles, tr.size());
 
-    for (size_t i = 0; i < points.size(); i++)
+    
+    for (size_t i = 0; i < tr.size(); i++)
     {
-        triangles[i].position = sf::Vector2f(points[i][0], points[i][1]);;
+        triangles[i].position = sf::Vector2f(tr[i].coordinate(0), tr[i].coordinate(1));
         triangles[i].color = color; // назначаем цвет
     }
     return triangles;
 }
 
-matrix<float, 4, 4> generateProjectionMatrix(
-    float AspectRatio,
-    float Near = 0.1f,
-    float Far = 1000.0f,
-    float FOV = 90.0f)
+std::vector<std::vector<point<float>>> readObj(string fileName)
 {
-    float FovRad = 1.0f / (tanf((FOV / 360.0f) * M_PI));
-    return matrix{
-        std::array<std::array<float, 4>, 4>{
-            {
-                {AspectRatio * FovRad, 0.0f, 0.0f, 0.0f},
-                {0.0f, FovRad, 0.0f, 0.0f},
-                {0.0f, 0.0f, Far / (Far - Near), 1.0f},
-                {0.0f, 0.0f, (-Far * Near) / (Far - Near), 0.0f}
-            }
+    ifstream file(fileName);
+
+    if (!file.is_open())
+    {
+        std::cerr << "Could not open the file: " << fileName << std::endl;
+        return {};
+    }
+    std::vector<point<float>> points;
+    std::vector<std::vector<point<float>>> triangles;
+    // Read vertices
+    while (!file.eof())
+    {
+        char line[128];
+        file.getline(line, 128);
+        stringstream ss(line);
+        string prefix;
+        ss >> prefix;
+        if (prefix == "v") // vertex
+        {
+            float x, y, z;
+            ss >> x >> y >> z;
+            points.push_back({4, x, y, z, 1.0}); // 4D point with w = 1.0f
         }
-    };
+        else if (prefix == "f") // face
+        {
+            std::vector<point<float>> triangle;
+            int index;
+            for (int i = 0; i < 3; ++i) // assuming triangles
+            {
+                ss >> index; // read vertex index
+                triangle.push_back(points[index - 1]); // indices in obj are 1-based
+            }
+            triangles.push_back(triangle);
+        }
+    }
+
+    return triangles;
 }
 
-matrix<float, 4, 4> generateRotationMatrix(float fTheta)
+std::string getCurrentDir()
 {
-    return matrix{
-
-        // Z-axis rotation matrix
-        std::array<std::array<float, 4>, 4>{
-            {
-                {cosf(fTheta), sinf(fTheta), 0.0f, 0.0f},
-                {-sinf(fTheta), cosf(fTheta), 0.0f, 0.0f},
-                {0.0f, 0.0f, 1.0f, 0.0f},
-                {0.0f, 0.0f, 0.0f, 1.0f}
-            }
-        }
-    } * matrix{
-
-        // X-axis rotation matrix
-        std::array<std::array<float, 4>, 4>{
-            {
-                {1.0f, 0.0f, 0.0f, 0.0f},
-                {0.0f, cosf(fTheta * 0.5f), sinf(fTheta * 0.5f), 0.0f},
-                {0.0f, -sinf(fTheta * 0.5f), cosf(fTheta * 0.5f), 0.0f},
-                {0.0f, 0.0f, 0.0f, 1.0f}
-            }
-        }
-    };
+    return std::filesystem::current_path().string();
 }
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode({800, 800}), "Space Traveler");
+    sf::RenderWindow window(sf::VideoMode({1000, 1000}), "Space Traveler");
     window.setFramerateLimit(60); // reduce CPU usage in the render loop
-    auto meshCube = generateMeshCube();
-    auto projectionMatrix =
-        generateProjectionMatrix(float(window.getSize().x) / float(window.getSize().y));
+    std::cout << "Текущая директория: " << getCurrentDir() << std::endl;
+    //auto mesh = generateMeshCube();
+    auto mesh = readObj("assets/VideoShip.obj");
+    auto projectionMatrix = matrix<float>::projection_matrix(float(window.getSize().y) / float(window.getSize().x));
+
     sf::Clock clock;
-    point cameraPosition{array{0.0f, 0.0f, 0.0f, 0.0f}}; // Camera position in 4D space
+    point<float> cameraPosition{4, 0.0f, 0.0f, -1.0f, 1.0f}; // Camera position in 4D space
     while (window.isOpen())
     {
         window.clear();
-        auto rotationMatrix = generateRotationMatrix(float(clock.getElapsedTime().asMilliseconds() / 1000.f));
+        auto rotationMatrix = matrix<float>::rotation_matrix({
+            4,
+            float(clock.getElapsedTime().asMilliseconds() / 1000.f),
+            float(clock.getElapsedTime().asMilliseconds() / 2500.f),
+            float(clock.getElapsedTime().asMilliseconds() / 5000.f),
+            1.0
+    });
+        // Combine rotation matrices
+        
 
         while (auto event = window.pollEvent())
         {
@@ -147,65 +163,98 @@ int main()
                 window.close();
             }
         }
+        std::vector<std::tuple<vector<point<float>>, sf::Color>> toRasterize;
+        toRasterize.reserve(mesh.size());
         // Pipeline
-        for (const auto& row : meshCube.get_table())
+        for (const auto& meshTriangle : mesh)
         {
-            std::array<array<float, 2>, 3> projectedPoints;
-            std::array<matrix1D<float, 4>, 3> triangle;
-            
+            std::array<matrix<float>, 3> triangleToDraw;
+
             // each point in triangle
 
-            for (size_t i = 0; i < row.size(); ++i)
+            for (size_t i = 0; i < meshTriangle.size(); ++i)
             {
                 // Rotate
-                triangle[i] = matrix1D{row[i]} * rotationMatrix;
+                triangleToDraw[i] = matrix<float>{{meshTriangle[i]}} * rotationMatrix;
 
                 // Offset by z
-                triangle[i](0, 2) += 3.0f; // Move the cube away from the camera
+                triangleToDraw[i](0, 2) += 10.0f; // Move the cube away from the camera
             }
-            
+            point<float> pA{triangleToDraw[0].get_table()[0]};
+            point<float> pB{triangleToDraw[1].get_table()[0]};
+            point<float> pC{triangleToDraw[2].get_table()[0]};
+            std::cout << "A\t" << pA[0] << " " << pA[1] << " " << pA[2] << std::endl;
+            std::cout << "B\t" << pB[0] << " " << pB[1] << " " << pB[2] << std::endl;
+            std::cout << "C\t" << pC[0] << " " << pC[1] << " " << pC[2] << std::endl;
             // 0->1
-            direction A{triangle[0].get_table()[0], triangle[1].get_table()[0]};
+            direction A{pA, pB};
             // 0->2
-            direction B{triangle[0].get_table()[0], triangle[2].get_table()[0]};
-            auto normal = A.cross_product(B).ort();
-            auto p = point{triangle[0].get_table()[0]};
+            direction B{pA, pC};
+            direction C{pB, pC};
             
-            if (normal.dot_product(direction(p - cameraPosition).ort()) < 0.0f) // Check if the triangle is facing the camera
+            // Проверяем коллинеарность - если векторы коллинеарны, пропускаем треугольник
+            if (A.collinear(B) || A.collinear(C) || B.collinear(C))
+                continue;
+
+            auto normalP = A.cross_product(B);
+            auto zeroP = point<float>{4, 0.0f, 0.0f, 0.0f, 0.0f};
+
+            std::cout << "N\t" << normalP[0] << " " << normalP[1] << " " << normalP[2] << std::endl;
+
+            auto normalD = direction{zeroP, normalP}.ort();
+            auto p = pA - cameraPosition;
+            auto ort = direction<float>(zeroP, p).ort();
+            if (direction{zeroP, normalP}.dot_product({zeroP, ort}) < 0.0f)
+            // Check if the triangle is facing the camera
             {
-                direction light = direction{array{0.0f, 0.0f, -1.0f, 0.0f}}.ort();
-                float lightIntensity = normal.dot_product(light);
-                auto triangleColor = sf::Color{static_cast<uint8_t>(std::max(0.0f, lightIntensity) * 75.0f),
-                                            static_cast<uint8_t>(std::max(0.0f, lightIntensity) * 75.0f),
-                                            static_cast<uint8_t>(std::max(0.0f, lightIntensity) * 75.0f),
-                                            255};
-                for (size_t i = 0; i < row.size(); ++i)
+                point<float> lightP = {4, 0.0f, 0.0f, -1.0f, 0.0f}; // Light position in 4D space
+                auto light = direction{zeroP, lightP}.ort();
+                float lightIntensity = direction{zeroP, normalD}.dot_product({zeroP, light});
+                auto triangleColor = sf::Color{
+                    static_cast<uint8_t>(std::max(0.04f, lightIntensity) * 50.0f),
+                    static_cast<uint8_t>(std::max(0.04f, lightIntensity) * 50.0f),
+                    static_cast<uint8_t>(std::max(0.04f, lightIntensity) * 50.0f),
+                    255
+                };
+                for (size_t i = 0; i < meshTriangle.size(); ++i)
                 {
                     // Project
-                    triangle[i] *= projectionMatrix;
-                    float w = triangle[i](0, 3);
+                    triangleToDraw[i] *= projectionMatrix;
+                    float w = triangleToDraw[i](0, 3);
                     if (w != 0.0f)
                     {
-                        triangle[i] /= w;
+                        triangleToDraw[i] /= w;
                     }
 
                     // Scale
-                    triangle[i] += 1.0f;
-                    triangle[i] *= 0.5f * float(window.getSize().x > window.getSize().y
-                                             ? window.getSize().y
-                                             : window.getSize().x);
-
-                    // Store projected points
-                    projectedPoints[i][0] = triangle[i](0, 0);
-                    projectedPoints[i][1] = triangle[i](0, 1);
+                    triangleToDraw[i] += 1.0f;
+                    triangleToDraw[i] *= 0.5f * float(window.getSize().x);
+                    
                 }
-
-
-                window.draw(arrayToTriangles(projectedPoints, triangleColor));
-                window.draw(arrayToLineTriangle(projectedPoints));
+                point<float> A{3, triangleToDraw[0](0, 0), triangleToDraw[0](0, 1),  triangleToDraw[0](0, 2)};
+                point<float> B{3, triangleToDraw[1](0, 0), triangleToDraw[1](0, 1),  triangleToDraw[1](0, 2)};
+                point<float> C{3, triangleToDraw[2](0, 0), triangleToDraw[2](0, 1),  triangleToDraw[2](0, 2)};
+                toRasterize.emplace_back(vector{A, B, C}, triangleColor);                
             }
         }
 
+        // Sort triangles
+        std::sort(toRasterize.begin(), toRasterize.end(),
+            [](const auto& a, const auto& b) {
+                auto [firstA, secondA] = a;
+                auto [firstB, secondB] = b;
+                // Sort by the average z-coordinate of the triangle
+                float avgA = (firstA[0][2] + firstA[1][2] + firstA[2][2]) / 3.0;
+                float avgB = (firstB[0][2] + firstB[1][2] + firstB[2][2]) / 3.0;
+                return avgA > avgB; // Sort in descending order
+            });
+        for (const auto & triangle : toRasterize)
+        {
+            window.draw(arrayToTriangles(triangle));
+            //window.draw(arrayToLineTriangle(triangle));
+        }
+        
+        
         window.display();
     }
     return 0;

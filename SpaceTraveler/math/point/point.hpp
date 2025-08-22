@@ -5,9 +5,9 @@
 #ifndef POINT_HPP
 #define POINT_HPP
 
-#include <array>
+#include <vector>
 
-namespace engine_lib
+namespace SpaceEngine
 {
     using namespace std;
 
@@ -15,7 +15,7 @@ namespace engine_lib
      * @enum axis
      * @brief Represents the axes in a 2D, 3D, or 4D space.
      *
-     * This enum is used to specify the axis for various operations in the engine_lib::point class.
+     * This enum is used to specify the axis for various operations in the SpaceEngine::point class.
      */
     enum axis: unsigned char
     {
@@ -35,17 +35,16 @@ namespace engine_lib
      * coordinates and the ability to set coordinates.
      *
      * @param T The type of the coordinates.
-     * @param N The number of dimensions of the point.
      *
      * @throws invalid_argument If an index is out of range or if division by zero is attempted.
      */
-    template <class T, size_t N>
+    template <class T>
     class point
     {
         /**
          * @param coordinates_ array of coordinates for the point.
          */
-        array<T, N> coordinates_;
+        vector<T> coordinates_;
 
     public:
         /**
@@ -53,17 +52,16 @@ namespace engine_lib
          *
          * This constructor initializes a point with an empty array of coordinates.
          */
-        point();
-        
 
-        
+        point() = default;
+
         /**
          * @brief Initializer list constructor for the point class.
          *
          * This constructor initializes a point from initializer list.
          */
         template <typename... Args>
-        point(Args... args);
+        point(size_t N, Args... args);
 
         /**
          * @brief Constructor for the point class that takes an array of coordinates.
@@ -73,7 +71,7 @@ namespace engine_lib
          * @param coordinates The array of coordinates to initialize the point with.
          */
 
-        point(const array<T, N>& coordinates);
+        point(const vector<T>& coordinates);
 
 
         /**
@@ -93,7 +91,7 @@ namespace engine_lib
          * @tparam N The number of dimensions.
          * @return An array containing the coordinates of the point.
          */
-        array<T, N> get_coordinates() const;
+        vector<T> get_coordinates() const;
 
         /**
          * @brief Returns the number of dimensions of the point.
@@ -150,8 +148,7 @@ namespace engine_lib
          * @param other The point to add to this point.
          * @return A new point that is the result of adding this point and the other point.
          */
-        template <size_t M>
-        point operator+(const point<T, M>& other) const;
+        point operator+(const point& other) const;
 
 
         /**
@@ -164,8 +161,7 @@ namespace engine_lib
          * @param other The point to subtract from this point.
          * @return A new point that is the result of subtracting this point and the other point.
          */
-        template <size_t M>
-        point operator-(const point<T, M>& other) const;
+        point operator-(const point& other) const;
 
 
         /**
@@ -178,8 +174,8 @@ namespace engine_lib
          * @param other The point to add to this point.
          * @return A reference to this point, which has been modified in-place.
          */
-        template <size_t M>
-        point& operator+=(const point<T, M>& other);
+
+        point& operator+=(const point& other);
 
 
         /**
@@ -192,8 +188,8 @@ namespace engine_lib
          * @param other The point to subtract from this point.
          * @return A reference to this point, which has been modified in-place.
          */
-        template <size_t M>
-        point& operator-=(const point<T, M>& other);
+
+        point& operator-=(const point& other);
 
 
         /**
@@ -286,17 +282,11 @@ namespace engine_lib
          * @throws std::invalid_argument if the given value is zero.
          */
         point& operator/=(T value);
-    };
 
-    template <class T>
-    using point1D = point<T, 1>;
-    template <class T>
-    using point2D = point<T, 2>;
-    template <class T>
-    using point3D = point<T, 3>;
-    template <class T>
-    using point4D = point<T, 4>;
-} // engine_lib
+
+        void check_compatible(const point& other) const;
+    };
+} // SpaceEngine
 
 
 #endif //POINT_HPP
