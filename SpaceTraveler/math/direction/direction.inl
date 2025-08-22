@@ -27,7 +27,7 @@ namespace SpaceEngine
           {
           }))
     {
-        if (beginning_->axes() > end_->axes())
+        if (beginning_->axes() != end_->axes())
             throw std::invalid_argument("Beginning and end points must have the same number of axes");
     }
 
@@ -77,7 +77,7 @@ namespace SpaceEngine
         T sum(0);
         auto a = this->radius_direction();
         auto b = other.radius_direction();
-        if (a->axes() > b->axes())
+        if (a->axes() != b->axes())
             throw std::invalid_argument("Cosine angle requires directions with the same number of axes");
         for (size_t i = 0; i < a.axes(); ++i)
             sum += a.coordinate(i) * b.coordinate(i);
@@ -121,6 +121,8 @@ namespace SpaceEngine
         result[x] = a.coordinate(y) * b.coordinate(z) - a.coordinate(z) * b.coordinate(y);
         result[y] = a.coordinate(z) * b.coordinate(x) - a.coordinate(x) * b.coordinate(z);
         result[z] = a.coordinate(x) * b.coordinate(y) - a.coordinate(y) * b.coordinate(x);
+        if (a.axes() > 3)
+            result[w] = T(1);
         return result;
     }
 
@@ -208,7 +210,7 @@ namespace SpaceEngine
     {
         auto A = get_beginning();
         auto B = get_end();
-        return make_tuple(A, B + other);
+        return tuple(A, B + other);
     }
 
     template <class T>
@@ -216,7 +218,7 @@ namespace SpaceEngine
     {
         auto A = get_beginning();
         auto B = get_end();
-        return make_tuple(A, B - other);
+        return tuple(A, B - other);
     }
 
     // direction<T> arguments (forward to point versions)
@@ -227,7 +229,7 @@ namespace SpaceEngine
         auto B = get_end();
         auto C = other.get_beginning();
         auto D = other.get_end();
-        return make_tuple(A, B + (D - C));
+        return tuple(A, B + (D - C));
     }
 
     template <class T>
@@ -237,7 +239,7 @@ namespace SpaceEngine
         auto B = get_end();
         auto C = other.get_beginning();
         auto D = other.get_end();
-        return make_tuple(A, B - (D - C));
+        return tuple(A, B - (D - C));
     }
 
 
@@ -247,7 +249,7 @@ namespace SpaceEngine
     {
         auto a = get_beginning();
         auto b = get_end();
-        return make_tuple(a / other, b / other);
+        return tuple(a / other, b / other);
     }
 
     template <class T>
@@ -255,7 +257,7 @@ namespace SpaceEngine
     {
         auto a = get_beginning();
         auto b = get_end();
-        return make_tuple(a / other, b / other);
+        return tuple(a / other, b / other);
     }
 
 
@@ -268,7 +270,7 @@ namespace SpaceEngine
         auto C = other.get_beginning();
         auto D = other.get_end();
 
-        return make_tuple(A * C, B * D);
+        return tuple(A * C, B * D);
     }
 
     template <class T>
@@ -279,7 +281,7 @@ namespace SpaceEngine
         auto C = other.get_beginning();
         auto D = other.get_end();
 
-        return make_tuple(A / C, B / D);
+        return tuple(A / C, B / D);
     }
 
 
@@ -289,7 +291,7 @@ namespace SpaceEngine
     {
         auto A = get_beginning();
         auto B = get_end();
-        return make_tuple(A * value, B * value);
+        return tuple(A * value, B * value);
     }
 
     template <class T>
@@ -297,7 +299,7 @@ namespace SpaceEngine
     {
         auto A = get_beginning();
         auto B = get_end();
-        return make_tuple(A / value, B / value);
+        return tuple(A / value, B / value);
     }
 
     template <class T>
