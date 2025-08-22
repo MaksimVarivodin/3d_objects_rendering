@@ -7,9 +7,9 @@
 #include "math/direction/direction.hpp"
 #include "math/point/point.hpp"
 #include "math/matrix/matrix.hpp"
-
+#include "math/triangle/triangle.hpp"
 #include <vector>
-#include <cmath>
+
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -157,6 +157,8 @@ std::string getCurrentDir()
 
 int main()
 {
+    sf::Color c{};
+    
     constexpr size_t sizeX = 1080;
     constexpr size_t sizeY = 1080;
     constexpr size_t viewSizeX = sizeX / 4;
@@ -235,7 +237,7 @@ int main()
         for (const auto& meshTriangle : mesh)
         {
             std::vector<point<double>> triangleProjected(meshTriangle.size(), {4, 0.0f, 0.0f, 0.0f});
-
+            
             for (size_t i = 0; i < meshTriangle.size(); ++i)
             {
                 // Rotate
