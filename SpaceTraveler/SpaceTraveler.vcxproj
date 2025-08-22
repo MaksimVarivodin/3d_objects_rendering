@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="math\triangle\triangle.cpp" />
     <ClInclude Include="JaggedArray\JaggedArray.inl" />
     <ClCompile Include="main.cpp" />
     <ClInclude Include="math\direction\direction.hpp" />
@@ -27,6 +28,7 @@
     <ClInclude Include="math\matrix\matrix.inl" />
     <ClInclude Include="math\point\point.hpp" />
     <ClInclude Include="math\point\point.inl" />
+    <ClInclude Include="math\triangle\triangle.hpp" />
     <ClInclude Include="sfml3\include\SFML\Audio.hpp" />
     <ClInclude Include="sfml3\include\SFML\Audio\AudioResource.hpp" />
     <ClInclude Include="sfml3\include\SFML\Audio\Export.hpp" />
