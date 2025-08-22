@@ -480,7 +480,7 @@ namespace SpaceEngine
          *
          * @return Identity matrix.
          */
-        static matrix identity_matrix();
+        static matrix identity_matrix(size_t rows_columns);
 
         /**
          * @brief Create a rotation matrix around the X-axis.
@@ -522,7 +522,21 @@ namespace SpaceEngine
          */
         static matrix rotation_matrix(point<T> theta, size_t rows = 4, size_t columns = 4);
 
-        static matrix projection_matrix(T AspectRatio, T Near = 0.1, T Far = 1000.0, T FOV = 90.0, size_t rows = 4, size_t columns = 4);
+        /**
+         * @brief Create a projection matrix.
+         * @param AspectRatio Aspect ratio of the projection.
+         * @param Near clipping plane distance.
+         * @param Far clipping plane distance.
+         * @param FOV Field of view in degrees.
+         * @param rows Number of rows in the resulting matrix.
+         * @param columns Number of columns in the resulting matrix.
+         * @return Projection matrix.
+         */
+        static matrix projection_matrix(T AspectRatio, T Near = 0.1, T Far = 1000.0, T FOV = 90.0, size_t rows = 4,
+                                        size_t columns = 4);
+
+        static matrix translation_matrix(point<T> translation);
+        
     };
 } // SpaceEngine
 

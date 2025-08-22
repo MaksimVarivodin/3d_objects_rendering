@@ -11,6 +11,8 @@ namespace SpaceEngine
 {
     using namespace std;
 
+    template <class T>
+    class matrix;
     /**
      * @enum axis
      * @brief Represents the axes in a 2D, 3D, or 4D space.
@@ -188,9 +190,36 @@ namespace SpaceEngine
          * @param other The point to subtract from this point.
          * @return A reference to this point, which has been modified in-place.
          */
-
         point& operator-=(const point& other);
 
+
+        /**
+         * @brief Adds a scalar value to each coordinate of the point.
+         * @param value The value to add to each coordinate.
+         * @return A new point with the added value.
+         */
+        point operator+(T value) const;
+
+        /**
+         * @brief Adds a scalar value to each coordinate of the point in-place.
+         * @param value The value to add to each coordinate.
+         * @return A reference to the modified point.
+         */
+        point& operator+=(T value);
+
+        /**
+         * @brief Subtracts a scalar value from each coordinate of the point.
+         * @param value The value to subtract from each coordinate.
+         * @return A new point with the subtracted value.
+         */
+        point operator-(T value) const;
+
+        /**
+         * @brief Subtracts a scalar value from each coordinate of the point in-place.
+         * @param value The value to subtract from each coordinate.
+         * @return A reference to the modified point.
+         */
+        point& operator-=(T value);
 
         /**
          * @brief Multiplies this point by another point.
@@ -202,6 +231,17 @@ namespace SpaceEngine
          * @return A new point that is the result of multiplying this point and the other point.
          */
         point operator*(const point& other) const;
+
+        /**
+         * @brief Multiplies this point by a matrix.
+         *
+         * This function multiplies this point by a matrix.
+         * The result is a new point with coordinates that are the products of the corresponding coordinates of this point and the matrix.
+         *
+         * @param m The matrix to multiply this point by.
+         * @return A new point that is the result of multiplying this point and the matrix.
+         */
+        point operator*(const matrix<T>& m) const;
 
 
         /**
@@ -253,7 +293,16 @@ namespace SpaceEngine
          */
         point& operator*=(const point& other);
 
-
+        /** 
+         * @brief Multiplies this point by a matrix in-place.
+         *
+         * This function multiplies this point by a matrix and modifies this point in-place.
+         * The result is a new point with coordinates that are the products of the corresponding coordinates of this point and the matrix.
+         *
+         * @param m The matrix to multiply this point by.
+         * @return A reference to this point, which has been modified in-place.
+         */
+        point& operator*=(const matrix<T>& m);
         /**
          * @brief Divides this point by another point in-place.
          *

@@ -148,6 +148,7 @@
     <ClInclude Include="BackgroundThread\BackgroundThread.inl" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\teapot.obj" />
     <Content Include="assets\VideoShip.obj" />
     <Content Include="sfml3\bin\sfml-audio-3.dll" />
     <Content Include="sfml3\bin\sfml-audio-d-3.dll" />

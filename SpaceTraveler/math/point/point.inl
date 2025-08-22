@@ -15,6 +15,8 @@ namespace SpaceEngine
         size_t copy_count = std::min(N, num_args);
         size_t i = 0;
         ((i < copy_count ? (void)(coordinates_[i++] = static_cast<T>(args)) : void()), ...);
+        if (N > 3 && num_args <= 3)
+            coordinates_[3] = static_cast<T>(1);
     }
 
     template <class T>
@@ -112,6 +114,40 @@ namespace SpaceEngine
 
         for (size_t i = 0; i < axes(); ++i)
             coordinates_[i] -= other.coordinate(i);
+        return *this;
+    }
+
+    template <class T>
+    point<T> point<T>::operator+(T value) const
+    {
+        point<T> result(*this);
+        for (auto& coord : result.coordinates_)
+            coord += value;
+        return result;
+    }
+
+    template <class T>
+    point<T>& point<T>::operator+=(T value)
+    {
+        for (auto& coord : coordinates_)
+            coord += value;
+        return *this;
+    }
+
+    template <class T>
+    point<T> point<T>::operator-(T value) const
+    {
+        point<T> result(*this);
+        for (auto& coord : result.coordinates_)
+            coord -= value;
+        return result;
+    }
+
+    template <class T>
+    point<T>& point<T>::operator-=(T value)
+    {
+        for (auto& coord : coordinates_)
+            coord -= value;
         return *this;
     }
 
@@ -216,7 +252,7 @@ namespace SpaceEngine
     template <class T>
     void point<T>::check_compatible(const point& other) const
     {
-        if (axes() > other.axes())
+        if (axes() != other.axes())
             throw std::invalid_argument("Cannot subtract point with fewer dimensions from point with more dimensions");
     }
 }

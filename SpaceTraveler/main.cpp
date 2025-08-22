@@ -16,11 +16,11 @@
 #include <filesystem>
 #include <algorithm>
 using namespace se;
+using namespace se;
 
-
-std::vector<std::vector<SpaceEngine::point<float>>> generateMeshCube()
+std::vector<std::vector<SpaceEngine::point<double>>> generateMeshCube()
 {
-    std::vector<std::vector<SpaceEngine::point<float>>> triangles = {
+    std::vector<std::vector<SpaceEngine::point<double>>> triangles = {
         {
             // South face, triangle 1
             {{4, 0.0f, 0.0f, 0.0f}, {4, 0.0f, 1.0f, 0.0f}, {4, 1.0f, 1.0f, 0.0f}},
@@ -56,15 +56,14 @@ std::vector<std::vector<SpaceEngine::point<float>>> generateMeshCube()
     return triangles;
 }
 
-sf::VertexArray arrayToLineTriangle(const std::tuple<std::vector<point<float>>, sf::Color>& points)
+sf::VertexArray arrayToLineTriangle(vector<point<double>>& tr, sf::Color color)
 {
     sf::VertexArray lines(sf::PrimitiveType::LineStrip, 4);
-    
-    auto &[tr, color] = points;
-    lines[0].position = sf::Vector2f(tr[0].coordinate(0), tr[0].coordinate(1));
-    lines[1].position = sf::Vector2f(tr[1].coordinate(0), tr[1].coordinate(1));
-    lines[2].position = sf::Vector2f(tr[2].coordinate(0), tr[2].coordinate(1));
-    lines[3].position = sf::Vector2f(tr[0].coordinate(0), tr[0].coordinate(1)); // замкнуть обратно
+
+    lines[0].position = sf::Vector2f((float)(tr[0][x]), (float)(tr[0][y]));
+    lines[1].position = sf::Vector2f((float)(tr[1][x]), (float)(tr[1][y]));
+    lines[2].position = sf::Vector2f((float)(tr[2][x]), (float)(tr[2][y]));
+    lines[3].position = sf::Vector2f((float)(tr[0][x]), (float)(tr[0][y])); // замкнуть обратно
 
     for (int i = 0; i < 4; i++)
         lines[i].color = sf::Color::White;
@@ -72,21 +71,45 @@ sf::VertexArray arrayToLineTriangle(const std::tuple<std::vector<point<float>>, 
     return lines;
 }
 
-sf::VertexArray arrayToTriangles(const std::tuple<std::vector<point<float>>, sf::Color>& points)
+sf::VertexArray arrayToTriangles(std::vector<point<double>>& points, sf::Color color)
 {
-    auto &[tr, color] = points;
-    sf::VertexArray triangles(sf::PrimitiveType::Triangles, tr.size());
+    sf::VertexArray triangles(sf::PrimitiveType::Triangles, points.size());
 
-    
-    for (size_t i = 0; i < tr.size(); i++)
+    for (size_t i = 0; i < points.size(); i++)
     {
-        triangles[i].position = sf::Vector2f(tr[i].coordinate(0), tr[i].coordinate(1));
-        triangles[i].color = color; // назначаем цвет
+        triangles[i].position = sf::Vector2f((int)(points[i][0]), (int)points[i][1]);
+        triangles[i].color = color;
     }
     return triangles;
 }
 
-std::vector<std::vector<point<float>>> readObj(string fileName)
+void createVertexBuffer(const std::vector<std::tuple<std::vector<point<double>>, sf::Color>>& points,
+                        sf::VertexBuffer& vb,
+                        size_t startIndex,
+                        size_t endIndex)
+{
+    vb.create((endIndex - startIndex) * 3); // 3 вершины на треугольник
+
+    std::vector<sf::Vertex> vertices((endIndex - startIndex) * 3);
+    size_t pointsIndex = startIndex;
+    for (size_t vertexIndex = 0; vertexIndex < vertices.size(); ++pointsIndex)
+    {
+        const auto& [tr, color] = points[pointsIndex];
+        if (tr.size() != 3) continue;
+        for (size_t i = 0; i < 3; ++i)
+        {
+            vertices[vertexIndex].position = sf::Vector2f(tr[i].coordinate(0), tr[i].coordinate(1));
+            vertices[vertexIndex].color = color;
+            ++vertexIndex;
+        }
+    }
+    if (!vb.update(vertices.data(), vertices.size(), 0))
+    {
+        std::cerr << "Failed to update vertex buffer" << std::endl;
+    }
+}
+
+std::vector<std::vector<point<double>>> readObj(string fileName)
 {
     ifstream file(fileName);
 
@@ -95,8 +118,8 @@ std::vector<std::vector<point<float>>> readObj(string fileName)
         std::cerr << "Could not open the file: " << fileName << std::endl;
         return {};
     }
-    std::vector<point<float>> points;
-    std::vector<std::vector<point<float>>> triangles;
+    std::vector<point<double>> points;
+    std::vector<std::vector<point<double>>> triangles;
     // Read vertices
     while (!file.eof())
     {
@@ -107,13 +130,13 @@ std::vector<std::vector<point<float>>> readObj(string fileName)
         ss >> prefix;
         if (prefix == "v") // vertex
         {
-            float x, y, z;
+            double x, y, z;
             ss >> x >> y >> z;
-            points.push_back({4, x, y, z, 1.0}); // 4D point with w = 1.0f
+            points.push_back({4, x, y, z}); // 4D point with w = 1.0f
         }
         else if (prefix == "f") // face
         {
-            std::vector<point<float>> triangle;
+            std::vector<point<double>> triangle;
             int index;
             for (int i = 0; i < 3; ++i) // assuming triangles
             {
@@ -134,27 +157,60 @@ std::string getCurrentDir()
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode({1000, 1000}), "Space Traveler");
-    window.setFramerateLimit(60); // reduce CPU usage in the render loop
-    std::cout << "Текущая директория: " << getCurrentDir() << std::endl;
+    constexpr size_t sizeX = 1080;
+    constexpr size_t sizeY = 1080;
+    constexpr size_t viewSizeX = sizeX / 4;
+    constexpr size_t viewSizeY = sizeY / 4;
+    uint32_t frameLimit = 240;
+
+    sf::ContextSettings settings;
+    settings.antiAliasingLevel = 8;
+    sf::RenderWindow window(
+        sf::VideoMode({sizeX, sizeY}),
+        "Space Traveler",
+        sf::Style::Default, sf::State::Windowed, settings);
+
+    // Define a view that's half the size of the window, effectively doubling pixel size
+    sf::View view1(sf::FloatRect({0, 0}, {viewSizeX, viewSizeY}));
+    window.setView(view1);
+    sf::RenderTexture renderTexture({viewSizeX, viewSizeY});
+    sf::Sprite bufferSprite(renderTexture.getTexture());
+    window.setFramerateLimit(frameLimit); // reduce CPU usage in the render loop
+
+    //window.setFramerateLimit(240); // reduce CPU usage in the render loop
+
+
+    std::cout << "Текущая директория: " << getCurrentDir() << "\n";
     //auto mesh = generateMeshCube();
-    auto mesh = readObj("assets/VideoShip.obj");
-    auto projectionMatrix = matrix<float>::projection_matrix(float(window.getSize().y) / float(window.getSize().x));
 
     sf::Clock clock;
-    point<float> cameraPosition{4, 0.0f, 0.0f, -1.0f, 1.0f}; // Camera position in 4D space
+
+    // Loading mesh from .obj file
+    //auto mesh = readObj("assets/VideoShip.obj");
+    auto mesh = readObj("assets/teapot.obj");
+    //auto mesh = readObj("assets/axis.obj");
+    // Creating projection matrix
+    auto projectionMatrix = matrix<double>::projection_matrix(double(viewSizeX) / double(viewSizeY));
+
+
+    auto translationMatrix = matrix<double>::translation_matrix({4, 0.0f, 0.0f, 8.f});
+    // Creating zero-point
+    auto zeroP = point<double>{4, 0.0f, 0.0f, 0.0f, 0.0f};
+
+    // Camera
+    point<double> cameraPosition{4, 0.0f, 0.0f, -1.0f}; // Camera position in 4D space
+
+    // Normalized light direction
+    point<double> lightOrt = {4, 0.0f, 0.0f, -1.0f}; // Light position in 4D space
+    lightOrt = direction{zeroP, lightOrt}.ort();
+
+
     while (window.isOpen())
     {
         window.clear();
-        auto rotationMatrix = matrix<float>::rotation_matrix({
-            4,
-            float(clock.getElapsedTime().asMilliseconds() / 1000.f),
-            float(clock.getElapsedTime().asMilliseconds() / 2500.f),
-            float(clock.getElapsedTime().asMilliseconds() / 5000.f),
-            1.0
-    });
+        renderTexture.clear();
         // Combine rotation matrices
-        
+
 
         while (auto event = window.pollEvent())
         {
@@ -163,99 +219,118 @@ int main()
                 window.close();
             }
         }
-        std::vector<std::tuple<vector<point<float>>, sf::Color>> toRasterize;
+
+
+        // Time-based rotation angle
+        auto fTheta = clock.getElapsedTime().asSeconds();
+        auto rotationMatrix = matrix<double>::rotation_matrix({4, fTheta, 0., fTheta * 0.5, 1.0});
+
+        // Store triangles to rasterize
+        std::vector<vector<point<double>>> toRasterize;
+        vector<sf::Color> colors;
         toRasterize.reserve(mesh.size());
+        colors.reserve(mesh.size());
+
         // Pipeline
         for (const auto& meshTriangle : mesh)
         {
-            std::array<matrix<float>, 3> triangleToDraw;
-
-            // each point in triangle
+            std::vector<point<double>> triangleProjected(meshTriangle.size(), {4, 0.0f, 0.0f, 0.0f});
 
             for (size_t i = 0; i < meshTriangle.size(); ++i)
             {
                 // Rotate
-                triangleToDraw[i] = matrix<float>{{meshTriangle[i]}} * rotationMatrix;
-
-                // Offset by z
-                triangleToDraw[i](0, 2) += 10.0f; // Move the cube away from the camera
+                triangleProjected[i] = meshTriangle[i] * rotationMatrix;
+                // Translate
+                triangleProjected[i] *= translationMatrix;
             }
-            point<float> pA{triangleToDraw[0].get_table()[0]};
-            point<float> pB{triangleToDraw[1].get_table()[0]};
-            point<float> pC{triangleToDraw[2].get_table()[0]};
-            std::cout << "A\t" << pA[0] << " " << pA[1] << " " << pA[2] << std::endl;
-            std::cout << "B\t" << pB[0] << " " << pB[1] << " " << pB[2] << std::endl;
-            std::cout << "C\t" << pC[0] << " " << pC[1] << " " << pC[2] << std::endl;
-            // 0->1
-            direction A{pA, pB};
-            // 0->2
-            direction B{pA, pC};
-            direction C{pB, pC};
-            
+
+
+            direction D{triangleProjected[0], triangleProjected[1]};
+            direction E{triangleProjected[0], triangleProjected[2]};
+            direction F{triangleProjected[1], triangleProjected[2]};
+
+
             // Проверяем коллинеарность - если векторы коллинеарны, пропускаем треугольник
-            if (A.collinear(B) || A.collinear(C) || B.collinear(C))
-                continue;
+            /*if (D.collinear(E) || D.collinear(F))
+                continue;*/
 
-            auto normalP = A.cross_product(B);
-            auto zeroP = point<float>{4, 0.0f, 0.0f, 0.0f, 0.0f};
 
-            std::cout << "N\t" << normalP[0] << " " << normalP[1] << " " << normalP[2] << std::endl;
+            auto triangleNormalRef = D.cross_product(E);
+            auto triangleNormalOrtRef = direction{zeroP, triangleNormalRef}.ort();
 
-            auto normalD = direction{zeroP, normalP}.ort();
-            auto p = pA - cameraPosition;
-            auto ort = direction<float>(zeroP, p).ort();
-            if (direction{zeroP, normalP}.dot_product({zeroP, ort}) < 0.0f)
+
+            auto cameraToTriangle = triangleProjected[0] - cameraPosition;
+
+
+            auto cameraToCenterOrt = direction{zeroP, cameraToTriangle}.ort();
+            auto isInLineOfSightRef = direction{zeroP, triangleNormalOrtRef}.dot_product({zeroP, cameraToCenterOrt});
+
+
+            if (isInLineOfSightRef < 0.0f)
             // Check if the triangle is facing the camera
             {
-                point<float> lightP = {4, 0.0f, 0.0f, -1.0f, 0.0f}; // Light position in 4D space
-                auto light = direction{zeroP, lightP}.ort();
-                float lightIntensity = direction{zeroP, normalD}.dot_product({zeroP, light});
+                double lightIntensity = direction{zeroP, triangleNormalOrtRef}.dot_product({zeroP, lightOrt});
                 auto triangleColor = sf::Color{
-                    static_cast<uint8_t>(std::max(0.04f, lightIntensity) * 50.0f),
-                    static_cast<uint8_t>(std::max(0.04f, lightIntensity) * 50.0f),
-                    static_cast<uint8_t>(std::max(0.04f, lightIntensity) * 50.0f),
+                    static_cast<uint8_t>(std::max(0.04, lightIntensity) * 50.0f),
+                    static_cast<uint8_t>(std::max(0.04, lightIntensity) * 50.0f),
+                    static_cast<uint8_t>(std::max(0.04, lightIntensity) * 50.0f),
                     255
                 };
                 for (size_t i = 0; i < meshTriangle.size(); ++i)
                 {
                     // Project
-                    triangleToDraw[i] *= projectionMatrix;
-                    float w = triangleToDraw[i](0, 3);
-                    if (w != 0.0f)
+                    triangleProjected[i] *= projectionMatrix;
+                    double w = triangleProjected[i][3];
+                    if (!almost_equal(w, 0.0))
                     {
-                        triangleToDraw[i] /= w;
+                        triangleProjected[i] /= w;
                     }
 
                     // Scale
-                    triangleToDraw[i] += 1.0f;
-                    triangleToDraw[i] *= 0.5f * float(window.getSize().x);
-                    
+                    triangleProjected[i] += 1.0f;
+                    triangleProjected[i] *= 0.5f * double(viewSizeX);
                 }
-                point<float> A{3, triangleToDraw[0](0, 0), triangleToDraw[0](0, 1),  triangleToDraw[0](0, 2)};
-                point<float> B{3, triangleToDraw[1](0, 0), triangleToDraw[1](0, 1),  triangleToDraw[1](0, 2)};
-                point<float> C{3, triangleToDraw[2](0, 0), triangleToDraw[2](0, 1),  triangleToDraw[2](0, 2)};
-                toRasterize.emplace_back(vector{A, B, C}, triangleColor);                
+                // Add to rasterization list if within view
+                toRasterize.emplace_back(vector{triangleProjected[0], triangleProjected[1], triangleProjected[2]});
+                colors.push_back(triangleColor);
             }
         }
 
         // Sort triangles
-        std::sort(toRasterize.begin(), toRasterize.end(),
-            [](const auto& a, const auto& b) {
-                auto [firstA, secondA] = a;
-                auto [firstB, secondB] = b;
-                // Sort by the average z-coordinate of the triangle
-                float avgA = (firstA[0][2] + firstA[1][2] + firstA[2][2]) / 3.0;
-                float avgB = (firstB[0][2] + firstB[1][2] + firstB[2][2]) / 3.0;
-                return avgA > avgB; // Sort in descending order
-            });
-        for (const auto & triangle : toRasterize)
+        std::ranges::sort(toRasterize.begin(), toRasterize.end(),
+                          [](const auto& a, const auto& b)
+                          {
+                              // Sort by the average z-coordinate of the triangle
+                              double avgAz = (
+                                      a[0].coordinate(axis::z) +
+                                      a[1].coordinate(axis::z) +
+                                      a[2].coordinate(axis::z))
+                                  / 3.0f;
+                              double avgBz = (
+                                      b[0].coordinate(axis::z) +
+                                      b[1].coordinate(axis::z) +
+                                      b[2].coordinate(axis::z))
+                                  / 3.0f;
+
+                              return avgAz > avgBz; // Sort in descending order
+                          });
+
+
+        size_t i = 0;
+        for (auto& triangle : toRasterize)
         {
-            window.draw(arrayToTriangles(triangle));
-            //window.draw(arrayToLineTriangle(triangle));
+            /*renderTexture.draw(arrayToTriangles(triangle, colors[i]));
+            renderTexture.draw(arrayToLineTriangle(triangle, sf::Color::White));*/
+            window.draw(arrayToTriangles(triangle, colors[i]));
+            window.draw(arrayToLineTriangle(triangle, sf::Color::White));
+            ++i;
         }
-        
-        
+        /*renderTexture.display();
+        window.draw(bufferSprite);*/
         window.display();
+
+        /*window.draw(bufferSprite);*/
+        //window.draw(createVertexBuffer(toRasterize, vb));
     }
     return 0;
 }

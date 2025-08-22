@@ -197,7 +197,7 @@ namespace SpaceEngine
     template <class T>
     matrix<T> matrix<T>::operator*(T value) const
     {
-        matrix<T> result;
+        matrix<T> result(rows_, columns_);
         for (size_t i(0); i < rows(); ++i)
             for (size_t j(0); j < columns(); ++j)
                 result[i][j] = table_[i][j] * value;
@@ -218,7 +218,7 @@ namespace SpaceEngine
     {
         if (value == T(0))
             throw invalid_argument("Division by zero");
-        matrix<T> result;
+        matrix<T> result(rows_, columns_);
         for (size_t i(0); i < rows(); ++i)
             for (size_t j(0); j < columns(); ++j)
                 result[i][j] = table_[i][j] / value;
@@ -288,7 +288,7 @@ namespace SpaceEngine
     template <class T>
     matrix<T> matrix<T>::operator+(const matrix<T>& other) const
     {
-        matrix<T> result;
+        matrix<T> result(rows_, columns_);
         for (size_t i(0); i < rows(); ++i)
             for (size_t j(0); j < columns(); ++j)
                 result.table_[i][j] = table_[i][j] + other.table_[i][j];
@@ -307,7 +307,7 @@ namespace SpaceEngine
     template <class T>
     matrix<T> matrix<T>::operator-(const matrix<T>& other) const
     {
-        matrix<T> result;
+        matrix<T> result(rows_, columns_);
         for (size_t i(0); i < rows(); ++i)
             for (size_t j(0); j < columns(); ++j)
                 result[i][j] = table_[i][j] - other.table_[i][j];
@@ -379,7 +379,7 @@ namespace SpaceEngine
     {
         if (!is_square_matrix())
             throw out_of_range("Matrix is not square");
-        auto L(identity_matrix()),
+        auto L(identity_matrix(rows_)),
              U(*this);
         for (int i(0); i < rows(); ++i)
             for (int j(i + 1); j < rows(); ++j)
@@ -429,7 +429,7 @@ namespace SpaceEngine
     {
         if (!is_square_matrix())
             throw out_of_range("Matrix is not square");
-        matrix<T> result;
+        matrix<T> result(rows_, columns_);
         for (size_t i(0); i < rows(); ++i)
             for (size_t j(0); j < columns(); ++j)
                 result(i, j) = algebraic_complement(i, j);
@@ -686,13 +686,11 @@ namespace SpaceEngine
 
 
     template <class T>
-    matrix<T> matrix<T>::identity_matrix()
+    matrix<T> matrix<T>::identity_matrix(size_t rows_columns)
     {
-        if (!is_square_matrix())
-            throw out_of_range("Matrix is not square");
-        matrix<T> identity;
+        matrix<T> identity(rows_columns, rows_columns);
 
-        for (int i(0); i < rows(); ++i)
+        for (size_t i(0); i < rows_columns; ++i)
             identity(i, i) = T(1);
 
         return identity;
@@ -762,10 +760,9 @@ namespace SpaceEngine
     template <class T>
     matrix<T> matrix<T>::projection_matrix(T AspectRatio, T Near, T Far, T FOV, size_t rows, size_t columns)
     {
-        
         if (rows < 4 || columns < 4)
             throw invalid_argument("Rotation matrix must be at least 4x4");
-        
+
         matrix<T> rotation(rows, columns);
         T FovRad = T(1) / (tan(FOV / T(360) * T(M_PI)));
 
@@ -774,8 +771,60 @@ namespace SpaceEngine
         rotation(2, 2) = Far / (Far - Near);
         rotation(2, 3) = T(1);
         rotation(3, 2) = (-Far * Near) / (Far - Near);
-        
+
         return rotation;
     }
+
+    template <class T>
+    matrix<T> matrix<T>::translation_matrix(point<T> translation)
+    {
+        if (translation.axes() < 1)
+            throw invalid_argument("Translation must have at least one axis");
+        matrix<T> translation_matrix(identity_matrix(translation.axes()));
+        /*
+            [1  ][      ][      ][  ]
+            [   ][1     ][      ][  ]
+            [   ][      ][1     ][  ]
+            [tx ][ty    ][tz    ][1 ]
+         */
+        for (size_t i = 0; i < translation.axes() - 1; ++i)
+            translation_matrix(translation.axes() - 1, i) = translation.coordinate(i);
+        return translation_matrix;
+    }
+
+    template <class T>
+    point<T> point<T>::operator*(const matrix<T>& m) const
+    {
+        if (axes() != m.rows() && m.rows() != m.columns())
+            throw invalid_argument("Matrix must have the same number of axes");
+        point<T> result(axes());
+
+        for (size_t i = 0; i < axes(); ++i)
+        {
+            T sum{0};
+            for (size_t j = 0; j < axes(); ++j)
+                sum += coordinate(j) * m(j, i);
+            result[i] = sum;
+        }
+        return result;
+    }
+
+    template <class T>
+    point<T>& point<T>::operator*=(const matrix<T>& m)
+    {
+        if (axes() != m.rows() && m.rows() != m.columns())
+            throw invalid_argument("Matrix must have the same number of axes");
+        point<T> pCopy(*this);
+        for (size_t i = 0; i < axes(); ++i)
+        {
+            T sum{0};
+            for (size_t j = 0; j < axes(); ++j)
+                sum += pCopy.coordinate(j) * m(j, i);
+            coordinates_[i] = sum;
+        }
+        return *this;
+        
+    }
+
 } // SpaceEngine
 #endif
