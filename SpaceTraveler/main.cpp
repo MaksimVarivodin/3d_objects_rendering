@@ -77,7 +77,7 @@ sf::VertexArray arrayToTriangles(std::vector<point<double>>& points, sf::Color c
 
     for (size_t i = 0; i < points.size(); i++)
     {
-        triangles[i].position = sf::Vector2f((int)(points[i][0]), (int)points[i][1]);
+        triangles[i].position = sf::Vector2f((float)(points[i][0]), (float)points[i][1]);
         triangles[i].color = color;
     }
     return triangles;
@@ -158,7 +158,7 @@ std::string getCurrentDir()
 int main()
 {
     sf::Color c{};
-    
+
     constexpr size_t sizeX = 1080;
     constexpr size_t sizeY = 1080;
     constexpr size_t viewSizeX = sizeX / 4;
@@ -225,7 +225,7 @@ int main()
 
         // Time-based rotation angle
         auto fTheta = clock.getElapsedTime().asSeconds();
-        auto rotationMatrix = matrix<double>::rotation_matrix({4, fTheta, 0., fTheta * 0.5, 1.0});
+        auto rotationMatrix = matrix<double>::rotation_matrix({4, fTheta * 0.1, fTheta * 0.1, 0.,  1.0});
 
         // Store triangles to rasterize
         std::vector<vector<point<double>>> toRasterize;
@@ -237,7 +237,7 @@ int main()
         for (const auto& meshTriangle : mesh)
         {
             std::vector<point<double>> triangleProjected(meshTriangle.size(), {4, 0.0f, 0.0f, 0.0f});
-            
+
             for (size_t i = 0; i < meshTriangle.size(); ++i)
             {
                 // Rotate
@@ -273,9 +273,9 @@ int main()
             {
                 double lightIntensity = direction{zeroP, triangleNormalOrtRef}.dot_product({zeroP, lightOrt});
                 auto triangleColor = sf::Color{
-                    static_cast<uint8_t>(std::max(0.04, lightIntensity) * 50.0f),
-                    static_cast<uint8_t>(std::max(0.04, lightIntensity) * 50.0f),
-                    static_cast<uint8_t>(std::max(0.04, lightIntensity) * 50.0f),
+                    static_cast<uint8_t>(std::max(0.02, lightIntensity) * 50.0f),
+                    static_cast<uint8_t>(std::max(0.02, lightIntensity) * 50.0f),
+                    static_cast<uint8_t>(std::max(0.02, lightIntensity) * 50.0f),
                     255
                 };
                 for (size_t i = 0; i < meshTriangle.size(); ++i)
@@ -303,7 +303,7 @@ int main()
                           [](const auto& a, const auto& b)
                           {
                               // Sort by the average z-coordinate of the triangle
-                              double avgAz = (
+                              /*double avgAz = (
                                       a[0].coordinate(axis::z) +
                                       a[1].coordinate(axis::z) +
                                       a[2].coordinate(axis::z))
@@ -312,8 +312,11 @@ int main()
                                       b[0].coordinate(axis::z) +
                                       b[1].coordinate(axis::z) +
                                       b[2].coordinate(axis::z))
-                                  / 3.0f;
-
+                                  / 3.0f;*/
+                              double avgAz = std::min(a[0].coordinate(axis::z),
+                                                      std::min(a[1].coordinate(axis::z), a[2].coordinate(axis::z)));
+                              double avgBz = std::min(b[0].coordinate(axis::z),
+                                                      std::min(b[1].coordinate(axis::z), b[2].coordinate(axis::z)));
                               return avgAz > avgBz; // Sort in descending order
                           });
 
@@ -323,7 +326,7 @@ int main()
         {
             /*renderTexture.draw(arrayToTriangles(triangle, colors[i]));
             renderTexture.draw(arrayToLineTriangle(triangle, sf::Color::White));*/
-            window.draw(arrayToTriangles(triangle, colors[i]));
+            window.draw(arrayToTriangles(triangle, {50, 50, 50, 255}));
             window.draw(arrayToLineTriangle(triangle, sf::Color::White));
             ++i;
         }
