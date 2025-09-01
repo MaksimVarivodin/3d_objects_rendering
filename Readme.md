@@ -24,9 +24,9 @@ SpaceTraveler represents a deep dive into 3D graphics programming, implementing 
 
 ## Demo
 
-[![SpaceTraveler Demo](SpaceTraveler/docs/demoPic.png)](SpaceTraveler/docs/2025-09-01%2023-15-51.mp4)
+[![SpaceTraveler Demo](SpaceTraveler/docs/demoPic.png)](https://github.com/MaksimVarivodin/3d_objects_rendering/blob/step9/SpaceTraveler/docs/2025-09-01%2023-15-51.mp4)
 
-*Click the image above to view the demonstration video*
+*Click the thumbnail above to view the demonstration video*
 
 ## Educational Resources
 
