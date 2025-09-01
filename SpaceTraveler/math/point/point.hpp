@@ -46,7 +46,7 @@ namespace SpaceEngine
         /**
          * @param coordinates_ array of coordinates for the point.
          */
-        vector<T> coordinates_;
+        vector<T> coordinates_ = {};
 
     public:
         /**
@@ -57,6 +57,10 @@ namespace SpaceEngine
 
         point() = default;
 
+        
+        
+
+        
         /**
          * @brief Initializer list constructor for the point class.
          *
@@ -139,6 +143,17 @@ namespace SpaceEngine
          */
         void set(size_t index, T value);
 
+        /**
+         * @brief Sets the number of dimensions of the point.
+         *
+         * This function sets the number of dimensions of the point.
+         * If the new number of dimensions is less than the current number of dimensions,
+         * the extra coordinates are discarded. If the new number of dimensions is greater
+         * than the current number of dimensions, the new coordinates are initialized to zero.
+         *
+         * @param count The new number of dimensions for the point.
+         */
+        void set_axis_count(size_t count);
 
         /**
          * @brief Adds another point to this point.
@@ -333,7 +348,44 @@ namespace SpaceEngine
         point& operator/=(T value);
 
 
+        bool operator!=(const point& other) const;
+        /**
+         * @brief Checks if another point is compatible with this point.
+         *
+         * This function checks if another point is compatible with this point,
+         * meaning that they have the same number of dimensions.
+         * If the number of dimensions of the other point is less than the number of dimensions of this point,
+         * an exception of type invalid_argument is thrown.
+         *
+         * @param other The point to check compatibility with.
+         * @throws invalid_argument If the number of dimensions of the other point is less than the number of dimensions of this point.
+         */
         void check_compatible(const point& other) const;
+    };
+
+    namespace point_constraints
+    {
+        /**
+         * @brief A global zero point with 4 axes (x, y, z, w) initialized to (0, 0, 0, 1).
+         *
+         * This point can be used as a reference or origin in various calculations.
+         */
+        template <class T>
+        static inline point<T> zero_point{4, T(0), T(0), T(0), T(0)};
+
+        /**
+         * @brief Sets the number of axes for the global zero point.
+         *
+         * This function allows changing the number of axes for the global zero point.
+         * If the new number of axes is less than 1, an exception of type invalid_argument is thrown.
+         * The coordinates of the zero point are adjusted accordingly, with all coordinates set to zero
+         * except for the last coordinate, which is set to one if there are at least two axes.
+         *
+         * @param axes The new number of axes for the global zero point.
+         * @throws invalid_argument If the new number of axes is less than 1.
+         */
+        template <class T>
+        void set_global_zero_axes(size_t axes);
     };
 } // SpaceEngine
 

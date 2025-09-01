@@ -6,11 +6,14 @@
 #define DIRECTION_HPP
 
 #include <memory>
+#include <cmath>      // std::isnan, std::isinf, std::fabs, std::sqrt
+#include <algorithm>
 #include "../point/point.hpp"
 
 namespace SpaceEngine
 {
     using namespace std;
+
 
     /**
     * @class direction
@@ -25,21 +28,68 @@ namespace SpaceEngine
     {
         shared_ptr<point<T>> beginning_; /// The beginning point of the direction.
         shared_ptr<point<T>> end_; /// The end point of the direction.
-
+        T cachedLength_ = T(-1); /// Cached length of the direction, -1 indicates not calculated yet.
+        point<T> cachedRadiusDirection_; /// Cached radius direction (vector from beginning to end).
+        point<T> cachedUnitDirection_; /// Cached unit direction (normalized vector).
     public:
         /**
          * @brief Default constructor for the direction class.
          */
         direction() = default;
 
-        direction(point<T>& begin, point<T>& end);
+        /**
+         * @brief Constructs a direction from two constant references to points.
+         *
+         * @param beginning The beginning point of the direction.
+         * @param end The end point of the direction.
+         * @throws invalid_argument If the beginning and end points do not have the same number of axes.
+         * @note It stores copies of the provided points.
+         */
+        direction(const point<T>& beginning, const point<T>& end);
+
+        /**
+         * @brief Constructs a direction from a constant reference to a point, using the zero point as the beginning.
+         *
+         * @param end The end point of the direction.
+         * @throws invalid_argument If the end point does not have the same number of axes as the zero point.
+         * @note It stores a copy of the provided end point and uses a static zero point for the beginning.
+         */
+        direction(const point<T>& end);
+
+        /**
+         * @brief Constructs a direction from a reference to a point, using the zero point as the beginning.
+         *
+         * @param end The end point of the direction.
+         * @throws invalid_argument If the end point does not have the same number of axes as the zero point.
+         * @note It stores a reference to the provided end point and uses a static zero point for the beginning.
+         */
+        direction(point<T>* end);
+        /**
+         * @brief Constructs a direction from two references to points.
+         *
+         * @param beginning The beginning point of the direction.
+         * @param end The end point of the direction.
+         * @throws invalid_argument If the beginning and end points do not have the same number of axes.
+         * @note It stores references to the provided points without taking ownership.
+         */
+        direction(point<T>* beginning, point<T>* end);
+
+        /**
+         * @brief Constructs a direction from two shared reference pointers to points.
+         *
+         * @param begin A shared pointer to the beginning point of the direction.
+         * @param end A shared pointer to the end point of the direction.
+         * @throws invalid_argument If the beginning and end points do not have the same number of axes.
+         * @note It stores the shared pointers, not allowing shared ownership of the points.
+         */
+        direction(const shared_ptr<point<T>>& begin, const shared_ptr<point<T>>& end);
 
         /**
          * @brief Copy constructor for the direction class.
          *
          * @param other The direction to copy from.
          */
-        direction(const direction& other) = delete;
+        direction(const direction& other);
 
         /**
          * @brief Assignment operator for the direction class.
@@ -49,8 +99,23 @@ namespace SpaceEngine
          * @param other The direction to assign from.
          * @return A reference to this direction.
          */
-        direction& operator=(const direction& other) = delete;
+        direction& operator=(const direction& other);
 
+
+        /**
+         * @brief Move constructor for the direction class.
+         *
+         * @param other The direction to move from.
+         */
+        direction(direction&& other) noexcept;
+
+        /**
+         * @brief Move assignment operator for the direction class.
+         *
+         * @param other The direction to move from.
+         * @return A reference to this direction.
+         */
+        direction& operator=(direction&& other) noexcept;
         /**
          * @brief Retrieves the beginning point of the direction.
          *
@@ -65,14 +130,29 @@ namespace SpaceEngine
          */
         point<T> get_end() const;
 
-        point<T> radius_direction() const;
-
         /**
-         * @brief Calculates the length of the direction.
+         * @brief Retrieves the length of the direction.
          *
          * @return The length of the direction.
          */
-        T length() const;
+        T get_length() const;
+
+
+        /**
+         * @brief Retrieves the unit direction (normalized vector).
+         *
+         * @return A direction representing the unit direction.
+         */
+        direction<T> get_unit_direction() const;
+
+
+        /**
+         * @brief Retrieves the radius direction (vector from beginning to end).
+         *
+         * @return A direction representing the radius direction.
+         */
+        direction<T> get_radius_direction() const;  
+
 
         /**
          * @brief Calculates the cosine of the angle between the direction and a specified axis.
@@ -112,7 +192,7 @@ namespace SpaceEngine
          * @param other The other direction.
          * @return The cross product.
          */
-        point<T> cross_product(const direction& other) const;
+        direction cross_product(const direction& other) const;
 
         /**
          * @brief Calculates the mixed product of this direction and two other directions.
@@ -128,7 +208,7 @@ namespace SpaceEngine
          *
          * @return The orthogonal direction.
          */
-        point<T> ort() const;
+        direction ort() const;
 
 
         /**
@@ -179,7 +259,7 @@ namespace SpaceEngine
          * @param other The point to add.
          * @return A new direction containing the element-wise sum.
          */
-        tuple<point<T>, point<T>> operator+(const point<T>& other) const;
+        direction<T> operator+(const point<T>& other) const;
 
         /**
          * @brief Subtracts a point from this direction element-wise and returns a new direction.
@@ -188,7 +268,7 @@ namespace SpaceEngine
          * @param other The point to subtract.
          * @return A new direction containing the element-wise difference.
          */
-        tuple<point<T>, point<T>> operator-(const point<T>& other) const;
+        direction<T> operator-(const point<T>& other) const;
 
 
         /**
@@ -198,7 +278,7 @@ namespace SpaceEngine
          * @param other The direction to add.
          * @return A new direction containing the element-wise sum.
          */
-        tuple<point<T>, point<T>> operator+(const direction<T>& other) const;
+        direction<T> operator+(const direction<T>& other) const;
 
         /**
          * @brief Subtracts a direction from this direction element-wise and returns a new direction.
@@ -207,7 +287,7 @@ namespace SpaceEngine
          * @param other The direction to subtract.
          * @return A new direction containing the element-wise difference.
          */
-        tuple<point<T>, point<T>> operator-(const direction<T>& other) const;
+        direction<T> operator-(const direction<T>& other) const;
 
 
         /**
@@ -215,14 +295,14 @@ namespace SpaceEngine
          * @param other The point to multiply with.
          * @return A new direction containing the element-wise product.
          */
-        tuple<point<T>, point<T>> operator*(const point<T>& other) const;
+        direction<T> operator*(const point<T>& other) const;
 
         /**
          * @brief Element-wise division by a point of the same dimension.
          * @param other The point to divide by.
          * @return A new direction containing the element-wise quotient.
          */
-        tuple<point<T>, point<T>> operator/(const point<T>& other) const;
+        direction<T> operator/(const point<T>& other) const;
 
 
         /**
@@ -230,14 +310,14 @@ namespace SpaceEngine
          * @param other The direction to multiply with.
          * @return A new direction containing the element-wise product.
          */
-        tuple<point<T>, point<T>> operator*(const direction<T>& other) const;
+        direction<T> operator*(const direction<T>& other) const;
 
         /**
          * @brief Element-wise division by a direction of the same dimension.
          * @param other The direction to divide by.
          * @return A new direction containing the element-wise quotient.
          */
-        tuple<point<T>, point<T>> operator/(const direction<T>& other) const;
+        direction<T> operator/(const direction<T>& other) const;
 
 
         /**
@@ -245,16 +325,26 @@ namespace SpaceEngine
          * @param value The scalar value.
          * @return A new scaled direction.
          */
-        tuple<point<T>, point<T>> operator*(T value) const;
+        direction<T> operator*(T value) const;
 
         /**
          * @brief Divides all coordinates by a scalar and returns a new direction.
          * @param value The scalar divisor.
          * @return A new scaled direction.
          */
-        tuple<point<T>, point<T>> operator/(T value) const;
+        direction<T> operator/(T value) const;
 
         void check_compatible(const direction& other) const;
+
+    private:
+
+        void set_cached_values(const shared_ptr<point<T>>& begin, const shared_ptr<point<T>>& end);
+        /**
+         * @brief Calculates the length of the direction.
+         *
+         * @return The length of the direction.
+         */
+        T length(shared_ptr<point<T>> beginning, shared_ptr<point<T>> end) const;
     };
 }
 #endif //DIRECTION_HPP

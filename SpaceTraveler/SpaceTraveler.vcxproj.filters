@@ -1,132 +1,411 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="math\triangle\triangle.cpp">
+      <Filter>SpaceEngine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="JaggedArray\JaggedArray.inl" />
-    <ClInclude Include="JaggedArray\JaggedArray.h" />
-    <ClInclude Include="BackgroundThread\BackgroundThread.hpp" />
-    <ClInclude Include="BackgroundThread\BackgroundThread.inl" />
-    <ClInclude Include="sfml3\include\SFML\Audio.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Audio\AudioResource.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Audio\Export.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Audio\InputSoundFile.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Audio\Listener.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Audio\Music.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Audio\OutputSoundFile.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Audio\PlaybackDevice.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Audio\Sound.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Audio\SoundBuffer.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Audio\SoundBufferRecorder.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Audio\SoundChannel.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Audio\SoundFileFactory.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Audio\SoundFileFactory.inl" />
-    <ClInclude Include="sfml3\include\SFML\Audio\SoundFileReader.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Audio\SoundFileWriter.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Audio\SoundRecorder.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Audio\SoundSource.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Audio\SoundStream.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Config.hpp" />
-    <ClInclude Include="sfml3\include\SFML\GpuPreference.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\BlendMode.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\CircleShape.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\Color.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\Color.inl" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\ConvexShape.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\CoordinateType.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\Drawable.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\Export.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\Font.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\Glsl.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\Glsl.inl" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\Glyph.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\Image.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\PrimitiveType.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\Rect.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\Rect.inl" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\RectangleShape.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\RenderStates.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\RenderTarget.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\RenderTexture.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\RenderWindow.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\Shader.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\Shape.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\Sprite.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\StencilMode.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\Text.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\Texture.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\Transform.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\Transform.inl" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\Transformable.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\Vertex.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\VertexArray.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\VertexBuffer.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Graphics\View.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Main.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Network.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Network\Export.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Network\Ftp.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Network\Http.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Network\IpAddress.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Network\Packet.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Network\Socket.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Network\SocketHandle.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Network\SocketSelector.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Network\TcpListener.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Network\TcpSocket.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Network\UdpSocket.hpp" />
-    <ClInclude Include="sfml3\include\SFML\OpenGL.hpp" />
-    <ClInclude Include="sfml3\include\SFML\System.hpp" />
-    <ClInclude Include="sfml3\include\SFML\System\Angle.hpp" />
-    <ClInclude Include="sfml3\include\SFML\System\Angle.inl" />
-    <ClInclude Include="sfml3\include\SFML\System\Clock.hpp" />
-    <ClInclude Include="sfml3\include\SFML\System\Err.hpp" />
-    <ClInclude Include="sfml3\include\SFML\System\Exception.hpp" />
-    <ClInclude Include="sfml3\include\SFML\System\Export.hpp" />
-    <ClInclude Include="sfml3\include\SFML\System\FileInputStream.hpp" />
-    <ClInclude Include="sfml3\include\SFML\System\InputStream.hpp" />
-    <ClInclude Include="sfml3\include\SFML\System\MemoryInputStream.hpp" />
-    <ClInclude Include="sfml3\include\SFML\System\NativeActivity.hpp" />
-    <ClInclude Include="sfml3\include\SFML\System\Sleep.hpp" />
-    <ClInclude Include="sfml3\include\SFML\System\String.hpp" />
-    <ClInclude Include="sfml3\include\SFML\System\String.inl" />
-    <ClInclude Include="sfml3\include\SFML\System\SuspendAwareClock.hpp" />
-    <ClInclude Include="sfml3\include\SFML\System\Time.hpp" />
-    <ClInclude Include="sfml3\include\SFML\System\Time.inl" />
-    <ClInclude Include="sfml3\include\SFML\System\Utf.hpp" />
-    <ClInclude Include="sfml3\include\SFML\System\Utf.inl" />
-    <ClInclude Include="sfml3\include\SFML\System\Vector2.hpp" />
-    <ClInclude Include="sfml3\include\SFML\System\Vector2.inl" />
-    <ClInclude Include="sfml3\include\SFML\System\Vector3.hpp" />
-    <ClInclude Include="sfml3\include\SFML\System\Vector3.inl" />
-    <ClInclude Include="sfml3\include\SFML\Window.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Window\Clipboard.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Window\Context.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Window\ContextSettings.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Window\Cursor.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Window\Event.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Window\Event.inl" />
-    <ClInclude Include="sfml3\include\SFML\Window\Export.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Window\GlResource.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Window\Joystick.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Window\Keyboard.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Window\Mouse.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Window\Sensor.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Window\Touch.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Window\VideoMode.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Window\Vulkan.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Window\Window.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Window\WindowBase.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Window\WindowBase.inl" />
-    <ClInclude Include="sfml3\include\SFML\Window\WindowEnums.hpp" />
-    <ClInclude Include="sfml3\include\SFML\Window\WindowHandle.hpp" />
-    <ClInclude Include="math\direction\direction.hpp" />
-    <ClInclude Include="math\direction\direction.inl" />
-    <ClInclude Include="math\matrix\matrix.hpp" />
-    <ClInclude Include="math\matrix\matrix.inl" />
-    <ClInclude Include="math\point\point.hpp" />
-    <ClInclude Include="math\point\point.inl" />
+    <ClInclude Include="sfml3\include\SFML\System\Angle.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\Angle.inl">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Audio.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Audio\AudioResource.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\BlendMode.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\CircleShape.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window\Clipboard.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\Clock.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\Color.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\Color.inl">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Config.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window\Context.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window\ContextSettings.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\ConvexShape.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\CoordinateType.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window\Cursor.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\Drawable.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\Err.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window\Event.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window\Event.inl">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\Exception.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Audio\Export.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\Export.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window\Export.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\Export.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Network\Export.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\FileInputStream.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\Font.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Network\Ftp.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window\GlResource.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\Glsl.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\Glsl.inl">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\Glyph.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\GpuPreference.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Network\Http.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\Image.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Audio\InputSoundFile.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\InputStream.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Network\IpAddress.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window\Joystick.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window\Keyboard.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Audio\Listener.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Main.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\MemoryInputStream.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window\Mouse.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Audio\Music.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\NativeActivity.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Network.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\OpenGL.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Audio\OutputSoundFile.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Network\Packet.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Audio\PlaybackDevice.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\PrimitiveType.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\Rect.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\Rect.inl">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\RectangleShape.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\RenderStates.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\RenderTarget.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\RenderTexture.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\RenderWindow.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window\Sensor.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\Shader.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\Shape.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\Sleep.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Network\Socket.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Network\SocketHandle.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Network\SocketSelector.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Audio\Sound.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Audio\SoundBuffer.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Audio\SoundBufferRecorder.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Audio\SoundChannel.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Audio\SoundFileFactory.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Audio\SoundFileFactory.inl">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Audio\SoundFileReader.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Audio\SoundFileWriter.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Audio\SoundRecorder.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Audio\SoundSource.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Audio\SoundStream.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\Sprite.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\StencilMode.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\String.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\String.inl">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\SuspendAwareClock.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Network\TcpListener.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Network\TcpSocket.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\Text.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\Texture.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\Time.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\Time.inl">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window\Touch.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\Transform.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\Transform.inl">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\Transformable.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Network\UdpSocket.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\Utf.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\Utf.inl">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\Vector2.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\Vector2.inl">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\Vector3.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\System\Vector3.inl">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\Vertex.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\VertexArray.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\VertexBuffer.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window\VideoMode.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Graphics\View.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window\Vulkan.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window\Window.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window\WindowBase.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window\WindowBase.inl">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window\WindowEnums.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml3\include\SFML\Window\WindowHandle.hpp">
+      <Filter>sfml3</Filter>
+    </ClInclude>
+    <ClInclude Include="math\direction\direction.hpp">
+      <Filter>SpaceEngine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\direction\direction.inl">
+      <Filter>SpaceEngine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\matrix\matrix.hpp">
+      <Filter>SpaceEngine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\matrix\matrix.inl">
+      <Filter>SpaceEngine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\point\point.inl">
+      <Filter>SpaceEngine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\point\point.hpp">
+      <Filter>SpaceEngine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\triangle\triangle.hpp">
+      <Filter>SpaceEngine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\triangle\triangle.inl">
+      <Filter>SpaceEngine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="BackgroundThread\BackgroundThread.inl">
+      <Filter>SpaceEngine\BackgroundThread</Filter>
+    </ClInclude>
+    <ClInclude Include="BackgroundThread\BackgroundThread.hpp">
+      <Filter>SpaceEngine\BackgroundThread</Filter>
+    </ClInclude>
+    <ClInclude Include="JaggedArray\JaggedArray.inl">
+      <Filter>SpaceEngine\JaggedArray</Filter>
+    </ClInclude>
+    <ClInclude Include="JaggedArray\JaggedArray.h">
+      <Filter>SpaceEngine\JaggedArray</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="sfml3">
+      <UniqueIdentifier>{6c305b69-fd36-42d9-9e35-bd534352d079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SpaceEngine">
+      <UniqueIdentifier>{1e8838e0-5fef-4423-b57f-d7d9cd68f2b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SpaceEngine\math">
+      <UniqueIdentifier>{e2109bd1-21d2-40f1-b204-45f18da6e86b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SpaceEngine\JaggedArray">
+      <UniqueIdentifier>{19ca0d5c-4294-424c-8d0d-3829ab6cf95d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SpaceEngine\BackgroundThread">
+      <UniqueIdentifier>{f865382c-5411-4b30-9777-9f0b67b2c016}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{bbe765a1-5f7e-4821-8746-3b9cb6134d18}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
