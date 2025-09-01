@@ -197,62 +197,43 @@ int main()
     auto projectionMatrix = matrix<double>::projection_matrix(double(viewSizeX) / double(viewSizeY));
 
 
-    auto translationMatrix = matrix<double>::translation_matrix({4, 0.0f, 0.0f, 20.f});
+    auto translationMatrix = matrix<double>::translation_matrix({4, 0.0f, 0.0f, 8.f});
 
     // Camera
     point<double> vCamera{4, 0.0f, 0.0f, 0.0f}; // Camera position in 4D space
     point<double> vLookDir{4, 0.0f, 0.0f, 1.0f}; // Point the camera is looking at
     // Normalized light direction
-    auto lightOrt = direction<double>{{4, 0.0f, 5.0f, -20.0f}}.ort();
+    auto lightOrt = direction<double>{{4, 0.0f, 1.0f, -1.0f}}.get_unit_direction();
 
-    auto elapsed = clock.getElapsedTime().asSeconds();
-
+    auto elapsedTime = clock.getElapsedTime().asSeconds();
+    auto elapsed = 0.0f;
+    auto fTheta = 0.0f;
+    auto fYaw = 0.0f;
     while (window.isOpen())
     {
         window.clear();
         renderTexture.clear();
         // Time-based rotation angle
-        auto fTheta = clock.getElapsedTime().asSeconds() - elapsed;
-        elapsed += fTheta;
-        //std::cout << "Theta: " << fTheta << "\n";
-
-        while (auto event = window.pollEvent())
-        {
-            if (event->is<sf::Event::Closed>())
-            {
-                window.close();
-            }
-
-            if (auto key = event->getIf<sf::Event::KeyPressed>())
-            {
-                switch (key->scancode)
-                {
-                case sf::Keyboard::Scancode::Up:
-                    vCamera[y] += 100.0* fTheta;
-                    break;
-                case sf::Keyboard::Scancode::Down:
-                    vCamera[y] -= 100.0* fTheta;
-                    break;
-                default:
-                    break;
-                }
-            }
-        }
-
+        elapsed = clock.getElapsedTime().asSeconds() - elapsedTime;
+        elapsedTime += elapsed;
+        point<double> vForward(vLookDir * (8.0 * elapsed));
 
         
-        /*auto rotationMatrix = matrix<double>::rotation_matrix({4, fTheta * 0.3, fTheta * 0.1, 0.});*/
-        auto rotationMatrix = matrix<double>::rotation_matrix({4, 0., 0., 0.});
-        auto worldMatrix = matrix<double>::identity_matrix(4) * rotationMatrix * translationMatrix;
 
-        auto cameraUp = point<double>{{4, 0.0f, 1.0f, 0.0f}};
-        auto cameraForward = direction<double>{vCamera, vLookDir};
+        auto matRotZ = matrix<double>::z_rotation_matrix(fTheta * 0.5);
+        auto matRotX = matrix<double>::x_rotation_matrix(fTheta);
+        auto worldMatrix = matRotZ * matRotX;
+        worldMatrix *= translationMatrix;
+
 
         point<double> vUp = {4, 0., 1., 0.};
         point<double> vTarget = {4, 0., 0., 1.};
+        auto matCameraRot = matrix<double>::y_rotation_matrix(fYaw);
+        vLookDir = vTarget * matCameraRot;
         vTarget = vCamera + vLookDir;
-        auto matView = matrix<double>::look_at(vCamera,  vTarget, vUp);
+        auto matView = matrix<double>::look_at(vCamera, vTarget, vUp);
 
+        
         // Store triangles to rasterize
         std::vector<triangle<double>> toRasterize;
 
@@ -280,10 +261,10 @@ int main()
                 continue;*/
 
 
-            auto triangleNormal = D.cross_product(E).ort();
+            auto triangleNormal = D.cross_product(E).get_unit_direction();
 
 
-            auto cameraToTriangle = direction{D.get_beginning() - vCamera}.ort();
+            auto cameraToTriangle = direction{D.get_beginning() - vCamera};
             auto isInLineOfSight = triangleNormal.dot_product(cameraToTriangle);
 
 
@@ -299,19 +280,23 @@ int main()
                 };
                 for (size_t i = 0; i < meshTriangle.size(); ++i)
                 {
+                    auto matviewproj = projectionMatrix * matView;
                     // World space to view space
-                    triangleProjected[i] *= matView;
+                    triangleProjected[i] *= matviewproj;
 
-                    // Project
-                    triangleProjected[i] *= projectionMatrix;
-                    double w = triangleProjected[i][3];
-                    if (!almost_equal(w, 0.0))
+                    // divide by w
+                    if (std::abs(triangleProjected[i][3]) > std::numeric_limits<float>::epsilon())
+                        triangleProjected[i] /= triangleProjected[i][3];
+                    else
                     {
-                        triangleProjected[i] /= w;
+                        continue;
                     }
-
+                    // invert x/y for correct handedness
+                    triangleProjected[i][0] *= -1.0f;
+                    triangleProjected[i][1] *= -1.0f;
                     // Scale
-                    triangleProjected[i] += 1.0f;
+                    triangleProjected[i] += point<double>{4, 1.0f, 1.0f, 0.0f};
+
                     triangleProjected[i] *= 0.5f * double(viewSizeX);
                 }
                 // Add to rasterization list if within view

@@ -371,7 +371,7 @@ namespace SpaceEngine
          * This point can be used as a reference or origin in various calculations.
          */
         template <class T>
-        static inline point<T> zero_point{4, T(0), T(0), T(0), T(0)};
+        static inline point<T> zero_point{4, T(0), T(0), T(0), T(1)};
 
         /**
          * @brief Sets the number of axes for the global zero point.
