@@ -54,7 +54,7 @@ namespace SpaceEngine
           columns_(data.empty() ? 0 : data[0].axes())
     {
         for (size_t i = 0; i < rows_; i++)
-            table_[i] = data[i].radius_direction().get_coordinates();
+            table_[i] = data[i].get_radius_direction().get_coordinates();
         check_validity();
     }
 
@@ -787,10 +787,72 @@ namespace SpaceEngine
             [   ][      ][1     ][  ]
             [tx ][ty    ][tz    ][1 ]
          */
-        for (size_t i = 0; i < translation.axes() - 1; ++i)
-            translation_matrix(translation.axes() - 1, i) = translation.coordinate(i);
+        for (size_t i = 0; i < translation.axes() - 1; i++)
+            translation_matrix(i, translation.axes() - 1) = translation.coordinate(i);
+
         return translation_matrix;
     }
+
+    template <class T>
+    inline matrix<T> matrix<T>::point_at(const point<T>& pos, const point<T>& target, const point<T>& up)
+    {
+        auto newForward = target - pos;
+        auto camera_forward = direction(newForward).get_unit_direction();
+
+        auto a = newForward * (direction(up).dot_product(camera_forward));
+        auto newUp = up - a;
+
+        auto camera_up = direction(newUp).get_unit_direction();
+        auto camera_right = camera_up.cross_product(camera_forward).get_unit_direction();
+
+        point<T> cRight = camera_right.get_end();
+        point<T> cUp = camera_up.get_end();
+        point<T> cForward = camera_forward.get_end();
+        point<T> cPosition = camera_forward.get_beginning();
+        /*
+            [rx  ry  rz  0]
+            [ux  uy  uz  0]
+            [fx  fy  fz  0]
+            [px  py  pz  1]
+         */
+        matrix<T> p_at(4, 4);
+        p_at(0, 0) = cRight[x];
+        p_at(0, 1) = cRight[y];
+        p_at(0, 2) = cRight[z];
+        p_at(1, 0) = cUp[x];
+        p_at(1, 1) = cUp[y];
+        p_at(1, 2) = cUp[z];
+        p_at(2, 0) = cForward[x];
+        p_at(2, 1) = cForward[y];
+        p_at(2, 2) = cForward[z];
+        p_at(3, 0) = cPosition[x];
+        p_at(3, 1) = cPosition[y];
+        p_at(3, 2) = cPosition[z];
+        p_at(3, 3) = T(1);
+        return p_at;
+    }
+
+    template <class T>
+    matrix<T> matrix<T>::look_at(const point<T>& pos, const point<T>& target, const point<T>& up)
+    {
+        matrix<T> p_at(point_at(pos, target, up));
+        matrix<T> l_at(4, 4);
+        l_at(0, 0) = p_at(0, 0);
+        l_at(0, 1) = p_at(1, 0);
+        l_at(0, 2) = p_at(2, 0);
+        l_at(1, 0) = p_at(0, 1);
+        l_at(1, 1) = p_at(1, 1);
+        l_at(1, 2) = p_at(2, 1);
+        l_at(2, 0) = p_at(0, 2);
+        l_at(2, 1) = p_at(1, 2);
+        l_at(2, 2) = p_at(2, 2);
+        l_at(3, 0) = -(p_at(3, 0) * l_at(0, 0) + p_at(3, 1) * l_at(1, 0) + p_at(3, 2) * l_at(2, 0));
+        l_at(3, 1) = -(p_at(3, 0) * l_at(0, 1) + p_at(3, 1) * l_at(1, 1) + p_at(3, 2) * l_at(2, 1));
+        l_at(3, 2) = -(p_at(3, 0) * l_at(0, 2) + p_at(3, 1) * l_at(1, 2) + p_at(3, 2) * l_at(2, 2));
+        l_at(3, 3) = T(1);
+        return l_at;
+    }
+
 
     template <class T>
     point<T> point<T>::operator*(const matrix<T>& m) const
@@ -803,7 +865,7 @@ namespace SpaceEngine
         {
             T sum{0};
             for (size_t j = 0; j < axes(); ++j)
-                sum += coordinate(j) * m(j, i);
+                sum += coordinate(j) * m(i, j);
             result[i] = sum;
         }
         return result;
@@ -819,12 +881,10 @@ namespace SpaceEngine
         {
             T sum{0};
             for (size_t j = 0; j < axes(); ++j)
-                sum += pCopy.coordinate(j) * m(j, i);
+                sum += pCopy.coordinate(j) * m(i, j);
             coordinates_[i] = sum;
         }
         return *this;
-        
     }
-
 } // SpaceEngine
 #endif

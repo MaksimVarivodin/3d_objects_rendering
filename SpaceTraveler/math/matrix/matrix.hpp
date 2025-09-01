@@ -535,8 +535,33 @@ namespace SpaceEngine
         static matrix projection_matrix(T AspectRatio, T Near = 0.1, T Far = 1000.0, T FOV = 90.0, size_t rows = 4,
                                         size_t columns = 4);
 
+        /**
+         * @brief Create a translation matrix based on the given translation vector.
+         *
+         * @param translation Translation vector.
+         * @return Translation matrix.
+         */
         static matrix translation_matrix(point<T> translation);
-        
+
+
+        /**
+         * @brief Create a point-at matrix based on the given position, target, and up vector.
+         *
+         * @param pos Position of the point.
+         * @param target Target point to look at.
+         * @param up Up vector.
+         * @return Point-at matrix.
+         */
+        static matrix point_at(const point<T>& pos, const point<T>& target, const point<T>& up);
+
+        /**
+         * @brief Create a look-at matrix based on the given position, target, and up vector.
+         * @param pos  Position of the camera.
+         * @param target  Target point to look at.
+         * @param up  Up vector.
+         * @return Look-at matrix.
+         */
+        static matrix look_at(const point<T>& pos, const point<T>& target, const point<T>& up);
     };
 } // SpaceEngine
 

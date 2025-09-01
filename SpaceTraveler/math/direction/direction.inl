@@ -19,16 +19,117 @@ namespace SpaceEngine
     }
 
     template <class T>
-    direction<T>::direction(point<T>& begin, point<T>& end)
-        : beginning_(shared_ptr<point<T>>(&begin, [](point<T>*)
+    direction<T>::direction(const point<T>& beginning, const point<T>& end)
+        : beginning_(make_shared<point<T>>(beginning)),
+          end_(make_shared<point<T>>(end))
+    {
+        if (beginning_->axes() != end_->axes())
+            throw std::invalid_argument("Beginning and end points must have the same number of axes");
+        set_cached_values(beginning_, end_);
+    }
+
+    template <class T>
+    direction<T>::direction(const point<T>& end)
+        : beginning_(shared_ptr<point<T>>(&point_constraints::zero_point<T>, [](point<T>*)
           {
           })),
-          end_(shared_ptr<point<T>>(&end, [](point<T>*)
+          end_(make_shared<point<T>>(end)),
+          cachedLength_(-1)
+    {
+        if (beginning_->axes() != end_->axes())
+            throw std::invalid_argument("Beginning and end points must have the same number of axes");
+        set_cached_values(beginning_, end_);
+    }
+
+    template <class T>
+    direction<T>::direction(point<T>* end)
+        : beginning_(shared_ptr<point<T>>(&point_constraints::zero_point<T>, [](point<T>*)
+          {
+          })),
+          end_(shared_ptr<point<T>>(end, [](point<T>*)
           {
           }))
     {
         if (beginning_->axes() != end_->axes())
             throw std::invalid_argument("Beginning and end points must have the same number of axes");
+        set_cached_values(beginning_, end_);
+    }
+
+
+    template <class T>
+    direction<T>::direction(point<T>* begin, point<T>* end)
+        : beginning_(shared_ptr<point<T>>(begin, [](point<T>*)
+          {
+          })),
+          end_(shared_ptr<point<T>>(end, [](point<T>*)
+          {
+          }))
+    {
+        if (beginning_->axes() != end_->axes())
+            throw std::invalid_argument("Beginning and end points must have the same number of axes");
+        set_cached_values(beginning_, end_);
+    }
+
+    template <class T>
+    direction<T>::direction(const shared_ptr<point<T>>& begin, const shared_ptr<point<T>>& end)
+        : beginning_(begin),
+          end_(end)
+    {
+        if (beginning_->axes() != end_->axes())
+            throw std::invalid_argument("Beginning and end points must have the same number of axes");
+        set_cached_values(beginning_, end_);
+    }
+
+    template <class T>
+    direction<T>::direction(const direction& other)
+        : direction(other.beginning_, other.end_)
+    {
+    }
+
+    template <class T>
+    direction<T>& direction<T>::operator=(const direction& other)
+    {
+        direction<T> copy(other);
+        *this = std::move(copy);
+        return *this;
+    }
+
+    template <class T>
+    direction<T>::direction(direction&& other) noexcept
+        : beginning_{
+              std::move(other.beginning_)
+          },
+          end_{
+              std::move(other.end_)
+          },
+          cachedLength_(other.cachedLength_),
+          cachedRadiusDirection_(other.cachedRadiusDirection_),
+          cachedUnitDirection_(other.cachedUnitDirection_)
+    {
+        other.beginning_.reset();
+        other.end_.reset();
+        other.cachedLength_ = T(-1);
+        cachedRadiusDirection_ = point<T>{cachedRadiusDirection_.axes()};
+        cachedUnitDirection_ = point<T>{cachedUnitDirection_.axes()};
+    }
+
+    template <class T>
+    direction<T>& direction<T>::operator=(direction&& other) noexcept
+    {
+        if (this != &other)
+        {
+            this->beginning_ = std::move(other.beginning_);
+            this->end_ = std::move(other.end_);
+            cachedLength_ = other.cachedLength_;
+            cachedRadiusDirection_ = other.cachedRadiusDirection_;
+            cachedUnitDirection_ = other.cachedUnitDirection_;
+            other.cachedLength_ = T(-1);
+            cachedRadiusDirection_ = point<T>{cachedRadiusDirection_.axes()};
+            cachedUnitDirection_ = point<T>{cachedUnitDirection_.axes()};
+            other.beginning_.reset();
+            other.end_.reset();
+        }
+        return *this;
     }
 
     template <class T>
@@ -44,22 +145,29 @@ namespace SpaceEngine
     }
 
     template <class T>
-    point<T> direction<T>::radius_direction() const
+    T direction<T>::get_length() const
     {
-        auto begin = get_beginning();
+        return cachedLength_;
+    }
 
-        point<T> radius(get_end());
-        for (size_t i = 0; i < begin.axes(); ++i)
-            radius[i] -= begin[i];
-        return radius;
+    template <class T>
+    direction<T> direction<T>::get_unit_direction() const
+    {
+        return direction(cachedUnitDirection_);
+    }
+
+    template <class T>
+    direction<T> direction<T>::get_radius_direction() const
+    {
+        return direction(cachedRadiusDirection_);
     }
 
 
     template <class T>
-    T direction<T>::length() const
+    T direction<T>::length(shared_ptr<point<T>> beginning, shared_ptr<point<T>> end) const
     {
         T sum(0);
-        for (T i : this->radius_direction().get_coordinates())
+        for (auto r = *end - *beginning; T i : r.get_coordinates())
             sum += i * i;
         return T(sqrt(sum));
     }
@@ -67,7 +175,7 @@ namespace SpaceEngine
     template <class T>
     T direction<T>::cos_axis_angle(size_t axis) const
     {
-        return this->radius_direction().coordinate(axis) / length();
+        return this->get_radius_direction().get_end().coordinate(axis) / cachedLength_;
     }
 
     template <class T>
@@ -75,13 +183,13 @@ namespace SpaceEngine
     {
         check_compatible(other);
         T sum(0);
-        auto a = this->radius_direction();
-        auto b = other.radius_direction();
+        auto a = this->get_radius_direction().get_end();
+        auto b = other.get_radius_direction().get_end();
         if (a->axes() != b->axes())
             throw std::invalid_argument("Cosine angle requires directions with the same number of axes");
         for (size_t i = 0; i < a.axes(); ++i)
             sum += a.coordinate(i) * b.coordinate(i);
-        return sum / (this->length() * other.length());
+        return sum / (this->get_length() * other.get_length());
     }
 
     template <class T>
@@ -90,7 +198,7 @@ namespace SpaceEngine
         check_compatible(other);
         if (other.zero_direction())
             throw std::invalid_argument("Cannot project on zero-direction");
-        return dot_product(other) / other.length();
+        return dot_product(other) / other.get_length();
     }
 
     template <class T>
@@ -99,8 +207,8 @@ namespace SpaceEngine
         check_compatible(other);
 
         T sum(0);
-        auto a = this->radius_direction();
-        auto b = other.radius_direction();
+        auto a = this->get_radius_direction().get_end();
+        auto b = other.get_radius_direction().get_end();
 
         for (size_t i = 0; i < a.axes(); ++i)
             sum += a.coordinate(i) * b.coordinate(i);
@@ -108,11 +216,11 @@ namespace SpaceEngine
     }
 
     template <class T>
-    point<T> direction<T>::cross_product(const direction<T>& other) const
+    direction<T> direction<T>::cross_product(const direction<T>& other) const
     {
         check_compatible(other);
-        auto a = this->radius_direction();
-        auto b = other.radius_direction();
+        auto a = this->get_radius_direction().get_end();
+        auto b = other.get_radius_direction().get_end();
 
         if (a.axes() < 3 || b.axes() < 3)
             throw std::invalid_argument("Cross product is only defined for 3D directions");
@@ -123,26 +231,27 @@ namespace SpaceEngine
         result[z] = a.coordinate(x) * b.coordinate(y) - a.coordinate(y) * b.coordinate(x);
         if (a.axes() > 3)
             result[w] = T(1);
-        return result;
+        return direction(result);
     }
 
 
     template <class T>
-    point<T> direction<T>::ort() const
+    direction<T> direction<T>::ort() const
     {
-        auto o = this->radius_direction();
-        T l(length());
-        if (almost_equal(l, T(0.0)))
+        auto o = this->get_radius_direction().get_end();
+
+        if (almost_equal(cachedLength_, T(0.0)))
             throw std::invalid_argument("Cannot divide by zero");
-        return o / l;
+        return {o / cachedLength_};
     }
 
     template <class T>
+
     bool direction<T>::equal(const direction<T>& other) const
     {
         check_compatible(other);
-        auto a = this->radius_direction();
-        auto b = other.radius_direction();
+        auto a = this->get_radius_direction().get_end();
+        auto b = other.get_radius_direction().get_end();
 
         for (int i = 0; i < a.axes(); ++i)
             if (a[i] != b[i])
@@ -153,19 +262,21 @@ namespace SpaceEngine
 
 
     template <class T>
+
     bool direction<T>::orthogonal(const direction<T>& other) const
     {
         return dot_product(other) == 0;
     }
 
     template <class T>
+
     bool direction<T>::collinear(const direction<T>& other) const
     {
         check_compatible(other);
         if (zero_direction() || other.zero_direction())
             throw std::invalid_argument("Cannot calculate collinearity with zero-direction");
-        auto a = this->radius_direction();
-        auto b = other.radius_direction();
+        auto a = this->get_radius_direction().get_end();
+        auto b = other.get_radius_direction().get_end();
 
         // Найдем первую ненулевую координату в векторе b
         size_t non_zero_index = a.axes();
@@ -177,10 +288,10 @@ namespace SpaceEngine
                 break;
             }
         }
-        
+
         if (non_zero_index == a.axes())
             return false; // b - нулевой вектор
-        
+
         T division = a.coordinate(non_zero_index) / b.coordinate(non_zero_index);
 
         for (size_t i = 0; i < a.axes(); ++i)
@@ -194,9 +305,10 @@ namespace SpaceEngine
 
 
     template <class T>
+
     bool direction<T>::zero_direction() const
     {
-        auto a = this->radius_direction();
+        auto a = this->get_radius_direction().get_end();
         for (T i : a.get_coordinates())
             if (!almost_equal(i, T(0.0)))
                 return false;
@@ -206,103 +318,104 @@ namespace SpaceEngine
     // ========================= Operator implementations =========================
 
     template <class T>
-    tuple<point<T>, point<T>> direction<T>::operator+(const point<T>& other) const
+    direction<T> direction<T>::operator+(const point<T>& other) const
     {
         auto A = get_beginning();
         auto B = get_end();
-        return tuple(A, B + other);
+        return direction(A, B + other);
     }
 
     template <class T>
-    tuple<point<T>, point<T>> direction<T>::operator-(const point<T>& other) const
+    direction<T> direction<T>::operator-(const point<T>& other) const
     {
         auto A = get_beginning();
         auto B = get_end();
-        return tuple(A, B - other);
+        return direction(A, B - other);
     }
 
     // direction<T> arguments (forward to point versions)
     template <class T>
-    tuple<point<T>, point<T>> direction<T>::operator+(const direction<T>& other) const
+    direction<T> direction<T>::operator+(const direction<T>& other) const
     {
         auto A = get_beginning();
         auto B = get_end();
         auto C = other.get_beginning();
         auto D = other.get_end();
-        return tuple(A, B + (D - C));
+        return direction(A, B + (D - C));
     }
 
     template <class T>
-    tuple<point<T>, point<T>> direction<T>::operator-(const direction<T>& other) const
+    direction<T> direction<T>::operator-(const direction<T>& other) const
     {
         auto A = get_beginning();
         auto B = get_end();
         auto C = other.get_beginning();
         auto D = other.get_end();
-        return tuple(A, B - (D - C));
+        return direction(A, B - (D - C));
     }
 
 
     // Same-N point element-wise ops
     template <class T>
-    tuple<point<T>, point<T>> direction<T>::operator*(const point<T>& other) const
+    direction<T> direction<T>::operator*(const point<T>& other) const
     {
         auto a = get_beginning();
         auto b = get_end();
-        return tuple(a / other, b / other);
+        return direction(a / other, b / other);
     }
 
     template <class T>
-    tuple<point<T>, point<T>> direction<T>::operator/(const point<T>& other) const
+    direction<T> direction<T>::operator/(const point<T>& other) const
     {
         auto a = get_beginning();
         auto b = get_end();
-        return tuple(a / other, b / other);
+        return direction(a / other, b / other);
     }
 
 
     // Same-N direction element-wise ops (forward to point ones)
     template <class T>
-    tuple<point<T>, point<T>> direction<T>::operator*(const direction<T>& other) const
+    direction<T> direction<T>::operator*(const direction<T>& other) const
     {
         auto A = get_beginning();
         auto B = get_end();
         auto C = other.get_beginning();
         auto D = other.get_end();
 
-        return tuple(A * C, B * D);
+        return direction(A * C, B * D);
     }
 
     template <class T>
-    tuple<point<T>, point<T>> direction<T>::operator/(const direction<T>& other) const
+    direction<T> direction<T>::operator/(const direction<T>& other) const
     {
         auto A = get_beginning();
         auto B = get_end();
         auto C = other.get_beginning();
         auto D = other.get_end();
 
-        return tuple(A / C, B / D);
+        return direction(A / C, B / D);
     }
 
 
     // Scalar ops
     template <class T>
-    tuple<point<T>, point<T>> direction<T>::operator*(T value) const
+    direction<T> direction<T>::operator*(T value) const
     {
         auto A = get_beginning();
         auto B = get_end();
-        return tuple(A * value, B * value);
+        return direction(A * value, B * value);
     }
 
     template <class T>
-    tuple<point<T>, point<T>> direction<T>::operator/(T value) const
+    direction<T> direction<T>::operator/(T value) const
     {
         auto A = get_beginning();
         auto B = get_end();
-        return tuple(A / value, B / value);
+        return direction(A / value, B / value);
     }
 
     template <class T>
+
     void direction<T>::check_compatible(const direction& other) const
     {
         auto A = get_beginning();
@@ -313,6 +426,14 @@ namespace SpaceEngine
             A.axes() != C.axes() ||
             C.axes() != D.axes())
             throw std::invalid_argument("Directions must have the same number of axes");
+    }
+
+    template <class T>
+    void direction<T>::set_cached_values(const shared_ptr<point<T>>& begin, const shared_ptr<point<T>>& end)
+    {
+        cachedLength_ = this->length(begin, end);
+        cachedRadiusDirection_ = *end - *begin;
+        cachedUnitDirection_ = cachedRadiusDirection_ / cachedLength_;
     }
 }
 #endif

@@ -29,6 +29,7 @@
     <ClInclude Include="math\point\point.hpp" />
     <ClInclude Include="math\point\point.inl" />
     <ClInclude Include="math\triangle\triangle.hpp" />
+    <ClInclude Include="math\triangle\triangle.inl" />
     <ClInclude Include="sfml3\include\SFML\Audio.hpp" />
     <ClInclude Include="sfml3\include\SFML\Audio\AudioResource.hpp" />
     <ClInclude Include="sfml3\include\SFML\Audio\Export.hpp" />
@@ -151,8 +152,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\Readme.md" />
+    <Content Include="assets\axis.obj" />
+    <Content Include="assets\ico16x16.png" />
+    <Content Include="assets\ico20x20.png" />
+    <Content Include="assets\ico70x70.png" />
+    <Content Include="assets\icon32x32.png" />
     <Content Include="assets\teapot.obj" />
     <Content Include="assets\VideoShip.obj" />
+    <Content Include="docs\ErrorRenderingAxis.png" />
     <Content Include="sfml3\bin\sfml-audio-3.dll" />
     <Content Include="sfml3\bin\sfml-audio-d-3.dll" />
     <Content Include="sfml3\bin\sfml-graphics-3.dll" />
