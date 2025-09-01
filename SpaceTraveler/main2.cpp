@@ -57,7 +57,6 @@ struct mesh
             string prefix;
             ss >> prefix;
 
-            
 
             if (prefix == "v") // vertex
             {
@@ -98,6 +97,7 @@ private:
     float fTheta; // Spins World transform
     float fAlpha;
     sf::Vector2i prevMousePos;
+
 public:
     olcEngine3D()
     {
@@ -422,6 +422,7 @@ public:
             return 2; // Return two newly formed triangles which form a quad
         }
     }
+
     bool keyCheck(float fElapsedTime)
     {
         while (auto event = pollEvent())
@@ -430,7 +431,7 @@ public:
             {
                 return false;
             }
-            if (auto mouse = event-> getIf<sf::Event::MouseMoved>())
+            if (auto mouse = event->getIf<sf::Event::MouseMoved>())
             {
                 sf::Vector2i curMousePos = {mouse->position.x, mouse->position.y};
                 auto delta = curMousePos - prevMousePos;
@@ -438,8 +439,7 @@ public:
                 if (this->hasFocus())
                 {
                     fYaw += (float)(delta.x) * fElapsedTime * 0.1f;
-                    fAlpha+= (float)(delta.y) * fElapsedTime * 0.1f;
-                    
+                    fAlpha += (float)(delta.y) * fElapsedTime * 0.1f;
                 }
             }
             if (auto key = event->getIf<sf::Event::KeyPressed>())
@@ -453,10 +453,10 @@ public:
                     vCamera.y -= 8.0f * fElapsedTime; // Travel Downwards
                     break;
                 case sf::Keyboard::Scancode::Left:
-                    vCamera.x -= 8.0f * fElapsedTime; // Travel Along X-Axis
+                    vCamera.x += 8.0f * fElapsedTime; // Travel Along X-Axis
                     break;
                 case sf::Keyboard::Scancode::Right:
-                    vCamera.x += 8.0f * fElapsedTime; // Travel Along X-Axis
+                    vCamera.x -= 8.0f * fElapsedTime; // Travel Along X-Axis
                     break;
                 default:
                     break;
@@ -494,6 +494,7 @@ public:
             255
         };
     }
+
     sf::VertexArray arrayToTriangles(const triangle& tr)
     {
         sf::VertexArray triangles(sf::PrimitiveType::Triangles, 3);
@@ -507,9 +508,8 @@ public:
         triangles[2].color = tr.col;
         return triangles;
     }
+
 public:
-
-
     bool perFrame(float fElapsedTime)
     {
         if (!keyCheck(fElapsedTime))
@@ -538,7 +538,7 @@ public:
         mat4x4 matRotCamX = Matrix_MakeRotationX(fAlpha);
         mat4x4 matCameraRot;
         matCameraRot = Matrix_MultiplyMatrix(matRotCamX, matRotCamY);
-        
+
         vLookDir = Matrix_MultiplyVector(matCameraRot, vTarget);
         vTarget = Vector_Add(vCamera, vLookDir);
         mat4x4 matCamera = Matrix_PointAt(vCamera, vTarget, vUp);
@@ -729,10 +729,11 @@ int main()
     olcEngine3D demo;
     sf::Image icon;
     // Убедитесь, что путь к файлу иконки правильный.
-    if (icon.loadFromFile("assets/icon16x16.png")) 
+    if (icon.loadFromFile("assets/icon16x16.png"))
     {
         demo.setIcon(icon);
     }
+
     sf::Clock clock;
     auto elapsedTime = clock.getElapsedTime().asSeconds();
     auto elapsed = 0.0f;
@@ -740,9 +741,37 @@ int main()
     {
         elapsed = clock.getElapsedTime().asSeconds() - elapsedTime;
         elapsedTime += elapsed;
+        int FPS = (int)(1.0f / elapsed);
+        std::cout << "FPS: " << FPS << std::endl;
         if (!demo.perFrame(elapsed))
             break;
         demo.display();        
     }
+    /*sf::RenderWindow window(sf::VideoMode({800, 600}), "Vertex Array Points");
+
+    // Создаем массив вершин с типом sf::Points
+    sf::VertexArray points(sf::PrimitiveType::Points);
+
+    // Добавляем несколько пикселей (вершин)
+    points.append(sf::Vertex(sf::Vector2f(100.f, 100.f), sf::Color::Red));
+    points.append(sf::Vertex(sf::Vector2f(150.f, 200.f), sf::Color::Green));
+    points.append(sf::Vertex(sf::Vector2f(400.f, 300.f), sf::Color::Blue));
+
+    while (window.isOpen())
+    {
+        while (auto event = window.pollEvent())
+        {
+            if (event->is<sf::Event::Closed>())
+            {
+                window.close();
+            }
+            
+        }
+        window.clear();
+        window.draw(points); // Рисуем все точки одним вызовом
+        window.display();
+    }*/
+
+
     return 0;
 }
