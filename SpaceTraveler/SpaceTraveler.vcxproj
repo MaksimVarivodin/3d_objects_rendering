@@ -159,6 +159,8 @@
     <Content Include="assets\mountains.obj" />
     <Content Include="assets\teapot.obj" />
     <Content Include="assets\VideoShip.obj" />
+    <Content Include="docs\2025-09-01 23-15-51.mp4" />
+    <Content Include="docs\demoPic.png" />
     <Content Include="docs\ErrorRenderingAxis.png" />
     <Content Include="docs\ErrorRenderingAxis2.png" />
     <Content Include="docs\ErrorRenderingAxis3.png" />
