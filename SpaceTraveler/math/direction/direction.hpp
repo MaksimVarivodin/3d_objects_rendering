@@ -5,66 +5,84 @@
 #ifndef DIRECTION_HPP
 #define DIRECTION_HPP
 
-#include <array>
+#include <memory>
+#include <cmath>      // std::isnan, std::isinf, std::fabs, std::sqrt
+#include <algorithm>
 #include "../point/point.hpp"
 
-namespace engine_lib
+namespace SpaceEngine
 {
     using namespace std;
 
+
     /**
     * @class direction
-    * @brief A class representing a direction in N-dimensional space, inheriting from the point class.
+    * @brief A class representing a direction in N-dimensional space.
     *
     * @tparam T The type of the coordinates (e.g., float, double).
-    * @tparam N The number of dimensions.
+    * @note It doesn't store elements, but rather references to two points: the beginning and the end of the direction.
+    * @throws invalid_argument If the beginning and end points do not have the same number of axes.
     */
-    template <class T, size_t N>
-    class direction : public point<T, N>
+    template <class T>
+    class direction
     {
-        array<T, N> beginning_; /// The beginning point of the direction.
-        array<T, N> end_; /// The end point of the direction.
-
+        shared_ptr<point<T>> beginning_; /// The beginning point of the direction.
+        shared_ptr<point<T>> end_; /// The end point of the direction.
+        T cachedLength_ = T(-1); /// Cached length of the direction, -1 indicates not calculated yet.
+        point<T> cachedRadiusDirection_; /// Cached radius direction (vector from beginning to end).
+        point<T> cachedUnitDirection_; /// Cached unit direction (normalized vector).
     public:
         /**
          * @brief Default constructor for the direction class.
          */
-        direction();
-        /**
-         * @brief Initializer list constructor for the direction class.
-         *
-         * This constructor initializes a direction from initializer list.
-         */
-        direction(initializer_list<T> init);
-        /**
-         * @brief Constructs a direction from a single point.
-         *
-         * @param direction_point The point representing the direction.
-         */
-        direction(const point<T, N>& direction_point);
+        direction() = default;
 
         /**
-         * @brief Constructs a direction from two points.
+         * @brief Constructs a direction from two constant references to points.
          *
-         * @param a The starting point.
-         * @param b The ending point.
+         * @param beginning The beginning point of the direction.
+         * @param end The end point of the direction.
+         * @throws invalid_argument If the beginning and end points do not have the same number of axes.
+         * @note It stores copies of the provided points.
          */
-        direction(const point<T, N>& a, const point<T, N>& b);
+        direction(const point<T>& beginning, const point<T>& end);
 
         /**
-         * @brief Constructs a direction from an array of direction coordinates.
+         * @brief Constructs a direction from a constant reference to a point, using the zero point as the beginning.
          *
-         * @param direction_coordinates The array representing the direction coordinates.
+         * @param end The end point of the direction.
+         * @throws invalid_argument If the end point does not have the same number of axes as the zero point.
+         * @note It stores a copy of the provided end point and uses a static zero point for the beginning.
          */
-        direction(const array<T, N>& direction_coordinates);
+        direction(const point<T>& end);
 
         /**
-         * @brief Constructs a direction from two arrays of coordinates.
+         * @brief Constructs a direction from a reference to a point, using the zero point as the beginning.
          *
-         * @param a The array representing the starting point coordinates.
-         * @param b The array representing the ending point coordinates.
+         * @param end The end point of the direction.
+         * @throws invalid_argument If the end point does not have the same number of axes as the zero point.
+         * @note It stores a reference to the provided end point and uses a static zero point for the beginning.
          */
-        direction(const array<T, N>& a, const array<T, N>& b);
+        direction(point<T>* end);
+        /**
+         * @brief Constructs a direction from two references to points.
+         *
+         * @param beginning The beginning point of the direction.
+         * @param end The end point of the direction.
+         * @throws invalid_argument If the beginning and end points do not have the same number of axes.
+         * @note It stores references to the provided points without taking ownership.
+         */
+        direction(point<T>* beginning, point<T>* end);
+
+        /**
+         * @brief Constructs a direction from two shared reference pointers to points.
+         *
+         * @param begin A shared pointer to the beginning point of the direction.
+         * @param end A shared pointer to the end point of the direction.
+         * @throws invalid_argument If the beginning and end points do not have the same number of axes.
+         * @note It stores the shared pointers, not allowing shared ownership of the points.
+         */
+        direction(const shared_ptr<point<T>>& begin, const shared_ptr<point<T>>& end);
 
         /**
          * @brief Copy constructor for the direction class.
@@ -72,26 +90,69 @@ namespace engine_lib
          * @param other The direction to copy from.
          */
         direction(const direction& other);
+
+        /**
+         * @brief Assignment operator for the direction class.
+         *
+         * This operator is deleted to prevent assignment of direction objects.
+         *
+         * @param other The direction to assign from.
+         * @return A reference to this direction.
+         */
+        direction& operator=(const direction& other);
+
+
+        /**
+         * @brief Move constructor for the direction class.
+         *
+         * @param other The direction to move from.
+         */
+        direction(direction&& other) noexcept;
+
+        /**
+         * @brief Move assignment operator for the direction class.
+         *
+         * @param other The direction to move from.
+         * @return A reference to this direction.
+         */
+        direction& operator=(direction&& other) noexcept;
         /**
          * @brief Retrieves the beginning point of the direction.
          *
          * @return An array representing the beginning point coordinates.
          */
-        array<T, N> get_beginning() const;
+        point<T> get_beginning() const;
 
         /**
          * @brief Retrieves the end point of the direction.
          *
          * @return An array representing the end point coordinates.
          */
-        array<T, N> get_end() const;
+        point<T> get_end() const;
 
         /**
-         * @brief Calculates the length of the direction.
+         * @brief Retrieves the length of the direction.
          *
          * @return The length of the direction.
          */
-        T length() const;
+        T get_length() const;
+
+
+        /**
+         * @brief Retrieves the unit direction (normalized vector).
+         *
+         * @return A direction representing the unit direction.
+         */
+        direction<T> get_unit_direction() const;
+
+
+        /**
+         * @brief Retrieves the radius direction (vector from beginning to end).
+         *
+         * @return A direction representing the radius direction.
+         */
+        direction<T> get_radius_direction() const;  
+
 
         /**
          * @brief Calculates the cosine of the angle between the direction and a specified axis.
@@ -149,12 +210,6 @@ namespace engine_lib
          */
         direction ort() const;
 
-        /**
-         * @brief Returns a reference to the orthogonal direction of this direction.
-         *
-         * @return A reference to the orthogonal direction.
-         */
-        direction& ort();
 
         /**
          * @brief Checks if this direction is a zero direction.
@@ -180,19 +235,19 @@ namespace engine_lib
         bool orthogonal(const direction& other) const;
 
         /**
-         * @brief Checks if this direction is colinear with another direction.
+         * @brief Checks if this direction is collinear with another direction.
          *
          * @param other The other direction.
-         * @return True if the directions are colinear, false otherwise.
+         * @return True if the directions are collinear, false otherwise.
          */
         bool collinear(const direction& other) const;
 
         /**
-         * @brief Checks if this direction is complanar with two other directions.
+         * @brief Checks if this direction is coplanar with two other directions.
          *
          * @param b The second direction.
          * @param c The third direction.
-         * @return True if the directions are complanar, false otherwise.
+         * @return True if the directions are coplanar, false otherwise.
          */
         bool coplanar(const direction& b, const direction& c) const;
 
@@ -204,8 +259,7 @@ namespace engine_lib
          * @param other The point to add.
          * @return A new direction containing the element-wise sum.
          */
-        template <size_t M>
-        direction operator+(const point<T, M>& other) const;
+        direction<T> operator+(const point<T>& other) const;
 
         /**
          * @brief Subtracts a point from this direction element-wise and returns a new direction.
@@ -214,32 +268,8 @@ namespace engine_lib
          * @param other The point to subtract.
          * @return A new direction containing the element-wise difference.
          */
-        template <size_t M>
-        direction operator-(const point<T, M>& other) const;
+        direction<T> operator-(const point<T>& other) const;
 
-        /**
-         * @brief Adds a point to this direction in-place (element-wise).
-         *
-         * Executes the parent method and then updates the beginning and end fields.
-         *
-         * @tparam M The number of dimensions of the other point (M <= N).
-         * @param other The point to add.
-         * @return A reference to this direction.
-         */
-        template <size_t M>
-        direction& operator+=(const point<T, M>& other);
-
-        /**
-         * @brief Subtracts a point from this direction in-place (element-wise).
-         *
-         * Executes the parent method and then updates the beginning and end fields.
-         *
-         * @tparam M The number of dimensions of the other point (M <= N).
-         * @param other The point to subtract.
-         * @return A reference to this direction.
-         */
-        template <size_t M>
-        direction& operator-=(const point<T, M>& other);
 
         /**
          * @brief Adds a direction to this direction element-wise and returns a new direction.
@@ -248,8 +278,7 @@ namespace engine_lib
          * @param other The direction to add.
          * @return A new direction containing the element-wise sum.
          */
-        template <size_t M>
-        direction operator+(const direction<T, M>& other) const;
+        direction<T> operator+(const direction<T>& other) const;
 
         /**
          * @brief Subtracts a direction from this direction element-wise and returns a new direction.
@@ -258,134 +287,64 @@ namespace engine_lib
          * @param other The direction to subtract.
          * @return A new direction containing the element-wise difference.
          */
-        template <size_t M>
-        direction operator-(const direction<T, M>& other) const;
+        direction<T> operator-(const direction<T>& other) const;
 
-        /**
-         * @brief Adds a direction to this direction in-place (element-wise).
-         *
-         * Executes the parent method and then updates the beginning and end fields.
-         *
-         * @tparam M The number of dimensions of the other direction (M <= N).
-         * @param other The direction to add.
-         * @return A reference to this direction.
-         */
-        template <size_t M>
-        direction& operator+=(const direction<T, M>& other);
-
-        /**
-         * @brief Subtracts a direction from this direction in-place (element-wise).
-         *
-         * Executes the parent method and then updates the beginning and end fields.
-         *
-         * @tparam M The number of dimensions of the other direction (M <= N).
-         * @param other The direction to subtract.
-         * @return A reference to this direction.
-         */
-        template <size_t M>
-        direction& operator-=(const direction<T, M>& other);
 
         /**
          * @brief Element-wise multiplication with a point of the same dimension.
          * @param other The point to multiply with.
          * @return A new direction containing the element-wise product.
          */
-        direction operator*(const point<T, N>& other) const;
+        direction<T> operator*(const point<T>& other) const;
 
         /**
          * @brief Element-wise division by a point of the same dimension.
          * @param other The point to divide by.
          * @return A new direction containing the element-wise quotient.
          */
-        direction operator/(const point<T, N>& other) const;
+        direction<T> operator/(const point<T>& other) const;
 
-        /**
-         * @brief In-place element-wise multiplication with a point of the same dimension.
-         *
-         * Executes the parent method and then updates the beginning and end fields.
-         *
-         * @param other The point to multiply with.
-         * @return A reference to this direction.
-         */
-        direction& operator*=(const point<T, N>& other);
-
-        /**
-         * @brief In-place element-wise division by a point of the same dimension.
-         *
-         * Executes the parent method and then updates the beginning and end fields.
-         *
-         * @param other The point to divide by.
-         * @return A reference to this direction.
-         */
-        direction& operator/=(const point<T, N>& other);
 
         /**
          * @brief Element-wise multiplication with a direction of the same dimension.
          * @param other The direction to multiply with.
          * @return A new direction containing the element-wise product.
          */
-        direction operator*(const direction<T, N>& other) const;
+        direction<T> operator*(const direction<T>& other) const;
 
         /**
          * @brief Element-wise division by a direction of the same dimension.
          * @param other The direction to divide by.
          * @return A new direction containing the element-wise quotient.
          */
-        direction operator/(const direction<T, N>& other) const;
+        direction<T> operator/(const direction<T>& other) const;
 
-        /**
-         * @brief In-place element-wise multiplication with a direction of the same dimension.
-         *
-         * Executes the parent method and then updates the beginning and end fields.
-         *
-         * @param other The direction to multiply with.
-         * @return A reference to this direction.
-         */
-        direction& operator*=(const direction<T, N>& other);
-
-        /**
-         * @brief In-place element-wise division by a direction of the same dimension.
-         *
-         * Executes the parent method and then updates the beginning and end fields.
-         *
-         * @param other The direction to divide by.
-         * @return A reference to this direction.
-         */
-        direction& operator/=(const direction<T, N>& other);
 
         /**
          * @brief Multiplies all coordinates by a scalar and returns a new direction.
          * @param value The scalar value.
          * @return A new scaled direction.
          */
-        direction operator*(T value) const;
+        direction<T> operator*(T value) const;
 
         /**
          * @brief Divides all coordinates by a scalar and returns a new direction.
          * @param value The scalar divisor.
          * @return A new scaled direction.
          */
-        direction operator/(T value) const;
+        direction<T> operator/(T value) const;
 
-        /**
-         * @brief Scales this direction by a scalar in-place.
-         *
-         * Executes the parent method and then updates the beginning and end fields.
-         *
-         * @param value The scalar value.
-         * @return A reference to this direction.
-         */
-        direction& operator*=(T value);
+        void check_compatible(const direction& other) const;
 
+    private:
+
+        void set_cached_values(const shared_ptr<point<T>>& begin, const shared_ptr<point<T>>& end);
         /**
-         * @brief Divides this direction by a scalar in-place.
+         * @brief Calculates the length of the direction.
          *
-         * Executes the parent method and then updates the beginning and end fields.
-         *
-         * @param value The scalar divisor.
-         * @return A reference to this direction.
+         * @return The length of the direction.
          */
-        direction& operator/=(T value);
+        T length(shared_ptr<point<T>> beginning, shared_ptr<point<T>> end) const;
     };
 }
 #endif //DIRECTION_HPP

@@ -1,203 +1,233 @@
 #ifndef POINT_INL
 #define POINT_INL
+#include <stdexcept>
 
-namespace engine_lib
+namespace SpaceEngine
 {
     using namespace std;
 
 
-    template <class T, size_t N>
-    point<T, N>::point() : coordinates_()
-    {
-    }
-
-    template <class T, size_t N>
+    template <class T>
     template <typename... Args>
-    point<T, N>::point(Args... args)
+    point<T>::point(size_t N, Args... args) : coordinates_(N, T{})
     {
-        // creating vector of N size
-        std::vector<T> temp(N, T{});
-
-        // filling accessible elements
         constexpr size_t num_args = sizeof...(args);
-        constexpr size_t copy_count = (num_args < N) ? num_args : N;
-
-        // Используем fold expression для заполнения
-        if constexpr (num_args > 0)
-        {
-            auto values = std::array<T, num_args>{static_cast<T>(args)...};
-            std::copy_n(values.begin(), copy_count, temp.begin());
-        }
-
-        // Копируем из вектора в массив
-        std::copy(temp.begin(), temp.end(), coordinates_.begin());
+        size_t copy_count = std::min(N, num_args);
+        size_t i = 0;
+        ((i < copy_count ? (void)(coordinates_[i++] = static_cast<T>(args)) : void()), ...);
+        if (N > 3 && num_args <= 3)
+            coordinates_[3] = static_cast<T>(1);
     }
 
-    template <class T, size_t N>
-    point<T, N>::point(const array<T, N>& coordinates)
+    template <class T>
+    point<T>::point(const vector<T>& coordinates)
         : coordinates_(coordinates)
     {
     }
 
 
-    template <class T, size_t N>
-    point<T, N>::point(const point<T, N>& other)
+    template <class T>
+    point<T>::point(const point<T>& other)
         : coordinates_(other.coordinates_)
     {
     }
 
-    template <class T, size_t N>
-    array<T, N> point<T, N>::get_coordinates() const
+    template <class T>
+    vector<T> point<T>::get_coordinates() const
     {
         return coordinates_;
     }
 
 
-    template <class T, size_t N>
-    size_t point<T, N>::axes() const
+    template <class T>
+    size_t point<T>::axes() const
     {
-        return N;
+        return coordinates_.size();
     }
 
 
-    template <class T, size_t N>
-    T& point<T, N>::operator[](size_t index)
+    template <class T>
+    T& point<T>::operator[](size_t index)
     {
-        if (index >= N)
+        if (index >= axes())
             throw invalid_argument("Index out of range");
 
         return coordinates_[index];
     }
 
 
-    template <class T, size_t N>
-    T point<T, N>::coordinate(size_t index) const
+    template <class T>
+    T point<T>::coordinate(size_t index) const
     {
-        if (index >= N)
+        if (index >= axes())
             return T(0);
         return coordinates_[index];
     }
 
 
-    template <class T, size_t N>
-    void point<T, N>::set(size_t index, T value)
+    template <class T>
+    void point<T>::set(size_t index, T value)
     {
-        if (index < N)
+        if (index < axes())
             coordinates_[index] = value;
     }
 
-
-    template <class T, size_t N>
-    template <size_t M>
-    point<T, N> point<T, N>::operator+(const point<T, M>& other) const
+    template <class T>
+    void point<T>::set_axis_count(size_t count)
     {
-        static_assert(N >= M, "Left side size is less than right side size");
+        coordinates_.resize(count);
+    }
 
-        point<T, N> result(coordinates_);
-        for (size_t i = 0; i < N; ++i)
+
+    template <class T>
+    point<T> point<T>::operator+(const point<T>& other) const
+    {
+        check_compatible(other);
+        point<T> result(coordinates_);
+        for (size_t i = 0; i < axes(); ++i)
             result[i] += other.coordinate(i);
         return result;
     }
 
 
-    template <class T, size_t N>
-    template <size_t M>
-    point<T, N> point<T, N>::operator-(const point<T, M>& other) const
+    template <class T>
+    point<T> point<T>::operator-(const point<T>& other) const
     {
-        static_assert(N >= M, "Left side size is less than right side size");
+        check_compatible(other);
 
-        point<T, N> result(coordinates_);
-        for (size_t i = 0; i < N; ++i)
+        point<T> result(coordinates_);
+        for (size_t i = 0; i < axes(); ++i)
             result[i] -= other.coordinate(i);
         return result;
     }
 
 
-    template <class T, size_t N>
-    template <size_t M>
-    point<T, N>& point<T, N>::operator+=(const point<T, M>& other)
+    template <class T>
+    point<T>& point<T>::operator+=(const point<T>& other)
     {
-        static_assert(N >= M, "Left side size is less than right side size");
+        check_compatible(other);
 
-        for (size_t i = 0; i < N; ++i)
+        for (size_t i = 0; i < axes(); ++i)
             coordinates_[i] += other.coordinate(i);
         return *this;
     }
 
 
-    template <class T, size_t N>
-    template <size_t M>
-    point<T, N>& point<T, N>::operator-=(const point<T, M>& other)
+    template <class T>
+    point<T>& point<T>::operator-=(const point<T>& other)
     {
-        static_assert(N >= M, "Left side size is less than right side size");
-        for (size_t i = 0; i < N; ++i)
+        check_compatible(other);
+
+        for (size_t i = 0; i < axes(); ++i)
             coordinates_[i] -= other.coordinate(i);
         return *this;
     }
 
-
-    template <class T, size_t N>
-    point<T, N> point<T, N>::operator*(const point<T, N>& other) const
+    template <class T>
+    point<T> point<T>::operator+(T value) const
     {
-        point<T, N> result;
-        for (size_t i = 0; i < N; ++i)
-            result[i] = coordinates_[i] * other.coordinate(i);
+        point<T> result(*this);
+        for (auto& coord : result.coordinates_)
+            coord += value;
+        return result;
+    }
+
+    template <class T>
+    point<T>& point<T>::operator+=(T value)
+    {
+        for (auto& coord : coordinates_)
+            coord += value;
+        return *this;
+    }
+
+    template <class T>
+    point<T> point<T>::operator-(T value) const
+    {
+        point<T> result(*this);
+        for (auto& coord : result.coordinates_)
+            coord -= value;
+        return result;
+    }
+
+    template <class T>
+    point<T>& point<T>::operator-=(T value)
+    {
+        for (auto& coord : coordinates_)
+            coord -= value;
+        return *this;
+    }
+
+
+    template <class T>
+    point<T> point<T>::operator*(const point<T>& other) const
+    {
+        check_compatible(other);
+
+        point<T> result(*this);
+        for (size_t i = 0; i < axes(); ++i)
+            result[i] *= other.coordinate(i);
         return result;
     }
 
 
-    template <class T, size_t N>
-    point<T, N> point<T, N>::operator/(const point<T, N>& other) const
+    template <class T>
+    point<T> point<T>::operator/(const point<T>& other) const
     {
-        point<T, N> result;
-        for (size_t i = 0; i < N; ++i)
+        check_compatible(other);
+
+        point<T> result(*this);
+        for (size_t i = 0; i < axes(); ++i)
         {
             T divider(other.coordinate(i));
             if (divider == T(0))
                 throw std::invalid_argument("Cannot divide by zero");
-            result[i] = coordinates_[i] / divider;
+            result[i] /= divider;
         }
 
         return result;
     }
 
 
-    template <class T, size_t N>
-    point<T, N> point<T, N>::operator*(T value) const
+    template <class T>
+    point<T> point<T>::operator*(T value) const
     {
-        point<T, N> result;
-        for (size_t i = 0; i < N; ++i)
-            result[i] = coordinates_[i] * value;
+        point<T> result(*this);
+        for (size_t i = 0; i < axes(); ++i)
+            result[i] *= value;
         return result;
     }
 
 
-    template <class T, size_t N>
-    point<T, N> point<T, N>::operator/(T value) const
+    template <class T>
+    point<T> point<T>::operator/(T value) const
     {
         if (value == T(0))
             throw std::invalid_argument("Cannot divide by zero");
 
-        point<T, N> result;
-        for (size_t i = 0; i < N; ++i)
-            result[i] = coordinates_[i] / value;
+        point<T> result(*this);
+        for (size_t i = 0; i < axes(); ++i)
+            result[i] /= value;
         return result;
     }
 
 
-    template <class T, size_t N>
-    point<T, N>& point<T, N>::operator*=(const point<T, N>& other)
+    template <class T>
+    point<T>& point<T>::operator*=(const point<T>& other)
     {
-        for (size_t i = 0; i < N; ++i)
+        check_compatible(other);
+
+        for (size_t i = 0; i < axes(); ++i)
             coordinates_[i] *= other.coordinate(i);
         return *this;
     }
 
 
-    template <class T, size_t N>
-    point<T, N>& point<T, N>::operator/=(const point<T, N>& other)
+    template <class T>
+    point<T>& point<T>::operator/=(const point<T>& other)
     {
-        for (size_t i = 0; i < N; ++i)
+        check_compatible(other);
+
+        for (size_t i = 0; i < axes(); ++i)
         {
             T divider(other.coordinate(i));
             if (divider == T(0))
@@ -207,22 +237,49 @@ namespace engine_lib
         return *this;
     }
 
-    template <class T, size_t N>
-    point<T, N>& point<T, N>::operator*=(T value)
+    template <class T>
+    point<T>& point<T>::operator*=(T value)
     {
         for (T& i : coordinates_)
             i *= value;
         return *this;
     }
 
-    template <class T, size_t N>
-    point<T, N>& point<T, N>::operator/=(T value)
+    template <class T>
+    point<T>& point<T>::operator/=(T value)
     {
         if (value == T(0))
             throw std::invalid_argument("Cannot divide by zero");
         for (T& i : coordinates_)
             i /= value;
         return *this;
+    }
+
+    template <class T>
+    bool point<T>::operator!=(const point& other) const
+    {
+        check_compatible(other);
+        size_t it = 0;
+        for (const T& el : coordinates_)
+        {
+            if (el != other.coordinate(it))
+                return true;
+            ++it;   
+        }
+        return false;
+    }
+
+    template <class T>
+    void point<T>::check_compatible(const point& other) const
+    {
+        if (axes() != other.axes())
+            throw std::invalid_argument("Cannot subtract point with fewer dimensions from point with more dimensions");
+    }
+
+    template <class T>
+    void point_constraints::set_global_zero_axes(size_t axes)
+    {
+        zero_point.set_axis_count(axes);
     }
 }
 #endif
