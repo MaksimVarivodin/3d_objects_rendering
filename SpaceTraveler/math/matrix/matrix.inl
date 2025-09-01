@@ -247,7 +247,7 @@ namespace SpaceEngine
         for (size_t i(0); i < rows(); ++i)
             for (size_t j(0); j < other.columns(); ++j)
                 for (size_t k(0); k < columns(); ++k)
-                    result(i, j) += table_[i][k] * other(k, j);
+                    result(i, j) += table_[j][k] * other(k, i);
         return result;
     }
 
@@ -272,7 +272,7 @@ namespace SpaceEngine
                 {
                     if (other[k][j] == T(0))
                         throw invalid_argument("Division by zero in matrix division");
-                    result[i][j] += table_[i][k] / other[k][j];
+                    result[i][j] += table_[j][k] / other[k][i];
                 }
 
         return result;
@@ -705,8 +705,8 @@ namespace SpaceEngine
 
         rotation(0, 0) = T(1);
         rotation(1, 1) = cos(theta);
-        rotation(1, 2) = -sin(theta);
-        rotation(2, 1) = sin(theta);
+        rotation(1, 2) = sin(theta);
+        rotation(2, 1) = -sin(theta);
         rotation(2, 2) = cos(theta);
         if (rows >= 4 && columns >= 4)
             rotation(3, 3) = T(1);
@@ -738,8 +738,8 @@ namespace SpaceEngine
         matrix<T> rotation(rows, columns);
 
         rotation(0, 0) = cos(theta);
-        rotation(0, 1) = -sin(theta);
-        rotation(1, 0) = sin(theta);
+        rotation(0, 1) = sin(theta);
+        rotation(1, 0) = -sin(theta);
         rotation(1, 1) = cos(theta);
         rotation(2, 2) = T(1);
         if (rows >= 4 && columns >= 4)
@@ -760,19 +760,33 @@ namespace SpaceEngine
     template <class T>
     matrix<T> matrix<T>::projection_matrix(T AspectRatio, T Near, T Far, T FOV, size_t rows, size_t columns)
     {
-        if (rows < 4 || columns < 4)
+        /*if (rows < 4 || columns < 4)
             throw invalid_argument("Rotation matrix must be at least 4x4");
 
         matrix<T> rotation(rows, columns);
-        T FovRad = T(1) / (tan(FOV / T(360) * T(M_PI)));
+        T FovRad = T(1) / (tan(FOV* T(M_PI) / T(360) ));
 
         rotation(0, 0) = AspectRatio * FovRad;
         rotation(1, 1) = FovRad;
         rotation(2, 2) = Far / (Far - Near);
-        rotation(2, 3) = T(1);
-        rotation(3, 2) = (-Far * Near) / (Far - Near);
+        rotation(2, 3) = (-Far * Near) / (Far - Near);
+        rotation(3, 2) = T(1);
+        
+        rotation(3, 3) = T(0);
+        return rotation;*/
+        if (rows < 4 || columns < 4)
+            throw invalid_argument("Projection matrix must be at least 4x4");
 
-        return rotation;
+        matrix<T> proj(rows, columns);
+        T FovRad = T(1) / tan(FOV * T(0.5) * (T(M_PI) / T(180)));
+
+        proj(0, 0) = AspectRatio * FovRad;
+        proj(1, 1) = FovRad;
+        proj(2, 2) = Far / (Far - Near);
+        proj(2, 3) = (-Far * Near) / (Far - Near);
+        proj(3, 2) = T(1);
+        proj(3, 3) = T(0);
+        return proj;
     }
 
     template <class T>
@@ -788,7 +802,7 @@ namespace SpaceEngine
             [tx ][ty    ][tz    ][1 ]
          */
         for (size_t i = 0; i < translation.axes() - 1; i++)
-            translation_matrix(i, translation.axes() - 1) = translation.coordinate(i);
+            translation_matrix(translation.axes() - 1,i ) = translation.coordinate(i);
 
         return translation_matrix;
     }
@@ -796,77 +810,151 @@ namespace SpaceEngine
     template <class T>
     inline matrix<T> matrix<T>::point_at(const point<T>& pos, const point<T>& target, const point<T>& up)
     {
-        auto newForward = target - pos;
-        auto camera_forward = direction(newForward).get_unit_direction();
+        /*auto forwardDir = direction(target - pos).get_unit_direction().get_end();
+        auto a = forwardDir * direction(up).dot_product(forwardDir);
+        auto newUpDir = direction(up - a).get_unit_direction();
+        auto rightDir = newUpDir.cross_product(forwardDir).get_unit_direction();
 
-        auto a = newForward * (direction(up).dot_product(camera_forward));
-        auto newUp = up - a;
+        point<T> r = rightDir.get_end();
+        point<T> u = newUpDir.get_end();
+        point<T> f = forwardDir;
 
-        auto camera_up = direction(newUp).get_unit_direction();
-        auto camera_right = camera_up.cross_product(camera_forward).get_unit_direction();
-
-        point<T> cRight = camera_right.get_end();
-        point<T> cUp = camera_up.get_end();
-        point<T> cForward = camera_forward.get_end();
-        point<T> cPosition = camera_forward.get_beginning();
+        matrix<T> m = identity_matrix(4);
+        
+        m(0,0)=r[x]; m(0, 1)=r[y]; m(0, 2)=r[z];m(0, 3)= T(0);
+        m(1,0)=u[x]; m(1, 1)=u[y]; m(1, 2)=u[z];m(1, 3)= T(0);
+        m(2,0)=f[x]; m(2, 1)=f[y]; m(2, 2)=f[z];m(2, 3)= T(0);
+        m(3,0)=pos.coordinate(x);
+        m(3,1)=pos.coordinate(y);
+        m(3,2)=pos.coordinate(z);
+        m(3,3)= T(1);
+        return m;*/
         /*
-            [rx  ry  rz  0]
-            [ux  uy  uz  0]
-            [fx  fy  fz  0]
-            [px  py  pz  1]
+            [ rx  ux  fx  0 ]
+            [ ry  uy  fy  0 ]
+            [ rz  uz  fz  0 ]
+            [ tx  ty  tz  1 ]
          */
-        matrix<T> p_at(4, 4);
-        p_at(0, 0) = cRight[x];
-        p_at(0, 1) = cRight[y];
-        p_at(0, 2) = cRight[z];
-        p_at(1, 0) = cUp[x];
-        p_at(1, 1) = cUp[y];
-        p_at(1, 2) = cUp[z];
-        p_at(2, 0) = cForward[x];
-        p_at(2, 1) = cForward[y];
-        p_at(2, 2) = cForward[z];
-        p_at(3, 0) = cPosition[x];
-        p_at(3, 1) = cPosition[y];
-        p_at(3, 2) = cPosition[z];
-        p_at(3, 3) = T(1);
-        return p_at;
+
+        
+        auto forwardDir = direction(target - pos).get_unit_direction();
+        auto a = forwardDir.get_end() * direction(up).dot_product(forwardDir);
+        auto newUpDir = direction(up - a).get_unit_direction();
+        auto rightDir = newUpDir.cross_product(forwardDir);
+
+        point<T> r = rightDir.get_end();
+        point<T> u = newUpDir.get_end();
+        point<T> f = forwardDir.get_end();
+
+        matrix<T> m = identity_matrix(4);
+    
+        m(0,0)=r[x]; m(0, 1)=u[x]; m(0, 2)=f[x]; m(0, 3)=pos.coordinate(x);
+        m(1,0)=r[y]; m(1, 1)=u[y]; m(1, 2)=f[y]; m(1, 3)=pos.coordinate(y);
+        m(2,0)=r[z]; m(2, 1)=u[z]; m(2, 2)=f[z]; m(2, 3)=pos.coordinate(z);
+        m(3,0)=T(0); m(3, 1)=T(0); m(3, 2)=T(0); m(3, 3)=T(1);
+    
+        return m;
     }
 
     template <class T>
     matrix<T> matrix<T>::look_at(const point<T>& pos, const point<T>& target, const point<T>& up)
     {
-        matrix<T> p_at(point_at(pos, target, up));
-        matrix<T> l_at(4, 4);
-        l_at(0, 0) = p_at(0, 0);
-        l_at(0, 1) = p_at(1, 0);
-        l_at(0, 2) = p_at(2, 0);
-        l_at(1, 0) = p_at(0, 1);
-        l_at(1, 1) = p_at(1, 1);
-        l_at(1, 2) = p_at(2, 1);
-        l_at(2, 0) = p_at(0, 2);
-        l_at(2, 1) = p_at(1, 2);
-        l_at(2, 2) = p_at(2, 2);
-        l_at(3, 0) = -(p_at(3, 0) * l_at(0, 0) + p_at(3, 1) * l_at(1, 0) + p_at(3, 2) * l_at(2, 0));
-        l_at(3, 1) = -(p_at(3, 0) * l_at(0, 1) + p_at(3, 1) * l_at(1, 1) + p_at(3, 2) * l_at(2, 1));
-        l_at(3, 2) = -(p_at(3, 0) * l_at(0, 2) + p_at(3, 1) * l_at(1, 2) + p_at(3, 2) * l_at(2, 2));
-        l_at(3, 3) = T(1);
-        return l_at;
+        /*matrix<T> m = point_at(pos, target, up);
+        
+        matrix<T> inv = matrix(pos.axes(), pos.axes());
+        
+        for (int i=0;i<3;++i)
+            for (int j=0;j<3;++j)
+                inv(i,j) = m(j,i);
+        inv(0, 3) = T(0);
+        inv(1, 3) = T(0);
+        inv(2, 3) = T(0);
+/*
+        matrix.m[3][0] = -(m.m[3][0] * matrix.m[0][0] + m.m[3][1] * matrix.m[1][0] + m.m[3][2] * matrix.m[2][0]);
+        matrix.m[3][1] = -(m.m[3][0] * matrix.m[0][1] + m.m[3][1] * matrix.m[1][1] + m.m[3][2] * matrix.m[2][1]);
+        matrix.m[3][2] = -(m.m[3][0] * matrix.m[0][2] + m.m[3][1] * matrix.m[1][2] + m.m[3][2] * matrix.m[2][2]);
+                
+ #1#
+        inv(3, 0 ) = -(m(3, 0) * inv(0, 0) + m(3, 1) * inv(1, 0) + m(3, 2) * inv(2, 0));
+        inv(3, 1 ) = -(m(3, 0) * inv(0, 1) + m(3, 1) * inv(1, 1) + m(3, 2) * inv(2, 1));
+        inv(3, 2 ) = -(m(3, 0) * inv(0, 2) + m(3, 1) * inv(1, 2) + m(3, 2) * inv(2, 2));
+        inv(3, 3 ) = T(1);
+        return inv;*/
+        /*matrix<T> m = point_at(pos, target, up);
+    
+        // Быстрое инвертирование для ортонормальной матрицы вида
+        matrix<T> inv(4, 4);
+    
+        // Транспонирование части вращения 3x3
+        for (int i = 0; i < 3; ++i)
+            for (int j = 0; j < 3; ++j)
+                inv(i, j) = m(j, i);
+
+        // Вычисление нового смещения
+        inv(0, 3) = -(m(0, 0) * m(0, 3) + m(1, 0) * m(1, 3) + m(2, 0) * m(2, 3));
+        inv(1, 3) = -(m(0, 1) * m(0, 3) + m(1, 1) * m(1, 3) + m(2, 1) * m(2, 3));
+        inv(2, 3) = -(m(0, 2) * m(0, 3) + m(1, 2) * m(1, 3) + m(2, 2) * m(2, 3));
+    
+        inv(3, 0) = T(0);
+        inv(3, 1) = T(0);
+        inv(3, 2) = T(0);
+        inv(3, 3) = T(1);
+    
+        return inv;*/
+
+        // Вектор "вперед" (новый Z)
+        auto forward = direction<T>(target - pos).get_unit_direction();
+
+        // Вектор "вверх" (новый Y)
+        auto a = forward.get_end() * direction<T>(up).dot_product(forward);
+        auto up_dir = direction<T>(up - a).get_unit_direction();
+
+        // Вектор "вправо" (новый X)
+        auto right_dir = up_dir.cross_product(forward);
+
+        point<T> r = right_dir.get_end();
+        point<T> u = up_dir.get_end();
+        point<T> f = forward.get_end();
+
+        matrix<T> m(4, 4);
+
+        m(0, 0) = r.coordinate(x); m(0, 1) = r.coordinate(y); m(0, 2) = r.coordinate(z); m(0, 3) = -direction<T>(pos).dot_product(right_dir);
+        m(1, 0) = u.coordinate(x); m(1, 1) = u.coordinate(y); m(1, 2) = u.coordinate(z); m(1, 3) = -direction<T>(pos).dot_product(up_dir);
+        m(2, 0) = f.coordinate(x); m(2, 1) = f.coordinate(y); m(2, 2) = f.coordinate(z); m(2, 3) = -direction<T>(pos).dot_product(forward);
+        m(3, 0) = T(0);            m(3, 1) = T(0);            m(3, 2) = T(0);            m(3, 3) = T(1);
+
+        return m;
     }
 
 
     template <class T>
     point<T> point<T>::operator*(const matrix<T>& m) const
     {
-        if (axes() != m.rows() && m.rows() != m.columns())
-            throw invalid_argument("Matrix must have the same number of axes");
-        point<T> result(axes());
+        if (axes() != m.columns())
+            throw invalid_argument("Point axes must match matrix columns for multiplication.");
 
-        for (size_t i = 0; i < axes(); ++i)
+        point<T> result(m.rows());
+        for (size_t i = 0; i < m.rows(); ++i)
         {
-            T sum{0};
+            T sum = T(0);
             for (size_t j = 0; j < axes(); ++j)
-                sum += coordinate(j) * m(i, j);
+            {
+                sum += m(i, j) * coordinate(j);
+            }
             result[i] = sum;
+        }
+
+        // Handle homogeneous coordinate w
+        if (result.axes() == 4)
+        {
+            T w = result.coordinate(3);
+            if (w != T(0) && w != T(1))
+            {
+                for (size_t i = 0; i < 3; ++i)
+                {
+                    result[i] /= w;
+                }
+            }
         }
         return result;
     }
@@ -874,16 +962,7 @@ namespace SpaceEngine
     template <class T>
     point<T>& point<T>::operator*=(const matrix<T>& m)
     {
-        if (axes() != m.rows() && m.rows() != m.columns())
-            throw invalid_argument("Matrix must have the same number of axes");
-        point<T> pCopy(*this);
-        for (size_t i = 0; i < axes(); ++i)
-        {
-            T sum{0};
-            for (size_t j = 0; j < axes(); ++j)
-                sum += pCopy.coordinate(j) * m(i, j);
-            coordinates_[i] = sum;
-        }
+        *this = *this * m;
         return *this;
     }
 } // SpaceEngine

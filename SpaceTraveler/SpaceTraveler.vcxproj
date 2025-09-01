@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="main2.cpp" />
     <ClCompile Include="math\triangle\triangle.cpp" />
     <ClInclude Include="JaggedArray\JaggedArray.inl" />
-    <ClCompile Include="main.cpp" />
     <ClInclude Include="math\direction\direction.hpp" />
     <ClInclude Include="math\direction\direction.inl" />
     <ClInclude Include="math\matrix\matrix.hpp" />
@@ -153,13 +153,15 @@
   <ItemGroup>
     <Content Include="..\Readme.md" />
     <Content Include="assets\axis.obj" />
-    <Content Include="assets\ico16x16.png" />
-    <Content Include="assets\ico20x20.png" />
-    <Content Include="assets\ico70x70.png" />
+    <Content Include="assets\icon16x16.png" />
     <Content Include="assets\icon32x32.png" />
+    <Content Include="assets\icon70x70.png" />
+    <Content Include="assets\mountains.obj" />
     <Content Include="assets\teapot.obj" />
     <Content Include="assets\VideoShip.obj" />
     <Content Include="docs\ErrorRenderingAxis.png" />
+    <Content Include="docs\ErrorRenderingAxis2.png" />
+    <Content Include="docs\ErrorRenderingAxis3.png" />
     <Content Include="sfml3\bin\sfml-audio-3.dll" />
     <Content Include="sfml3\bin\sfml-audio-d-3.dll" />
     <Content Include="sfml3\bin\sfml-graphics-3.dll" />
