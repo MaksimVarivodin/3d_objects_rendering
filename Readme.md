@@ -15,7 +15,7 @@ SpaceTraveler represents a deep dive into 3D graphics programming, implementing 
 - **3D Model Support**: .obj file format loading and rendering capabilities
 - **Cross-platform Architecture**: Built using SFML framework for portability
 
-## Technical Implementation
+## Technical Implementation~~~~
 
 **Programming Language**: C++  
 **Graphics Framework**: SFML (Simple and Fast Multimedia Library)  
