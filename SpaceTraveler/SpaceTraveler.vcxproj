@@ -153,11 +153,13 @@
   <ItemGroup>
     <Content Include="..\Readme.md" />
     <Content Include="assets\axis.obj" />
+
     <Content Include="assets\Haven.obj" />
     <Content Include="assets\icon16x16.png" />
     <Content Include="assets\icon32x32.png" />
     <Content Include="assets\icon70x70.png" />
     <Content Include="assets\jario.png" />
+
     <Content Include="assets\mountains.obj" />
     <Content Include="assets\teapot.obj" />
     <Content Include="assets\VideoShip.obj" />
